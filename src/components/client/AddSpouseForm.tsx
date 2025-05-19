@@ -15,8 +15,6 @@ const AddSpouseForm = ({
   members: FamilyTreeData;
 }) => {
   const [spouseId, setSpouseId] = useState<string | undefined>();
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
 
   const person = personId ? members.people[personId] : null;
   const gender = person?.gender;
@@ -33,13 +31,10 @@ const AddSpouseForm = ({
     });
 
     if (response.ok) {
-      setSuccess(true);
-      setError(null);
       toast(`${spouseId} has been added successfully.`)
       setSpouseId(undefined);
     } else {
       const errorData = await response.json();
-      setError(errorData.error || "An error occurred");
       toast(`Adding ${spouseId} Failed.`)
     }
   };

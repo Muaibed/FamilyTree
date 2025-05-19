@@ -23,8 +23,6 @@ const AddChildForm = ({
   const [motherId, setMotherId] = useState<string | undefined>(MID);
   const [birthDate, setbirthDate] = useState<string | undefined>();
   const [deathDate, setDeathDate] = useState<string | undefined>();
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,15 +43,12 @@ const AddChildForm = ({
     });
 
     if (response.ok) {
-      setSuccess(true);
       toast(`${firstName} has been added successfully.`)
-      setError(null);
       setFirstName("");
       setFamilyName("");
       setGender("MALE");
     } else {
       const errorData = await response.json();
-      setError(errorData.error || "An error occurred");
       toast(`Adding ${firstName} Failed.`)
     }
   };

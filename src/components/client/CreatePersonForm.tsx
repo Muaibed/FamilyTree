@@ -23,8 +23,6 @@ const CreatePersonForm = ({
   const [motherId, setMotherId] = useState<string | undefined>(MID);
   const [birthDate, setBirthDate] = useState();
   const [deathDate, setDeathDate] = useState();
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,8 +42,6 @@ const CreatePersonForm = ({
     });
 
     if (response.ok) {
-      setSuccess(true);
-      setError(null);
       toast(`${firstName} has been created successfully.`)
       setFirstName("");
       setFamilyName("");
@@ -53,7 +49,6 @@ const CreatePersonForm = ({
       setFatherId(undefined)
     } else {
       const errorData = await response.json();
-      setError(errorData.error || "An error occurred");
       toast(`Creating ${firstName} Failed.`)
     }
   };

@@ -20,8 +20,6 @@ const EditPersonForm = ({
   const [motherId, setMotherId] = useState<string | undefined>(person.motherId);
   const [birthDate, setBirthDate] = useState(person.birthDate);
   const [deathDate, setDeathDate] = useState(person.deathDate);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,12 +39,9 @@ const EditPersonForm = ({
     });
 
     if (response.ok) {
-      setSuccess(true);
-      setError(null);
       toast(`${firstName} has been updated successfully.`)
     } else {
       const errorData = await response.json();
-      setError(errorData.error || "An error occurred");
       toast(`Updating ${firstName} Failed.`)
     }
   };
@@ -54,7 +49,7 @@ const EditPersonForm = ({
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
-        Create Person
+        Edit Person
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
