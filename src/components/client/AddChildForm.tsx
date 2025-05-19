@@ -21,8 +21,8 @@ const AddChildForm = ({
   const [gender, setGender] = useState<"MALE" | "FEMALE">("MALE");
   const [fatherId, setFatherId] = useState<string | undefined>(FID);
   const [motherId, setMotherId] = useState<string | undefined>(MID);
-  const [birthDate, setbirthDate] = useState();
-  const [deathDate, setDeathDate] = useState();
+  const [birthDate, setbirthDate] = useState<string | undefined>();
+  const [deathDate, setDeathDate] = useState<string | undefined>();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
@@ -38,6 +38,7 @@ const AddChildForm = ({
         firstName,
         familyName,
         gender,
+        birthDate,
         fatherId,
         motherId,
       }),
@@ -120,14 +121,14 @@ const AddChildForm = ({
         <input
           type="date"
           value={birthDate}
-          onChange={(e) => setFamilyName(e.target.value)}
+          onChange={(e) => setbirthDate(e.target.value)}
           placeholder="Birth Date"
           className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
         />
         <input
           type="date"
           value={deathDate}
-          onChange={(e) => setFamilyName(e.target.value)}
+          onChange={(e) => setDeathDate(e.target.value)}
           placeholder="Death Date"
           className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
         />

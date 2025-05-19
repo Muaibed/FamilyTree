@@ -155,6 +155,7 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
             </div>
             <p>id: {selectedPerson.id}</p>
             <p>Gender: {selectedPerson.gender}</p>
+            <p>Birth Date: {selectedPerson.birthDate}</p>
             <p>Spouses: {selectedPerson.spouses}</p>
             {selectedPerson.deathDate && (
               <p>Death Date: {selectedPerson.deathDate}</p>
