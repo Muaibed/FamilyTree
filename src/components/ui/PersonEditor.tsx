@@ -1,6 +1,6 @@
 // components/PersonEditor.tsx
-import React, { useState } from 'react';
-import { Person } from '@/app/types/family';
+import React, { useState } from "react";
+import { Person } from "@/types/family";
 
 interface PersonEditorProps {
   person?: Person;
@@ -9,19 +9,28 @@ interface PersonEditorProps {
   onCancel: () => void;
 }
 
-export default function PersonEditor({ person, allPeople, onSave, onCancel }: PersonEditorProps) {
+export default function PersonEditor({
+  person,
+  allPeople,
+  onSave,
+  onCancel,
+}: PersonEditorProps) {
   const isNewPerson = !person;
-  
+
   const [formData, setFormData] = useState<Partial<Person>>(
     person || {
       id: crypto.randomUUID(),
-      name: '',
-      gender: 'MALE',
+      name: "",
+      gender: "MALE",
       parentIds: [],
     }
   );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -35,25 +44,27 @@ export default function PersonEditor({ person, allPeople, onSave, onCancel }: Pe
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4">{isNewPerson ? 'Add New Person' : `Edit ${person?.name}`}</h2>
-      
+      <h2 className="text-xl font-bold mb-4">
+        {isNewPerson ? "Add New Person" : `Edit ${person?.name}`}
+      </h2>
+
       <div className="mb-4">
         <label className="block mb-1">Name</label>
         <input
           type="text"
           name="name"
-          value={formData.name || ''}
+          value={formData.name || ""}
           onChange={handleChange}
           className="w-full p-2 border rounded"
           required
         />
       </div>
-      
+
       <div className="mb-4">
         <label className="block mb-1">Gender</label>
         <select
           name="gender"
-          value={formData.gender || 'other'}
+          value={formData.gender || "other"}
           onChange={handleChange}
           className="w-full p-2 border rounded"
         >
@@ -62,20 +73,20 @@ export default function PersonEditor({ person, allPeople, onSave, onCancel }: Pe
           <option value="other">Other</option>
         </select>
       </div>
-      
+
       <div className="mb-4">
         <label className="block mb-1">Birth Date</label>
         <input
           type="date"
           name="birthDate"
-          value={formData.birthDate || ''}
+          value={formData.birthDate || ""}
           onChange={handleChange}
           className="w-full p-2 border rounded"
         />
       </div>
-      
+
       {/* Other fields can be added here */}
-      
+
       <div className="flex justify-end gap-2 mt-6">
         <button
           type="button"

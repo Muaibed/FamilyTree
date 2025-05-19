@@ -1,5 +1,5 @@
 // src/lib/person.ts
-import { FamilyTreeData } from '@/app/types/family';
+import { FamilyTreeData } from '@/types/family';
 import { prisma } from './prisma';
 
 export const createPerson = async (data: {
@@ -119,9 +119,10 @@ export const updatePerson = async (id: number, data: {
   fistName?: string;
   familyName?: string;
   gender?: 'MALE' | 'FEMALE';
-  birthDate?: Date;
   fatherId?: number;
   motherId?: number;
+  birthDate?: Date;
+  deathDate?: Date;
 }) => {
   return prisma.person.update({
     where: { id },
@@ -130,6 +131,7 @@ export const updatePerson = async (id: number, data: {
       familyName: data.familyName,
       gender: data.gender,
       birthDate: data.birthDate,
+      deathData: data.deathDate,
       father: data.fatherId ? { connect: { id: data.fatherId } } : undefined,
       mother: data.motherId ? { connect: { id: data.motherId } } : undefined,
     },

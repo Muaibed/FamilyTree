@@ -1,4 +1,4 @@
-import { deletePerson, getPersonById } from '@/lib/person';
+import { deletePerson, getPersonById, updatePerson } from '@/lib/person';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req:NextRequest) {
@@ -21,10 +21,39 @@ export async function GET(req:NextRequest) {
   }
 }
 
-export async function DELETE(req: NextRequest) {
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+     const id = Number(params.id);
+
+    const { firstName, familyName, gender, fatherId, motherId, birthDate, deathDate } = await req.json();
+
+    const data = {
+      firstName,
+      familyName,
+      gender,
+      ...(fatherId ? { fatherId: Number(fatherId) } : {}),
+      ...(motherId ? { motherId: Number(motherId) } : {}),
+      ...(birthDate ? { birthDate: new Date(birthDate) } : {}),
+      ...(deathDate ? { deathDate: new Date(deathDate) } : {}),
+    }
+
+    if (!id) {
+      return new Response("Person ID is required", { status: 400});
+    }
+
+    await updatePerson(id, data);
+
+    return NextResponse.json("Updated successfully", { status: 201 });
+  } catch (error) {
+    console.error(error);
+    return new Response("Failed to update person", { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
-      const { searchParams } = new URL(req.url);
-      const id = searchParams.get("id");
+      const id = Number(params.id);
+
   
       if (!id) {
         return new Response("Person ID is required", { status: 400 });
