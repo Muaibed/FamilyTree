@@ -1,6 +1,6 @@
 import ThemeProvider from "@/theme/theme-provider";
-import ThemeToggle from "@/theme/theme-toggle";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner"
 
 export default function RootLayout({
   children,
@@ -17,6 +17,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

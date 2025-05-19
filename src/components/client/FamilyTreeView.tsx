@@ -6,15 +6,16 @@ import Tree, {
   CustomNodeElementProps,
   RenderCustomNodeElementFn,
 } from "react-d3-tree";
-import { FamilyTreeData, Person } from "@/app/types/family";
-import { Modal, PersonModal } from "@/app/components/client/Modal";
-import AddChildForm from "@/app/components/client/AddChildForm";
-import { deletePerson } from "@/app/components/server/deletePerson";
+import { FamilyTreeData, Person } from "@/types/family";
+import { toast } from "sonner"
+import { Modal, PersonModal } from "@/components/client/Modal";
+import AddChildForm from "@/components/client/AddChildForm";
 import AddSpouseForm from "./AddSpouseForm";
 import CreatePersonForm from "./CreatePersonForm";
-import { getAncestors } from "@/lib/person";
-import { TreeNode } from "@/app/types/tree";
+import { deletePerson, getAncestors } from "@/lib/person";
+import { TreeNode } from "@/types/tree";
 import { prepareTreeData } from "@/lib/tree";
+import DeletePerson from "./DeletePerson";
 
 const renderCustomNode: RenderCustomNodeElementFn = (
   rd3tNodeProps: CustomNodeElementProps
@@ -57,11 +58,25 @@ const renderCustomNode: RenderCustomNodeElementFn = (
   );
 };
 
+const handleDelete = async (id:string) => {
+    const response = await fetch(`api/person/${id}}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },       
+    });
+
+    if (response.ok) {
+
+    } else {
+      const errorData = await response.json();
+    }
+  };
+
+
 export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
   const [treeData, setTreeData] = useState<TreeNode | null>(null);
-  const [selectedPersonId, setSelectedPersonId] = useState<
-    string | number | null
-  >(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [isCreatingPerson, setIsCreatingPerson] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -69,11 +84,8 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const selectedPerson = selectedPersonId
-    ? data.people[selectedPersonId]
-    : null;
-
+  const [deleteStatus, setDeleteStatus] = useState<'success' | 'error' | null>(null);
+    
   useEffect(() => {
     if (data && data.rootPersonId) {
       const formattedData = prepareTreeData(data, data.rootPersonId);
@@ -85,16 +97,6 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
-      <style>
-        {/* {`
-          .custom-link {
-            stroke: var(--stroke-color) !important;
-            fill: #3B82F6;
-            color: #3B82F6;
-            stroke-width: 1;
-          }
-        `} */}
-      </style>
       <button
         className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
         onClick={() => setIsCreatingPerson(true)}
@@ -126,7 +128,7 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
 
             if (personId && personId !== true) {
               // exclude (true) if assigned to personId
-              setSelectedPersonId(personId);
+              setSelectedPerson(data.people[personId])
             }
             setDetailModalOpen(true);
           }}
@@ -136,7 +138,7 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
       <PersonModal
         isOpen={!!selectedPerson}
         onClose={() => {
-          setSelectedPersonId(null);
+          setSelectedPerson(null);
           setDetailModalOpen(false);
           setIsAddingChild(false);
           setIsAddingSpouse(false);
@@ -160,19 +162,19 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
             <div>
               <button
                 className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-                onClick={() => setIsAddingChild(true)}
+                onClick={() => setIsAddingChild(!isAddingChild)}
               >
                 ADD Child
               </button>
               <button
                 className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-                onClick={() => setIsAddingSpouse(true)}
+                onClick={() => setIsAddingSpouse(!isAddingSpouse)}
               >
                 ADD Spuose
               </button>
               <button
                 className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-                onClick={() => setIsDeleting(true)}
+                onClick={() => setIsDeleting(!isDeleting)}
               >
                 DELETE
               </button>
@@ -204,20 +206,14 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
         }}
       >
         {selectedPerson && isDeleting && (
-          <div className="text-center">
-            <h2 className="text-xl font-bold mb-2">
-              Are you sure to delete {selectedPerson.name}?
-            </h2>
-            <button
-              className="bg-rose-700 dark:bg-rose-700 rounded hover:cursor-pointer p-1 pl-4 pr-4"
-              onClick={() => {
-                deletePerson(selectedPerson.id);
+          <DeletePerson 
+            person={selectedPerson} 
+            onSubmit={() => {
                 setIsDeleting(false);
-              }}
-            >
-              CONFIRM
-            </button>
-          </div>
+                setSelectedPerson(null)
+            }}
+            onResult={(status) => setDeleteStatus(status)} 
+          />
         )}
       </Modal>
     </div>

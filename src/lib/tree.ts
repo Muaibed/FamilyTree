@@ -1,5 +1,5 @@
-import { FamilyTreeData } from "@/app/types/family";
-import { TreeNode } from "@/app/types/tree";
+import { FamilyTreeData } from "@/types/family";
+import { TreeNode } from "@/types/tree";
 
 export const prepareTreeData = (
   data: FamilyTreeData,

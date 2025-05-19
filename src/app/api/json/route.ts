@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { FamilyTreeData } from '@/app/types/family';
+import { FamilyTreeData } from '@/types/family';
 
 export async function GET() {
   try {

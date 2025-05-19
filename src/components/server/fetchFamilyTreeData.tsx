@@ -1,6 +1,6 @@
 export async function getFamilyTreeData() {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/json`, {
-        next: { revalidate: 10 }  
+        // next: { revalidate: 10 }  
     });
   
     if (!res.ok) {

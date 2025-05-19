@@ -1,7 +1,7 @@
 // src/app/api/person/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createPerson, deletePerson, getAllPersons } from '@/lib/person';
+import { createPerson, getAllPersons } from '@/lib/person';
 
 export async function POST(req: NextRequest) {
   try {
