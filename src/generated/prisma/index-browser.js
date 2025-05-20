@@ -123,7 +123,8 @@ exports.Prisma.PersonScalarFieldEnum = {
   familyName: 'familyName',
   gender: 'gender',
   birthDate: 'birthDate',
-  deathData: 'deathData',
+  deathDate: 'deathDate',
+  phone: 'phone',
   fatherId: 'fatherId',
   motherId: 'motherId'
 };

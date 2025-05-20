@@ -1064,7 +1064,8 @@ export namespace Prisma {
     familyName: string | null
     gender: $Enums.Gender | null
     birthDate: Date | null
-    deathData: Date | null
+    deathDate: Date | null
+    phone: string | null
     fatherId: number | null
     motherId: number | null
   }
@@ -1075,7 +1076,8 @@ export namespace Prisma {
     familyName: string | null
     gender: $Enums.Gender | null
     birthDate: Date | null
-    deathData: Date | null
+    deathDate: Date | null
+    phone: string | null
     fatherId: number | null
     motherId: number | null
   }
@@ -1086,7 +1088,8 @@ export namespace Prisma {
     familyName: number
     gender: number
     birthDate: number
-    deathData: number
+    deathDate: number
+    phone: number
     fatherId: number
     motherId: number
     _all: number
@@ -1111,7 +1114,8 @@ export namespace Prisma {
     familyName?: true
     gender?: true
     birthDate?: true
-    deathData?: true
+    deathDate?: true
+    phone?: true
     fatherId?: true
     motherId?: true
   }
@@ -1122,7 +1126,8 @@ export namespace Prisma {
     familyName?: true
     gender?: true
     birthDate?: true
-    deathData?: true
+    deathDate?: true
+    phone?: true
     fatherId?: true
     motherId?: true
   }
@@ -1133,7 +1138,8 @@ export namespace Prisma {
     familyName?: true
     gender?: true
     birthDate?: true
-    deathData?: true
+    deathDate?: true
+    phone?: true
     fatherId?: true
     motherId?: true
     _all?: true
@@ -1231,7 +1237,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate: Date | null
-    deathData: Date | null
+    deathDate: Date | null
+    phone: string | null
     fatherId: number | null
     motherId: number | null
     _count: PersonCountAggregateOutputType | null
@@ -1261,7 +1268,8 @@ export namespace Prisma {
     familyName?: boolean
     gender?: boolean
     birthDate?: boolean
-    deathData?: boolean
+    deathDate?: boolean
+    phone?: boolean
     fatherId?: boolean
     motherId?: boolean
     father?: boolean | Person$fatherArgs<ExtArgs>
@@ -1279,7 +1287,8 @@ export namespace Prisma {
     familyName?: boolean
     gender?: boolean
     birthDate?: boolean
-    deathData?: boolean
+    deathDate?: boolean
+    phone?: boolean
     fatherId?: boolean
     motherId?: boolean
     father?: boolean | Person$fatherArgs<ExtArgs>
@@ -1292,7 +1301,8 @@ export namespace Prisma {
     familyName?: boolean
     gender?: boolean
     birthDate?: boolean
-    deathData?: boolean
+    deathDate?: boolean
+    phone?: boolean
     fatherId?: boolean
     motherId?: boolean
     father?: boolean | Person$fatherArgs<ExtArgs>
@@ -1305,12 +1315,13 @@ export namespace Prisma {
     familyName?: boolean
     gender?: boolean
     birthDate?: boolean
-    deathData?: boolean
+    deathDate?: boolean
+    phone?: boolean
     fatherId?: boolean
     motherId?: boolean
   }
 
-  export type PersonOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "familyName" | "gender" | "birthDate" | "deathData" | "fatherId" | "motherId", ExtArgs["result"]["person"]>
+  export type PersonOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "familyName" | "gender" | "birthDate" | "deathDate" | "phone" | "fatherId" | "motherId", ExtArgs["result"]["person"]>
   export type PersonInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     father?: boolean | Person$fatherArgs<ExtArgs>
     mother?: boolean | Person$motherArgs<ExtArgs>
@@ -1345,7 +1356,8 @@ export namespace Prisma {
       familyName: string
       gender: $Enums.Gender
       birthDate: Date | null
-      deathData: Date | null
+      deathDate: Date | null
+      phone: string | null
       fatherId: number | null
       motherId: number | null
     }, ExtArgs["result"]["person"]>
@@ -1782,7 +1794,8 @@ export namespace Prisma {
     readonly familyName: FieldRef<"Person", 'String'>
     readonly gender: FieldRef<"Person", 'Gender'>
     readonly birthDate: FieldRef<"Person", 'DateTime'>
-    readonly deathData: FieldRef<"Person", 'DateTime'>
+    readonly deathDate: FieldRef<"Person", 'DateTime'>
+    readonly phone: FieldRef<"Person", 'String'>
     readonly fatherId: FieldRef<"Person", 'Int'>
     readonly motherId: FieldRef<"Person", 'Int'>
   }
@@ -3474,7 +3487,8 @@ export namespace Prisma {
     familyName: 'familyName',
     gender: 'gender',
     birthDate: 'birthDate',
-    deathData: 'deathData',
+    deathDate: 'deathDate',
+    phone: 'phone',
     fatherId: 'fatherId',
     motherId: 'motherId'
   };
@@ -3612,7 +3626,8 @@ export namespace Prisma {
     familyName?: StringFilter<"Person"> | string
     gender?: EnumGenderFilter<"Person"> | $Enums.Gender
     birthDate?: DateTimeNullableFilter<"Person"> | Date | string | null
-    deathData?: DateTimeNullableFilter<"Person"> | Date | string | null
+    deathDate?: DateTimeNullableFilter<"Person"> | Date | string | null
+    phone?: StringNullableFilter<"Person"> | string | null
     fatherId?: IntNullableFilter<"Person"> | number | null
     motherId?: IntNullableFilter<"Person"> | number | null
     father?: XOR<PersonNullableScalarRelationFilter, PersonWhereInput> | null
@@ -3629,7 +3644,8 @@ export namespace Prisma {
     familyName?: SortOrder
     gender?: SortOrder
     birthDate?: SortOrderInput | SortOrder
-    deathData?: SortOrderInput | SortOrder
+    deathDate?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
     fatherId?: SortOrderInput | SortOrder
     motherId?: SortOrderInput | SortOrder
     father?: PersonOrderByWithRelationInput
@@ -3649,7 +3665,8 @@ export namespace Prisma {
     familyName?: StringFilter<"Person"> | string
     gender?: EnumGenderFilter<"Person"> | $Enums.Gender
     birthDate?: DateTimeNullableFilter<"Person"> | Date | string | null
-    deathData?: DateTimeNullableFilter<"Person"> | Date | string | null
+    deathDate?: DateTimeNullableFilter<"Person"> | Date | string | null
+    phone?: StringNullableFilter<"Person"> | string | null
     fatherId?: IntNullableFilter<"Person"> | number | null
     motherId?: IntNullableFilter<"Person"> | number | null
     father?: XOR<PersonNullableScalarRelationFilter, PersonWhereInput> | null
@@ -3666,7 +3683,8 @@ export namespace Prisma {
     familyName?: SortOrder
     gender?: SortOrder
     birthDate?: SortOrderInput | SortOrder
-    deathData?: SortOrderInput | SortOrder
+    deathDate?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
     fatherId?: SortOrderInput | SortOrder
     motherId?: SortOrderInput | SortOrder
     _count?: PersonCountOrderByAggregateInput
@@ -3685,7 +3703,8 @@ export namespace Prisma {
     familyName?: StringWithAggregatesFilter<"Person"> | string
     gender?: EnumGenderWithAggregatesFilter<"Person"> | $Enums.Gender
     birthDate?: DateTimeNullableWithAggregatesFilter<"Person"> | Date | string | null
-    deathData?: DateTimeNullableWithAggregatesFilter<"Person"> | Date | string | null
+    deathDate?: DateTimeNullableWithAggregatesFilter<"Person"> | Date | string | null
+    phone?: StringNullableWithAggregatesFilter<"Person"> | string | null
     fatherId?: IntNullableWithAggregatesFilter<"Person"> | number | null
     motherId?: IntNullableWithAggregatesFilter<"Person"> | number | null
   }
@@ -3761,7 +3780,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
@@ -3776,7 +3796,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     fatherId?: number | null
     motherId?: number | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
@@ -3790,7 +3811,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
@@ -3805,7 +3827,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     fatherId?: NullableIntFieldUpdateOperationsInput | number | null
     motherId?: NullableIntFieldUpdateOperationsInput | number | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
@@ -3820,7 +3843,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     fatherId?: number | null
     motherId?: number | null
   }
@@ -3830,7 +3854,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PersonUncheckedUpdateManyInput = {
@@ -3839,7 +3864,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     fatherId?: NullableIntFieldUpdateOperationsInput | number | null
     motherId?: NullableIntFieldUpdateOperationsInput | number | null
   }
@@ -3946,6 +3972,21 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -3993,7 +4034,8 @@ export namespace Prisma {
     familyName?: SortOrder
     gender?: SortOrder
     birthDate?: SortOrder
-    deathData?: SortOrder
+    deathDate?: SortOrder
+    phone?: SortOrder
     fatherId?: SortOrder
     motherId?: SortOrder
   }
@@ -4010,7 +4052,8 @@ export namespace Prisma {
     familyName?: SortOrder
     gender?: SortOrder
     birthDate?: SortOrder
-    deathData?: SortOrder
+    deathDate?: SortOrder
+    phone?: SortOrder
     fatherId?: SortOrder
     motherId?: SortOrder
   }
@@ -4021,7 +4064,8 @@ export namespace Prisma {
     familyName?: SortOrder
     gender?: SortOrder
     birthDate?: SortOrder
-    deathData?: SortOrder
+    deathDate?: SortOrder
+    phone?: SortOrder
     fatherId?: SortOrder
     motherId?: SortOrder
   }
@@ -4088,6 +4132,24 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -4246,6 +4308,10 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type PersonUpdateOneWithoutFatherChildrenNestedInput = {
@@ -4471,6 +4537,20 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedIntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -4550,6 +4630,23 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -4595,7 +4692,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
@@ -4609,7 +4707,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     fatherId?: number | null
     motherId?: number | null
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
@@ -4627,7 +4726,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
@@ -4641,7 +4741,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     fatherId?: number | null
     motherId?: number | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
@@ -4659,7 +4760,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
@@ -4673,7 +4775,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     motherId?: number | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
@@ -4696,7 +4799,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
@@ -4710,7 +4814,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     fatherId?: number | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
@@ -4794,7 +4899,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
@@ -4808,7 +4914,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     fatherId?: NullableIntFieldUpdateOperationsInput | number | null
     motherId?: NullableIntFieldUpdateOperationsInput | number | null
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
@@ -4832,7 +4939,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
@@ -4846,7 +4954,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     fatherId?: NullableIntFieldUpdateOperationsInput | number | null
     motherId?: NullableIntFieldUpdateOperationsInput | number | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
@@ -4879,7 +4988,8 @@ export namespace Prisma {
     familyName?: StringFilter<"Person"> | string
     gender?: EnumGenderFilter<"Person"> | $Enums.Gender
     birthDate?: DateTimeNullableFilter<"Person"> | Date | string | null
-    deathData?: DateTimeNullableFilter<"Person"> | Date | string | null
+    deathDate?: DateTimeNullableFilter<"Person"> | Date | string | null
+    phone?: StringNullableFilter<"Person"> | string | null
     fatherId?: IntNullableFilter<"Person"> | number | null
     motherId?: IntNullableFilter<"Person"> | number | null
   }
@@ -4949,7 +5059,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
@@ -4963,7 +5074,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     fatherId?: number | null
     motherId?: number | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
@@ -4981,7 +5093,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
@@ -4995,7 +5108,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     fatherId?: number | null
     motherId?: number | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
@@ -5024,7 +5138,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
@@ -5038,7 +5153,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     fatherId?: NullableIntFieldUpdateOperationsInput | number | null
     motherId?: NullableIntFieldUpdateOperationsInput | number | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
@@ -5062,7 +5178,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
@@ -5076,7 +5193,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     fatherId?: NullableIntFieldUpdateOperationsInput | number | null
     motherId?: NullableIntFieldUpdateOperationsInput | number | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
@@ -5090,7 +5208,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     motherId?: number | null
   }
 
@@ -5100,7 +5219,8 @@ export namespace Prisma {
     familyName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
-    deathData?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
     fatherId?: number | null
   }
 
@@ -5125,7 +5245,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
@@ -5139,7 +5260,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     motherId?: NullableIntFieldUpdateOperationsInput | number | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
@@ -5153,7 +5275,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     motherId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
@@ -5162,7 +5285,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
@@ -5176,7 +5300,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     fatherId?: NullableIntFieldUpdateOperationsInput | number | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
@@ -5190,7 +5315,8 @@ export namespace Prisma {
     familyName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deathData?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     fatherId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
