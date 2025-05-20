@@ -186,9 +186,7 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
             {isAddingChild && (
               <div>
                 <AddChildForm
-                  {...(selectedPerson.gender === "MALE"
-                    ? { FID: selectedPerson.id }
-                    : { MID: selectedPerson.id })}
+                  parent={selectedPerson}
                   members={data}
                 />
               </div>

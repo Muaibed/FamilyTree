@@ -5,24 +5,33 @@
 import { FamilyTreeData, Person } from "@/types/family";
 import { getAllFemales, getAllMales } from "@/lib/person";
 import { toast } from "sonner"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const AddChildForm = ({
-  FID,
-  MID,
+  parent,
   members,
 }: {
-  FID?: string;
-  MID?: string;
+  parent: Person;
   members: FamilyTreeData;
 }) => {
+  
   const [firstName, setFirstName] = useState("");
   const [familyName, setFamilyName] = useState("");
   const [gender, setGender] = useState<"MALE" | "FEMALE">("MALE");
-  const [fatherId, setFatherId] = useState<string | undefined>(FID);
-  const [motherId, setMotherId] = useState<string | undefined>(MID);
+  const [fatherId, setFatherId] = useState<string | undefined>();
+  const [motherId, setMotherId] = useState<string | undefined>();
   const [birthDate, setbirthDate] = useState<string | undefined>();
   const [deathDate, setDeathDate] = useState<string | undefined>();
+  
+
+  useEffect(() => {
+    if (parent.gender === "MALE") {
+      setFatherId(parent.id)
+      setFamilyName(parent.familyName)
+    }
+    else if (parent.gender === "FEMALE")
+      setMotherId(parent.id)
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,32 +94,47 @@ const AddChildForm = ({
           <option value="FEMALE">Female</option>
         </select>
 
-        {FID && (
+        {parent.gender === 'MALE' && fatherId && (
           <select
             value={motherId ?? ""}
             onChange={(e) => setMotherId(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option>Select Mother (optional)</option>
-            {members.people[FID].spouses &&
-              members.people[FID].spouses.map((spouse) => {
-                return <option value={motherId} key={motherId}>{spouse}</option>;
+            {members.people[fatherId].spouses &&
+              members.people[fatherId].spouses.map((spouseId) => {
+                const spouse = members.people[spouseId];
+
+                return (
+                  <option value={spouseId} key={spouseId}>
+                    {spouse ? `${spouse.name} ${spouse.familyName} ${spouseId}` : "Unknown"}
+                  </option>
+                )
               })}
           </select>
         )}
 
-        {MID && (
+        {parent.gender === 'FEMALE' && motherId && (
           <select
             value={fatherId ?? ""}
-            onChange={(e) => setFatherId(e.target.value)}
+            onChange={(e) => {
+              setFatherId(e.target.value)
+              setFamilyName(members.people[e.target.value].familyName)
+            }}
             required
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option>Select Father</option>
-            {members.people[MID].spouses &&
-              members.people[MID].spouses.map((spouse) => {
-                return <option value={fatherId} key={fatherId}>{spouse}</option>;
-              })}
+            {members.people[motherId].spouses &&
+              members.people[motherId].spouses.map((spouseId) => {
+                const spouse = members.people[spouseId];
+
+                return (
+                  <option value={spouseId} key={spouseId}>
+                    {spouse ? `${spouse.name} ${spouse.familyName} ${spouseId}` : "Unknown"}
+                  </option>
+                )              
+            })}
           </select>
         )}
         <input
