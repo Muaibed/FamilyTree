@@ -59,22 +59,6 @@ const renderCustomNode: RenderCustomNodeElementFn = (
   );
 };
 
-const handleDelete = async (id:string) => {
-    const response = await fetch(`api/person/${id}}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },       
-    });
-
-    if (response.ok) {
-
-    } else {
-      const errorData = await response.json();
-    }
-  };
-
-
 export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
   const [treeData, setTreeData] = useState<TreeNode | null>(null);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
