@@ -1,6 +1,7 @@
 // src/lib/person.ts
 import { FamilyTreeData } from '@/types/family';
 import { prisma } from './prisma';
+import isValidDateString from './date';
 
 export const createPerson = async (data: {
   firstName: string;
@@ -116,24 +117,27 @@ export const getAllSpouses = async (personId: number) => {
 };
 
 export const updatePerson = async (id: number, data: {
-  fistName?: string;
+  firstName?: string;
   familyName?: string;
   gender?: 'MALE' | 'FEMALE';
+  phone?: string;
   fatherId?: number;
   motherId?: number;
-  birthDate?: Date;
-  deathDate?: Date;
+  birthDate?: string;
+  deathDate?: string;
 }) => {
+  const { firstName, familyName, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
   return prisma.person.update({
     where: { id },
     data: {
-      firstName: data.fistName,
-      familyName: data.familyName,
-      gender: data.gender,
-      birthDate: data.birthDate,
-      deathData: data.deathDate,
-      father: data.fatherId ? { connect: { id: data.fatherId } } : undefined,
-      mother: data.motherId ? { connect: { id: data.motherId } } : undefined,
+      firstName,
+      familyName,
+      gender,
+      phone,
+      birthDate: birthDate && isValidDateString(birthDate) ? new Date(birthDate) : null,
+      deathDate: deathDate && isValidDateString(deathDate) ? new Date(deathDate) : null,
+      father: fatherId ? { connect: { id: fatherId } } : undefined,
+      mother: motherId ? { connect: { id: motherId } } : undefined,
     },
   });
 };

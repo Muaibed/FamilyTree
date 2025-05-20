@@ -16,6 +16,7 @@ import { deletePerson, getAncestors } from "@/lib/person";
 import { TreeNode } from "@/types/tree";
 import { prepareTreeData } from "@/lib/tree";
 import DeletePerson from "./DeletePerson";
+import isValidDateString from "@/lib/date";
 
 const renderCustomNode: RenderCustomNodeElementFn = (
   rd3tNodeProps: CustomNodeElementProps
@@ -155,9 +156,11 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
             </div>
             <p>id: {selectedPerson.id}</p>
             <p>Gender: {selectedPerson.gender}</p>
-            <p>Birth Date: {selectedPerson.birthDate}</p>
+            {selectedPerson.birthDate && isValidDateString(selectedPerson.birthDate) && (
+              <p>Birth Date: {selectedPerson.birthDate}</p>
+            )}
             <p>Spouses: {selectedPerson.spouses}</p>
-            {selectedPerson.deathDate && (
+            {selectedPerson.deathDate && isValidDateString(selectedPerson.deathDate) && (
               <p>Death Date: {selectedPerson.deathDate}</p>
             )}
             <div>

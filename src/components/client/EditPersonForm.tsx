@@ -16,10 +16,11 @@ const EditPersonForm = ({
   const [firstName, setFirstName] = useState(person.name);
   const [familyName, setFamilyName] = useState(person.familyName);
   const [gender, setGender] = useState<"MALE" | "FEMALE">(person.gender);
+  const [phone, setPhone] = useState<string | undefined>(person.phone)
   const [fatherId, setFatherId] = useState<string | undefined>(person.fatherId);
   const [motherId, setMotherId] = useState<string | undefined>(person.motherId);
-  const [birthDate, setBirthDate] = useState(person.birthDate);
-  const [deathDate, setDeathDate] = useState(person.deathDate);
+  const [birthDate, setBirthDate] = useState<string | undefined>(person.birthDate);
+  const [deathDate, setDeathDate] = useState<string | undefined>(person.deathDate);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,8 +34,11 @@ const EditPersonForm = ({
         firstName,
         familyName,
         gender,
+        phone,
         fatherId,
         motherId,
+        birthDate,
+        deathDate
       }),
     });
 
@@ -113,14 +117,14 @@ const EditPersonForm = ({
         <input
           type="date"
           value={birthDate}
-          onChange={(e) => setFamilyName(e.target.value)}
+          onChange={(e) => setBirthDate(e.target.value)}
           placeholder="Birth Date"
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="date"
           value={deathDate}
-          onChange={(e) => setFamilyName(e.target.value)}
+          onChange={(e) => setDeathDate(e.target.value)}
           placeholder="Death Date"
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />

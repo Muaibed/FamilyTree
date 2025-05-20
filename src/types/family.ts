@@ -3,6 +3,7 @@ export interface Person {
     name: string;
     familyName: string;
     gender: 'MALE' | 'FEMALE';
+    phone: string;
     birthDate?: string;
     deathDate?: string;
     fatherId?: string;

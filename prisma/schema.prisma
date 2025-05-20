@@ -25,7 +25,8 @@ model Person {
   familyName String
   gender    Gender
   birthDate DateTime?
-  deathData DateTime?
+  deathDate DateTime?
+  phone     String?
 
   fatherId  Int?
   motherId  Int?

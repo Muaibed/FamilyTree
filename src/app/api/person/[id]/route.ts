@@ -31,17 +31,17 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       firstName,
       familyName,
       gender,
+      birthDate,
+      deathDate,
       ...(fatherId ? { fatherId: Number(fatherId) } : {}),
       ...(motherId ? { motherId: Number(motherId) } : {}),
-      ...(birthDate ? { birthDate: new Date(birthDate) } : {}),
-      ...(deathDate ? { deathDate: new Date(deathDate) } : {}),
     }
 
     if (!id) {
       return new Response("Person ID is required", { status: 400});
     }
 
-    await updatePerson(id, data);
+    await updatePerson(+id, data);
 
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
