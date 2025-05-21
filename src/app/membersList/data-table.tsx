@@ -4,6 +4,7 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -15,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { useState } from "react"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -25,13 +27,29 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [searchValue, setSearchValue] = useState("");
+
   const table = useReactTable({
     data,
     columns,
+    state: {
+      globalFilter: searchValue,
+    },
     getCoreRowModel: getCoreRowModel(),
-  })
+    getFilteredRowModel: getFilteredRowModel(), 
+    globalFilterFn: "includesString",
+    })
+
 
   return (
+    <div>
+
+      <input
+        placeholder="Search..."
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
+        className="w-full md:w-[300px]"
+      />
     <div className="rounded-md border">
       <Table>
         <TableHeader>
@@ -75,6 +93,7 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
+    </div>
     </div>
   )
 }

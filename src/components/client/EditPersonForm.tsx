@@ -9,9 +9,11 @@ import { useState } from "react";
 const EditPersonForm = ({
   person,
   members,
+  onEdit,
 }: {
   person: Person;
   members: FamilyTreeData;
+  onEdit: any;
 }) => {
   const [firstName, setFirstName] = useState(person.name);
   const [familyName, setFamilyName] = useState(person.familyName);
@@ -44,6 +46,7 @@ const EditPersonForm = ({
 
     if (response.ok) {
       toast(`${firstName} has been updated successfully.`)
+      onEdit();
     } else {
       const errorData = await response.json();
       toast(`Updating ${firstName} Failed.`)
