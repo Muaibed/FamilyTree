@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import useSWR, { SWRResponse } from 'swr';
 import Tree, {
   CustomNodeElementProps,
   RenderCustomNodeElementFn,
@@ -59,7 +60,7 @@ const renderCustomNode: RenderCustomNodeElementFn = (
   );
 };
 
-export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
+export default function FamilyTreeView({ data, onChange } : { data : FamilyTreeData, onChange : any }) {
   const [treeData, setTreeData] = useState<TreeNode | null>(null);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [isCreatingPerson, setIsCreatingPerson] = useState(false);
@@ -84,7 +85,9 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
     <div style={{ width: "100%", height: "100vh" }}>
       <button
         className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-        onClick={() => setIsCreatingPerson(true)}
+        onClick={() => {
+          setIsCreatingPerson(true)
+        }}
       >
         Create Person
       </button>
@@ -92,7 +95,7 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
         isOpen={!!isCreatingPerson}
         onClose={() => setIsCreatingPerson(false)}
       >
-        <CreatePersonForm members={data} />
+        <CreatePersonForm members={data} onCreate={onChange} />
       </Modal>
       <div
         className={`relative w-full h-screen ${
@@ -172,12 +175,17 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
                 <AddChildForm
                   parent={selectedPerson}
                   members={data}
+                  onAdd={onChange}
                 />
               </div>
             )}
             {isAddingSpouse && (
               <div>
-                <AddSpouseForm personId={selectedPerson.id} members={data} />
+                <AddSpouseForm 
+                  personId={selectedPerson.id} 
+                  members={data} 
+                  onAdd={onChange} 
+                />
               </div>
             )}
           </div>
@@ -196,7 +204,8 @@ export default function FamilyTreeView({ data }: { data: FamilyTreeData }) {
             person={selectedPerson} 
             onSubmit={() => {
                 setIsDeleting(false);
-                setSelectedPerson(null)
+                setSelectedPerson(null);
+                onChange;
             }}
             onResult={(status) => setDeleteStatus(status)} 
           />

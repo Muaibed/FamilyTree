@@ -10,9 +10,11 @@ import { useState } from "react";
 const AddSpouseForm = ({
   personId,
   members,
+  onAdd,
 }: {
   personId: string;
   members: FamilyTreeData;
+  onAdd: any;
 }) => {
   const [spouseId, setSpouseId] = useState<string | undefined>();
 
@@ -33,6 +35,7 @@ const AddSpouseForm = ({
     if (response.ok) {
       toast(`${spouseId} has been added successfully.`)
       setSpouseId(undefined);
+      onAdd();
     } else {
       const errorData = await response.json();
       toast(`Adding ${spouseId} Failed.`)

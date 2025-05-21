@@ -3,16 +3,17 @@
 "use client";
 
 import { FamilyTreeData, Person } from "@/types/family";
-import { getAllFemales, getAllMales } from "@/lib/person";
 import { toast } from "sonner"
 import { useEffect, useState } from "react";
 
 const AddChildForm = ({
   parent,
   members,
+  onAdd,
 }: {
   parent: Person;
   members: FamilyTreeData;
+  onAdd: any;
 }) => {
   
   const [firstName, setFirstName] = useState("");
@@ -56,6 +57,7 @@ const AddChildForm = ({
       setFirstName("");
       setFamilyName("");
       setGender("MALE");
+      onAdd();
     } else {
       const errorData = await response.json();
       toast(`Adding ${firstName} Failed.`)

@@ -11,10 +11,12 @@ const CreatePersonForm = ({
   FID,
   MID,
   members,
+  onCreate,
 }: {
   FID?: string;
   MID?: string;
   members: FamilyTreeData;
+  onCreate: any;
 }) => {
   const [firstName, setFirstName] = useState("");
   const [familyName, setFamilyName] = useState("");
@@ -47,6 +49,7 @@ const CreatePersonForm = ({
       setFamilyName("");
       setGender("MALE");
       setFatherId(undefined)
+      onCreate();
     } else {
       const errorData = await response.json();
       toast(`Creating ${firstName} Failed.`)
