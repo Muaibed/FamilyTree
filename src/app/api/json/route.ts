@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { FamilyTreeData } from '@/types/family';
+import { SpouseRelationship } from '@/generated/prisma';
 
 export async function GET() {
   try {
@@ -10,7 +11,8 @@ export async function GET() {
         mother: true,
         fatherChildren: true,
         motherChildren: true,
-        spouseConnections: true
+        spouseConnections: true,
+        spousedByConnections: true,
       },
     });
 
@@ -23,6 +25,9 @@ export async function GET() {
       else if (person.gender == 'FEMALE')
         children = person.motherChildren;
 
+      let spouses: [string, boolean][] = person.spouseConnections.map(connection => [`${connection.spouseId}`, connection.isActive])
+      person.spousedByConnections.map(connection => spouses.push([`${connection.personId}`, connection.isActive]))
+
       familyTreeData.people[`${person.id}`] = {
         id: `${person.id}`,
         name: person.firstName,
@@ -33,7 +38,7 @@ export async function GET() {
         fatherId: `${person.fatherId}`,
         motherId: `${person.motherId}`,
         familyName: person.familyName,
-        spouses: person.spouseConnections.map(connection => `${connection.spouseId}`),
+        spouses,
         childrenIds: children ? children.map(child => `${child.id}`) : []
       };
     });

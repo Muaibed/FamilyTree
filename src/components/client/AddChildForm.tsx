@@ -104,7 +104,7 @@ const AddChildForm = ({
           >
             <option>Select Mother (optional)</option>
             {members.people[fatherId].spouses &&
-              members.people[fatherId].spouses.map((spouseId) => {
+              members.people[fatherId].spouses.map(([spouseId, isActive]) => {
                 const spouse = members.people[spouseId];
 
                 return (
@@ -128,7 +128,7 @@ const AddChildForm = ({
           >
             <option>Select Father</option>
             {members.people[motherId].spouses &&
-              members.people[motherId].spouses.map((spouseId) => {
+              members.people[motherId].spouses.map(([spouseId, isActive]) => {
                 const spouse = members.people[spouseId];
 
                 return (

@@ -3,7 +3,6 @@
 "use client";
 
 import { FamilyTreeData, Person } from "@/types/family";
-import { getAllFemales, getAllMales } from "@/lib/person";
 import { toast } from "sonner"
 import { useState } from "react";
 
@@ -17,6 +16,7 @@ const AddSpouseForm = ({
   onAdd: any;
 }) => {
   const [spouseId, setSpouseId] = useState<string | undefined>();
+  const [isActive, setIsActive] = useState<boolean>()
 
   const person = personId ? members.people[personId] : null;
   const gender = person?.gender;
@@ -29,7 +29,7 @@ const AddSpouseForm = ({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ personId, spouseId }),
+      body: JSON.stringify({ personId, spouseId, isActive }),
     });
 
     if (response.ok) {
@@ -78,7 +78,19 @@ const AddSpouseForm = ({
                 })}
           </select>
         )}
-
+        <select
+            onChange={(e) => e.target.value === 'true' ? setIsActive(true) : setIsActive(false)}
+            required
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="" disabled>Current?</option>
+            <option value={'ture'}>
+              True
+            </option>
+            <option value={'false'}>
+              False
+            </option>
+          </select>
         <button
           type="submit"
           className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-semibold rounded-md transition"
