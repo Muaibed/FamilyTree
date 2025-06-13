@@ -8,11 +8,9 @@ import { toast } from "sonner";
 const DeletePerson = ({
   person,
   onSubmit,
-  onResult,
 }: {
   person: Person;
   onSubmit: () => void;
-  onResult?: (status: "success" | "error") => void;
 }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     try {
@@ -26,20 +24,17 @@ const DeletePerson = ({
       });
 
       if (response.ok) {
-        onResult?.("success");
-        onSubmit;
+        onSubmit();
         toast(`${person.name} has been deleted successfully.`);
       } else {
-        onResult?.("error");
         toast(`Deleting ${person.name} Failed.`);
       }
     } catch (error) {
-      onResult?.("error");
       toast(`Deleting ${person.name} Failed.`, {
         description: `${error}`,
       });
     } finally {
-      onSubmit;
+      onSubmit();
     }
   };
 

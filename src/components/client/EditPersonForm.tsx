@@ -5,6 +5,7 @@
 import { FamilyTreeData, Person } from "@/types/family";
 import { toast } from "sonner"
 import { useState } from "react";
+import { Button } from "../ui/button";
 
 const EditPersonForm = ({
   person,
@@ -23,6 +24,7 @@ const EditPersonForm = ({
   const [motherId, setMotherId] = useState<string | undefined>(person.motherId);
   const [birthDate, setBirthDate] = useState<string | undefined>(person.birthDate);
   const [deathDate, setDeathDate] = useState<string | undefined>(person.deathDate);
+  const [spouses, setSpouse] = useState<string[]>(person.spouses.map((s) => s[0]))
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +54,23 @@ const EditPersonForm = ({
       toast(`Updating ${firstName} Failed.`)
     }
   };
+
+  const deleteRelation = async (person1Id: string, person2Id: string) => {
+    const response = await fetch('api/spouseRelationship', {
+      method: "DELETE",
+      body: JSON.stringify({
+        person1Id,
+        person2Id
+      })
+    })
+
+    if (response.ok) {
+      toast(`Relataion has been deleted successfully.`)
+      onEdit();
+    } else {
+      toast(`Deletetion Failed.`)
+    }
+  }
 
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
@@ -131,6 +150,19 @@ const EditPersonForm = ({
           placeholder="Death Date"
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <div className="text-white">
+          {spouses.map((s) => {
+            return (
+            <div className="flex flex-col-2 justify-between" key={s}>
+              <p className="alig">{s + ""}</p>
+              <Button type="button" onClick={() => deleteRelation(person.id, s.toString())}>
+                Remove
+              </Button>
+            </div>
+            )
+          })}
+
+        </div>
 
         <button
           type="submit"

@@ -146,7 +146,12 @@ export default function FamilyTreeView({ data, onChange } : { data : FamilyTreeD
             {selectedPerson.birthDate && isValidDateString(selectedPerson.birthDate) && (
               <p>Birth Date: {selectedPerson.birthDate}</p>
             )}
-            <p>Spouses: {selectedPerson.spouses}</p>
+            <p>Spouses: {data.people[selectedPerson.id].spouses.map((s) => 
+              s[1] ? 
+              data.people[s[0]].name + " " + data.people[s[0]].familyName 
+              : "")
+              }
+            </p>
             {selectedPerson.deathDate && isValidDateString(selectedPerson.deathDate) && (
               <p>Death Date: {selectedPerson.deathDate}</p>
             )}
@@ -175,7 +180,12 @@ export default function FamilyTreeView({ data, onChange } : { data : FamilyTreeD
                 <AddChildForm
                   parent={selectedPerson}
                   members={data}
-                  onAdd={onChange}
+                  onAdd={() => {
+                    onChange();
+                    setDetailModalOpen(false)
+                    setIsAddingChild(false);
+                    setSelectedPerson(null)
+                  }}
                 />
               </div>
             )}
@@ -184,7 +194,12 @@ export default function FamilyTreeView({ data, onChange } : { data : FamilyTreeD
                 <AddSpouseForm 
                   personId={selectedPerson.id} 
                   members={data} 
-                  onAdd={onChange} 
+                  onAdd={() => {
+                    onChange();
+                    setDetailModalOpen(false)
+                    setIsAddingSpouse(false);
+                    setSelectedPerson(null)
+                  }} 
                 />
               </div>
             )}
@@ -196,18 +211,21 @@ export default function FamilyTreeView({ data, onChange } : { data : FamilyTreeD
         isOpen={!!isDeleting}
         onClose={() => {
           setIsDeleting(false);
+          setDetailModalOpen(false);
           setDeleteModalOpen(false);
+          setSelectedPerson(null);
         }}
       >
         {selectedPerson && isDeleting && (
           <DeletePerson 
             person={selectedPerson} 
             onSubmit={() => {
+                onChange();
+                setDetailModalOpen(false);
                 setIsDeleting(false);
                 setSelectedPerson(null);
-                onChange;
+                setDeleteModalOpen(false);
             }}
-            onResult={(status) => setDeleteStatus(status)} 
           />
         )}
       </Modal>
