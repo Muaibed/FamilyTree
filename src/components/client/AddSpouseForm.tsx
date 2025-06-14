@@ -35,7 +35,7 @@ const AddSpouseForm = ({
     if (response.ok) {
       toast(`${spouseId} has been added successfully.`)
       setSpouseId(undefined);
-      onAdd();
+      onAdd(spouseId);
     } else {
       const errorData = await response.json();
       toast(`Adding ${spouseId} Failed.`)

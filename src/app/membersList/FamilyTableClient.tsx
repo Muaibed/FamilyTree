@@ -19,7 +19,7 @@ export function FamilyTableClient({ data, onChange }: { data: FamilyTreeData, on
       <DataTable columns={tableColumns} data={Object.values(data.people)} />
       {selectedPerson && (
         <Modal isOpen={true} onClose={() => setSelectedPerson(null)}>
-          <EditPersonForm person={selectedPerson} members={data} onEdit={onChange} />
+          <EditPersonForm person={selectedPerson} onEdit={onChange} />
         </Modal>
       )}
     </>
