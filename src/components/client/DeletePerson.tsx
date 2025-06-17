@@ -1,5 +1,3 @@
-// src/app/components/EditPersonForm.tsx
-
 "use client";
 
 import { Person } from "@/types/family";

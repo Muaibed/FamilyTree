@@ -147,9 +147,31 @@ exports.Prisma.SpouseRelationshipScalarFieldEnum = {
   isActive: 'isActive'
 };
 
+exports.Prisma.ChangeRequestScalarFieldEnum = {
+  id: 'id',
+  requesterName: 'requesterName',
+  requesterPhone: 'requesterPhone',
+  action: 'action',
+  targetId: 'targetId',
+  data: 'data',
+  status: 'status',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.FamilyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  rootPersonId: 'rootPersonId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -161,6 +183,12 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',
   USER: 'USER'
@@ -171,10 +199,24 @@ exports.Gender = exports.$Enums.Gender = {
   FEMALE: 'FEMALE'
 };
 
+exports.ChangeRequestAction = exports.$Enums.ChangeRequestAction = {
+  ADD: 'ADD',
+  DELETE: 'DELETE',
+  UPDATE: 'UPDATE'
+};
+
+exports.ChangeRequestStatus = exports.$Enums.ChangeRequestStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Person: 'Person',
-  SpouseRelationship: 'SpouseRelationship'
+  SpouseRelationship: 'SpouseRelationship',
+  ChangeRequest: 'ChangeRequest',
+  Family: 'Family'
 };
 
 /**

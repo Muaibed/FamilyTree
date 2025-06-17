@@ -28,6 +28,16 @@ export type Person = $Result.DefaultSelection<Prisma.$PersonPayload>
  * 
  */
 export type SpouseRelationship = $Result.DefaultSelection<Prisma.$SpouseRelationshipPayload>
+/**
+ * Model ChangeRequest
+ * 
+ */
+export type ChangeRequest = $Result.DefaultSelection<Prisma.$ChangeRequestPayload>
+/**
+ * Model Family
+ * 
+ */
+export type Family = $Result.DefaultSelection<Prisma.$FamilyPayload>
 
 /**
  * Enums
@@ -48,6 +58,24 @@ export const Gender: {
 
 export type Gender = (typeof Gender)[keyof typeof Gender]
 
+
+export const ChangeRequestAction: {
+  ADD: 'ADD',
+  DELETE: 'DELETE',
+  UPDATE: 'UPDATE'
+};
+
+export type ChangeRequestAction = (typeof ChangeRequestAction)[keyof typeof ChangeRequestAction]
+
+
+export const ChangeRequestStatus: {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
+export type ChangeRequestStatus = (typeof ChangeRequestStatus)[keyof typeof ChangeRequestStatus]
+
 }
 
 export type Role = $Enums.Role
@@ -57,6 +85,14 @@ export const Role: typeof $Enums.Role
 export type Gender = $Enums.Gender
 
 export const Gender: typeof $Enums.Gender
+
+export type ChangeRequestAction = $Enums.ChangeRequestAction
+
+export const ChangeRequestAction: typeof $Enums.ChangeRequestAction
+
+export type ChangeRequestStatus = $Enums.ChangeRequestStatus
+
+export const ChangeRequestStatus: typeof $Enums.ChangeRequestStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -212,6 +248,26 @@ export class PrismaClient<
     * ```
     */
   get spouseRelationship(): Prisma.SpouseRelationshipDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.changeRequest`: Exposes CRUD operations for the **ChangeRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ChangeRequests
+    * const changeRequests = await prisma.changeRequest.findMany()
+    * ```
+    */
+  get changeRequest(): Prisma.ChangeRequestDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.family`: Exposes CRUD operations for the **Family** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Families
+    * const families = await prisma.family.findMany()
+    * ```
+    */
+  get family(): Prisma.FamilyDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -654,7 +710,9 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     Person: 'Person',
-    SpouseRelationship: 'SpouseRelationship'
+    SpouseRelationship: 'SpouseRelationship',
+    ChangeRequest: 'ChangeRequest',
+    Family: 'Family'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -673,7 +731,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "person" | "spouseRelationship"
+      modelProps: "user" | "person" | "spouseRelationship" | "changeRequest" | "family"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -899,6 +957,154 @@ export namespace Prisma {
           }
         }
       }
+      ChangeRequest: {
+        payload: Prisma.$ChangeRequestPayload<ExtArgs>
+        fields: Prisma.ChangeRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ChangeRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChangeRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ChangeRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChangeRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.ChangeRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChangeRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ChangeRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChangeRequestPayload>
+          }
+          findMany: {
+            args: Prisma.ChangeRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChangeRequestPayload>[]
+          }
+          create: {
+            args: Prisma.ChangeRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChangeRequestPayload>
+          }
+          createMany: {
+            args: Prisma.ChangeRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ChangeRequestCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChangeRequestPayload>[]
+          }
+          delete: {
+            args: Prisma.ChangeRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChangeRequestPayload>
+          }
+          update: {
+            args: Prisma.ChangeRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChangeRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.ChangeRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ChangeRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ChangeRequestUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChangeRequestPayload>[]
+          }
+          upsert: {
+            args: Prisma.ChangeRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChangeRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.ChangeRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateChangeRequest>
+          }
+          groupBy: {
+            args: Prisma.ChangeRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ChangeRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ChangeRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<ChangeRequestCountAggregateOutputType> | number
+          }
+        }
+      }
+      Family: {
+        payload: Prisma.$FamilyPayload<ExtArgs>
+        fields: Prisma.FamilyFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FamilyFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FamilyFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyPayload>
+          }
+          findFirst: {
+            args: Prisma.FamilyFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FamilyFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyPayload>
+          }
+          findMany: {
+            args: Prisma.FamilyFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyPayload>[]
+          }
+          create: {
+            args: Prisma.FamilyCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyPayload>
+          }
+          createMany: {
+            args: Prisma.FamilyCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FamilyCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyPayload>[]
+          }
+          delete: {
+            args: Prisma.FamilyDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyPayload>
+          }
+          update: {
+            args: Prisma.FamilyUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyPayload>
+          }
+          deleteMany: {
+            args: Prisma.FamilyDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FamilyUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FamilyUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyPayload>[]
+          }
+          upsert: {
+            args: Prisma.FamilyUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyPayload>
+          }
+          aggregate: {
+            args: Prisma.FamilyAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFamily>
+          }
+          groupBy: {
+            args: Prisma.FamilyGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FamilyGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FamilyCountArgs<ExtArgs>
+            result: $Utils.Optional<FamilyCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -986,6 +1192,8 @@ export namespace Prisma {
     user?: UserOmit
     person?: PersonOmit
     spouseRelationship?: SpouseRelationshipOmit
+    changeRequest?: ChangeRequestOmit
+    family?: FamilyOmit
   }
 
   /* Types for Logging */
@@ -2389,6 +2597,7 @@ export namespace Prisma {
     motherChildren?: boolean | Person$motherChildrenArgs<ExtArgs>
     spouseConnections?: boolean | Person$spouseConnectionsArgs<ExtArgs>
     spousedByConnections?: boolean | Person$spousedByConnectionsArgs<ExtArgs>
+    family?: boolean | Person$familyArgs<ExtArgs>
     _count?: boolean | PersonCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["person"]>
 
@@ -2440,6 +2649,7 @@ export namespace Prisma {
     motherChildren?: boolean | Person$motherChildrenArgs<ExtArgs>
     spouseConnections?: boolean | Person$spouseConnectionsArgs<ExtArgs>
     spousedByConnections?: boolean | Person$spousedByConnectionsArgs<ExtArgs>
+    family?: boolean | Person$familyArgs<ExtArgs>
     _count?: boolean | PersonCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PersonIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2460,6 +2670,7 @@ export namespace Prisma {
       motherChildren: Prisma.$PersonPayload<ExtArgs>[]
       spouseConnections: Prisma.$SpouseRelationshipPayload<ExtArgs>[]
       spousedByConnections: Prisma.$SpouseRelationshipPayload<ExtArgs>[]
+      family: Prisma.$FamilyPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -2871,6 +3082,7 @@ export namespace Prisma {
     motherChildren<T extends Person$motherChildrenArgs<ExtArgs> = {}>(args?: Subset<T, Person$motherChildrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     spouseConnections<T extends Person$spouseConnectionsArgs<ExtArgs> = {}>(args?: Subset<T, Person$spouseConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SpouseRelationshipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     spousedByConnections<T extends Person$spousedByConnectionsArgs<ExtArgs> = {}>(args?: Subset<T, Person$spousedByConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SpouseRelationshipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    family<T extends Person$familyArgs<ExtArgs> = {}>(args?: Subset<T, Person$familyArgs<ExtArgs>>): Prisma__FamilyClient<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3436,6 +3648,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SpouseRelationshipScalarFieldEnum | SpouseRelationshipScalarFieldEnum[]
+  }
+
+  /**
+   * Person.family
+   */
+  export type Person$familyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyInclude<ExtArgs> | null
+    where?: FamilyWhereInput
   }
 
   /**
@@ -4579,6 +4810,2144 @@ export namespace Prisma {
 
 
   /**
+   * Model ChangeRequest
+   */
+
+  export type AggregateChangeRequest = {
+    _count: ChangeRequestCountAggregateOutputType | null
+    _avg: ChangeRequestAvgAggregateOutputType | null
+    _sum: ChangeRequestSumAggregateOutputType | null
+    _min: ChangeRequestMinAggregateOutputType | null
+    _max: ChangeRequestMaxAggregateOutputType | null
+  }
+
+  export type ChangeRequestAvgAggregateOutputType = {
+    id: number | null
+    targetId: number | null
+  }
+
+  export type ChangeRequestSumAggregateOutputType = {
+    id: number | null
+    targetId: number | null
+  }
+
+  export type ChangeRequestMinAggregateOutputType = {
+    id: number | null
+    requesterName: string | null
+    requesterPhone: string | null
+    action: $Enums.ChangeRequestAction | null
+    targetId: number | null
+    status: $Enums.ChangeRequestStatus | null
+    createdAt: Date | null
+  }
+
+  export type ChangeRequestMaxAggregateOutputType = {
+    id: number | null
+    requesterName: string | null
+    requesterPhone: string | null
+    action: $Enums.ChangeRequestAction | null
+    targetId: number | null
+    status: $Enums.ChangeRequestStatus | null
+    createdAt: Date | null
+  }
+
+  export type ChangeRequestCountAggregateOutputType = {
+    id: number
+    requesterName: number
+    requesterPhone: number
+    action: number
+    targetId: number
+    data: number
+    status: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ChangeRequestAvgAggregateInputType = {
+    id?: true
+    targetId?: true
+  }
+
+  export type ChangeRequestSumAggregateInputType = {
+    id?: true
+    targetId?: true
+  }
+
+  export type ChangeRequestMinAggregateInputType = {
+    id?: true
+    requesterName?: true
+    requesterPhone?: true
+    action?: true
+    targetId?: true
+    status?: true
+    createdAt?: true
+  }
+
+  export type ChangeRequestMaxAggregateInputType = {
+    id?: true
+    requesterName?: true
+    requesterPhone?: true
+    action?: true
+    targetId?: true
+    status?: true
+    createdAt?: true
+  }
+
+  export type ChangeRequestCountAggregateInputType = {
+    id?: true
+    requesterName?: true
+    requesterPhone?: true
+    action?: true
+    targetId?: true
+    data?: true
+    status?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ChangeRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ChangeRequest to aggregate.
+     */
+    where?: ChangeRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChangeRequests to fetch.
+     */
+    orderBy?: ChangeRequestOrderByWithRelationInput | ChangeRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ChangeRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChangeRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChangeRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ChangeRequests
+    **/
+    _count?: true | ChangeRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ChangeRequestAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ChangeRequestSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ChangeRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ChangeRequestMaxAggregateInputType
+  }
+
+  export type GetChangeRequestAggregateType<T extends ChangeRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateChangeRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateChangeRequest[P]>
+      : GetScalarType<T[P], AggregateChangeRequest[P]>
+  }
+
+
+
+
+  export type ChangeRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChangeRequestWhereInput
+    orderBy?: ChangeRequestOrderByWithAggregationInput | ChangeRequestOrderByWithAggregationInput[]
+    by: ChangeRequestScalarFieldEnum[] | ChangeRequestScalarFieldEnum
+    having?: ChangeRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ChangeRequestCountAggregateInputType | true
+    _avg?: ChangeRequestAvgAggregateInputType
+    _sum?: ChangeRequestSumAggregateInputType
+    _min?: ChangeRequestMinAggregateInputType
+    _max?: ChangeRequestMaxAggregateInputType
+  }
+
+  export type ChangeRequestGroupByOutputType = {
+    id: number
+    requesterName: string
+    requesterPhone: string
+    action: $Enums.ChangeRequestAction
+    targetId: number | null
+    data: JsonValue | null
+    status: $Enums.ChangeRequestStatus
+    createdAt: Date
+    _count: ChangeRequestCountAggregateOutputType | null
+    _avg: ChangeRequestAvgAggregateOutputType | null
+    _sum: ChangeRequestSumAggregateOutputType | null
+    _min: ChangeRequestMinAggregateOutputType | null
+    _max: ChangeRequestMaxAggregateOutputType | null
+  }
+
+  type GetChangeRequestGroupByPayload<T extends ChangeRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ChangeRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ChangeRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ChangeRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], ChangeRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ChangeRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    requesterName?: boolean
+    requesterPhone?: boolean
+    action?: boolean
+    targetId?: boolean
+    data?: boolean
+    status?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["changeRequest"]>
+
+  export type ChangeRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    requesterName?: boolean
+    requesterPhone?: boolean
+    action?: boolean
+    targetId?: boolean
+    data?: boolean
+    status?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["changeRequest"]>
+
+  export type ChangeRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    requesterName?: boolean
+    requesterPhone?: boolean
+    action?: boolean
+    targetId?: boolean
+    data?: boolean
+    status?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["changeRequest"]>
+
+  export type ChangeRequestSelectScalar = {
+    id?: boolean
+    requesterName?: boolean
+    requesterPhone?: boolean
+    action?: boolean
+    targetId?: boolean
+    data?: boolean
+    status?: boolean
+    createdAt?: boolean
+  }
+
+  export type ChangeRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "requesterName" | "requesterPhone" | "action" | "targetId" | "data" | "status" | "createdAt", ExtArgs["result"]["changeRequest"]>
+
+  export type $ChangeRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ChangeRequest"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      requesterName: string
+      requesterPhone: string
+      action: $Enums.ChangeRequestAction
+      targetId: number | null
+      data: Prisma.JsonValue | null
+      status: $Enums.ChangeRequestStatus
+      createdAt: Date
+    }, ExtArgs["result"]["changeRequest"]>
+    composites: {}
+  }
+
+  type ChangeRequestGetPayload<S extends boolean | null | undefined | ChangeRequestDefaultArgs> = $Result.GetResult<Prisma.$ChangeRequestPayload, S>
+
+  type ChangeRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ChangeRequestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ChangeRequestCountAggregateInputType | true
+    }
+
+  export interface ChangeRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ChangeRequest'], meta: { name: 'ChangeRequest' } }
+    /**
+     * Find zero or one ChangeRequest that matches the filter.
+     * @param {ChangeRequestFindUniqueArgs} args - Arguments to find a ChangeRequest
+     * @example
+     * // Get one ChangeRequest
+     * const changeRequest = await prisma.changeRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ChangeRequestFindUniqueArgs>(args: SelectSubset<T, ChangeRequestFindUniqueArgs<ExtArgs>>): Prisma__ChangeRequestClient<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ChangeRequest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ChangeRequestFindUniqueOrThrowArgs} args - Arguments to find a ChangeRequest
+     * @example
+     * // Get one ChangeRequest
+     * const changeRequest = await prisma.changeRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ChangeRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, ChangeRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ChangeRequestClient<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ChangeRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChangeRequestFindFirstArgs} args - Arguments to find a ChangeRequest
+     * @example
+     * // Get one ChangeRequest
+     * const changeRequest = await prisma.changeRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ChangeRequestFindFirstArgs>(args?: SelectSubset<T, ChangeRequestFindFirstArgs<ExtArgs>>): Prisma__ChangeRequestClient<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ChangeRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChangeRequestFindFirstOrThrowArgs} args - Arguments to find a ChangeRequest
+     * @example
+     * // Get one ChangeRequest
+     * const changeRequest = await prisma.changeRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ChangeRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, ChangeRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__ChangeRequestClient<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ChangeRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChangeRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ChangeRequests
+     * const changeRequests = await prisma.changeRequest.findMany()
+     * 
+     * // Get first 10 ChangeRequests
+     * const changeRequests = await prisma.changeRequest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const changeRequestWithIdOnly = await prisma.changeRequest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ChangeRequestFindManyArgs>(args?: SelectSubset<T, ChangeRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ChangeRequest.
+     * @param {ChangeRequestCreateArgs} args - Arguments to create a ChangeRequest.
+     * @example
+     * // Create one ChangeRequest
+     * const ChangeRequest = await prisma.changeRequest.create({
+     *   data: {
+     *     // ... data to create a ChangeRequest
+     *   }
+     * })
+     * 
+     */
+    create<T extends ChangeRequestCreateArgs>(args: SelectSubset<T, ChangeRequestCreateArgs<ExtArgs>>): Prisma__ChangeRequestClient<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ChangeRequests.
+     * @param {ChangeRequestCreateManyArgs} args - Arguments to create many ChangeRequests.
+     * @example
+     * // Create many ChangeRequests
+     * const changeRequest = await prisma.changeRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ChangeRequestCreateManyArgs>(args?: SelectSubset<T, ChangeRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ChangeRequests and returns the data saved in the database.
+     * @param {ChangeRequestCreateManyAndReturnArgs} args - Arguments to create many ChangeRequests.
+     * @example
+     * // Create many ChangeRequests
+     * const changeRequest = await prisma.changeRequest.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ChangeRequests and only return the `id`
+     * const changeRequestWithIdOnly = await prisma.changeRequest.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ChangeRequestCreateManyAndReturnArgs>(args?: SelectSubset<T, ChangeRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ChangeRequest.
+     * @param {ChangeRequestDeleteArgs} args - Arguments to delete one ChangeRequest.
+     * @example
+     * // Delete one ChangeRequest
+     * const ChangeRequest = await prisma.changeRequest.delete({
+     *   where: {
+     *     // ... filter to delete one ChangeRequest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ChangeRequestDeleteArgs>(args: SelectSubset<T, ChangeRequestDeleteArgs<ExtArgs>>): Prisma__ChangeRequestClient<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ChangeRequest.
+     * @param {ChangeRequestUpdateArgs} args - Arguments to update one ChangeRequest.
+     * @example
+     * // Update one ChangeRequest
+     * const changeRequest = await prisma.changeRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ChangeRequestUpdateArgs>(args: SelectSubset<T, ChangeRequestUpdateArgs<ExtArgs>>): Prisma__ChangeRequestClient<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ChangeRequests.
+     * @param {ChangeRequestDeleteManyArgs} args - Arguments to filter ChangeRequests to delete.
+     * @example
+     * // Delete a few ChangeRequests
+     * const { count } = await prisma.changeRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ChangeRequestDeleteManyArgs>(args?: SelectSubset<T, ChangeRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ChangeRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChangeRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ChangeRequests
+     * const changeRequest = await prisma.changeRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ChangeRequestUpdateManyArgs>(args: SelectSubset<T, ChangeRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ChangeRequests and returns the data updated in the database.
+     * @param {ChangeRequestUpdateManyAndReturnArgs} args - Arguments to update many ChangeRequests.
+     * @example
+     * // Update many ChangeRequests
+     * const changeRequest = await prisma.changeRequest.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ChangeRequests and only return the `id`
+     * const changeRequestWithIdOnly = await prisma.changeRequest.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ChangeRequestUpdateManyAndReturnArgs>(args: SelectSubset<T, ChangeRequestUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ChangeRequest.
+     * @param {ChangeRequestUpsertArgs} args - Arguments to update or create a ChangeRequest.
+     * @example
+     * // Update or create a ChangeRequest
+     * const changeRequest = await prisma.changeRequest.upsert({
+     *   create: {
+     *     // ... data to create a ChangeRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ChangeRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ChangeRequestUpsertArgs>(args: SelectSubset<T, ChangeRequestUpsertArgs<ExtArgs>>): Prisma__ChangeRequestClient<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ChangeRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChangeRequestCountArgs} args - Arguments to filter ChangeRequests to count.
+     * @example
+     * // Count the number of ChangeRequests
+     * const count = await prisma.changeRequest.count({
+     *   where: {
+     *     // ... the filter for the ChangeRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends ChangeRequestCountArgs>(
+      args?: Subset<T, ChangeRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ChangeRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ChangeRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChangeRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ChangeRequestAggregateArgs>(args: Subset<T, ChangeRequestAggregateArgs>): Prisma.PrismaPromise<GetChangeRequestAggregateType<T>>
+
+    /**
+     * Group by ChangeRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChangeRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ChangeRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ChangeRequestGroupByArgs['orderBy'] }
+        : { orderBy?: ChangeRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ChangeRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChangeRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ChangeRequest model
+   */
+  readonly fields: ChangeRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ChangeRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ChangeRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ChangeRequest model
+   */
+  interface ChangeRequestFieldRefs {
+    readonly id: FieldRef<"ChangeRequest", 'Int'>
+    readonly requesterName: FieldRef<"ChangeRequest", 'String'>
+    readonly requesterPhone: FieldRef<"ChangeRequest", 'String'>
+    readonly action: FieldRef<"ChangeRequest", 'ChangeRequestAction'>
+    readonly targetId: FieldRef<"ChangeRequest", 'Int'>
+    readonly data: FieldRef<"ChangeRequest", 'Json'>
+    readonly status: FieldRef<"ChangeRequest", 'ChangeRequestStatus'>
+    readonly createdAt: FieldRef<"ChangeRequest", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ChangeRequest findUnique
+   */
+  export type ChangeRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which ChangeRequest to fetch.
+     */
+    where: ChangeRequestWhereUniqueInput
+  }
+
+  /**
+   * ChangeRequest findUniqueOrThrow
+   */
+  export type ChangeRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which ChangeRequest to fetch.
+     */
+    where: ChangeRequestWhereUniqueInput
+  }
+
+  /**
+   * ChangeRequest findFirst
+   */
+  export type ChangeRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which ChangeRequest to fetch.
+     */
+    where?: ChangeRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChangeRequests to fetch.
+     */
+    orderBy?: ChangeRequestOrderByWithRelationInput | ChangeRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ChangeRequests.
+     */
+    cursor?: ChangeRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChangeRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChangeRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ChangeRequests.
+     */
+    distinct?: ChangeRequestScalarFieldEnum | ChangeRequestScalarFieldEnum[]
+  }
+
+  /**
+   * ChangeRequest findFirstOrThrow
+   */
+  export type ChangeRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which ChangeRequest to fetch.
+     */
+    where?: ChangeRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChangeRequests to fetch.
+     */
+    orderBy?: ChangeRequestOrderByWithRelationInput | ChangeRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ChangeRequests.
+     */
+    cursor?: ChangeRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChangeRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChangeRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ChangeRequests.
+     */
+    distinct?: ChangeRequestScalarFieldEnum | ChangeRequestScalarFieldEnum[]
+  }
+
+  /**
+   * ChangeRequest findMany
+   */
+  export type ChangeRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which ChangeRequests to fetch.
+     */
+    where?: ChangeRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChangeRequests to fetch.
+     */
+    orderBy?: ChangeRequestOrderByWithRelationInput | ChangeRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ChangeRequests.
+     */
+    cursor?: ChangeRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChangeRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChangeRequests.
+     */
+    skip?: number
+    distinct?: ChangeRequestScalarFieldEnum | ChangeRequestScalarFieldEnum[]
+  }
+
+  /**
+   * ChangeRequest create
+   */
+  export type ChangeRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+    /**
+     * The data needed to create a ChangeRequest.
+     */
+    data: XOR<ChangeRequestCreateInput, ChangeRequestUncheckedCreateInput>
+  }
+
+  /**
+   * ChangeRequest createMany
+   */
+  export type ChangeRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ChangeRequests.
+     */
+    data: ChangeRequestCreateManyInput | ChangeRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ChangeRequest createManyAndReturn
+   */
+  export type ChangeRequestCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+    /**
+     * The data used to create many ChangeRequests.
+     */
+    data: ChangeRequestCreateManyInput | ChangeRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ChangeRequest update
+   */
+  export type ChangeRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+    /**
+     * The data needed to update a ChangeRequest.
+     */
+    data: XOR<ChangeRequestUpdateInput, ChangeRequestUncheckedUpdateInput>
+    /**
+     * Choose, which ChangeRequest to update.
+     */
+    where: ChangeRequestWhereUniqueInput
+  }
+
+  /**
+   * ChangeRequest updateMany
+   */
+  export type ChangeRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ChangeRequests.
+     */
+    data: XOR<ChangeRequestUpdateManyMutationInput, ChangeRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which ChangeRequests to update
+     */
+    where?: ChangeRequestWhereInput
+    /**
+     * Limit how many ChangeRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ChangeRequest updateManyAndReturn
+   */
+  export type ChangeRequestUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+    /**
+     * The data used to update ChangeRequests.
+     */
+    data: XOR<ChangeRequestUpdateManyMutationInput, ChangeRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which ChangeRequests to update
+     */
+    where?: ChangeRequestWhereInput
+    /**
+     * Limit how many ChangeRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ChangeRequest upsert
+   */
+  export type ChangeRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+    /**
+     * The filter to search for the ChangeRequest to update in case it exists.
+     */
+    where: ChangeRequestWhereUniqueInput
+    /**
+     * In case the ChangeRequest found by the `where` argument doesn't exist, create a new ChangeRequest with this data.
+     */
+    create: XOR<ChangeRequestCreateInput, ChangeRequestUncheckedCreateInput>
+    /**
+     * In case the ChangeRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ChangeRequestUpdateInput, ChangeRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * ChangeRequest delete
+   */
+  export type ChangeRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+    /**
+     * Filter which ChangeRequest to delete.
+     */
+    where: ChangeRequestWhereUniqueInput
+  }
+
+  /**
+   * ChangeRequest deleteMany
+   */
+  export type ChangeRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ChangeRequests to delete
+     */
+    where?: ChangeRequestWhereInput
+    /**
+     * Limit how many ChangeRequests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ChangeRequest without action
+   */
+  export type ChangeRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChangeRequest
+     */
+    select?: ChangeRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChangeRequest
+     */
+    omit?: ChangeRequestOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Family
+   */
+
+  export type AggregateFamily = {
+    _count: FamilyCountAggregateOutputType | null
+    _avg: FamilyAvgAggregateOutputType | null
+    _sum: FamilySumAggregateOutputType | null
+    _min: FamilyMinAggregateOutputType | null
+    _max: FamilyMaxAggregateOutputType | null
+  }
+
+  export type FamilyAvgAggregateOutputType = {
+    id: number | null
+    rootPersonId: number | null
+  }
+
+  export type FamilySumAggregateOutputType = {
+    id: number | null
+    rootPersonId: number | null
+  }
+
+  export type FamilyMinAggregateOutputType = {
+    id: number | null
+    name: string | null
+    rootPersonId: number | null
+  }
+
+  export type FamilyMaxAggregateOutputType = {
+    id: number | null
+    name: string | null
+    rootPersonId: number | null
+  }
+
+  export type FamilyCountAggregateOutputType = {
+    id: number
+    name: number
+    rootPersonId: number
+    _all: number
+  }
+
+
+  export type FamilyAvgAggregateInputType = {
+    id?: true
+    rootPersonId?: true
+  }
+
+  export type FamilySumAggregateInputType = {
+    id?: true
+    rootPersonId?: true
+  }
+
+  export type FamilyMinAggregateInputType = {
+    id?: true
+    name?: true
+    rootPersonId?: true
+  }
+
+  export type FamilyMaxAggregateInputType = {
+    id?: true
+    name?: true
+    rootPersonId?: true
+  }
+
+  export type FamilyCountAggregateInputType = {
+    id?: true
+    name?: true
+    rootPersonId?: true
+    _all?: true
+  }
+
+  export type FamilyAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Family to aggregate.
+     */
+    where?: FamilyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Families to fetch.
+     */
+    orderBy?: FamilyOrderByWithRelationInput | FamilyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FamilyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Families from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Families.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Families
+    **/
+    _count?: true | FamilyCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FamilyAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FamilySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FamilyMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FamilyMaxAggregateInputType
+  }
+
+  export type GetFamilyAggregateType<T extends FamilyAggregateArgs> = {
+        [P in keyof T & keyof AggregateFamily]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFamily[P]>
+      : GetScalarType<T[P], AggregateFamily[P]>
+  }
+
+
+
+
+  export type FamilyGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FamilyWhereInput
+    orderBy?: FamilyOrderByWithAggregationInput | FamilyOrderByWithAggregationInput[]
+    by: FamilyScalarFieldEnum[] | FamilyScalarFieldEnum
+    having?: FamilyScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FamilyCountAggregateInputType | true
+    _avg?: FamilyAvgAggregateInputType
+    _sum?: FamilySumAggregateInputType
+    _min?: FamilyMinAggregateInputType
+    _max?: FamilyMaxAggregateInputType
+  }
+
+  export type FamilyGroupByOutputType = {
+    id: number
+    name: string
+    rootPersonId: number
+    _count: FamilyCountAggregateOutputType | null
+    _avg: FamilyAvgAggregateOutputType | null
+    _sum: FamilySumAggregateOutputType | null
+    _min: FamilyMinAggregateOutputType | null
+    _max: FamilyMaxAggregateOutputType | null
+  }
+
+  type GetFamilyGroupByPayload<T extends FamilyGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FamilyGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FamilyGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FamilyGroupByOutputType[P]>
+            : GetScalarType<T[P], FamilyGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FamilySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    rootPersonId?: boolean
+    rootPerson?: boolean | PersonDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["family"]>
+
+  export type FamilySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    rootPersonId?: boolean
+    rootPerson?: boolean | PersonDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["family"]>
+
+  export type FamilySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    rootPersonId?: boolean
+    rootPerson?: boolean | PersonDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["family"]>
+
+  export type FamilySelectScalar = {
+    id?: boolean
+    name?: boolean
+    rootPersonId?: boolean
+  }
+
+  export type FamilyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "rootPersonId", ExtArgs["result"]["family"]>
+  export type FamilyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    rootPerson?: boolean | PersonDefaultArgs<ExtArgs>
+  }
+  export type FamilyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    rootPerson?: boolean | PersonDefaultArgs<ExtArgs>
+  }
+  export type FamilyIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    rootPerson?: boolean | PersonDefaultArgs<ExtArgs>
+  }
+
+  export type $FamilyPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Family"
+    objects: {
+      rootPerson: Prisma.$PersonPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      name: string
+      rootPersonId: number
+    }, ExtArgs["result"]["family"]>
+    composites: {}
+  }
+
+  type FamilyGetPayload<S extends boolean | null | undefined | FamilyDefaultArgs> = $Result.GetResult<Prisma.$FamilyPayload, S>
+
+  type FamilyCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FamilyFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FamilyCountAggregateInputType | true
+    }
+
+  export interface FamilyDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Family'], meta: { name: 'Family' } }
+    /**
+     * Find zero or one Family that matches the filter.
+     * @param {FamilyFindUniqueArgs} args - Arguments to find a Family
+     * @example
+     * // Get one Family
+     * const family = await prisma.family.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FamilyFindUniqueArgs>(args: SelectSubset<T, FamilyFindUniqueArgs<ExtArgs>>): Prisma__FamilyClient<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Family that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FamilyFindUniqueOrThrowArgs} args - Arguments to find a Family
+     * @example
+     * // Get one Family
+     * const family = await prisma.family.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FamilyFindUniqueOrThrowArgs>(args: SelectSubset<T, FamilyFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FamilyClient<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Family that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FamilyFindFirstArgs} args - Arguments to find a Family
+     * @example
+     * // Get one Family
+     * const family = await prisma.family.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FamilyFindFirstArgs>(args?: SelectSubset<T, FamilyFindFirstArgs<ExtArgs>>): Prisma__FamilyClient<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Family that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FamilyFindFirstOrThrowArgs} args - Arguments to find a Family
+     * @example
+     * // Get one Family
+     * const family = await prisma.family.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FamilyFindFirstOrThrowArgs>(args?: SelectSubset<T, FamilyFindFirstOrThrowArgs<ExtArgs>>): Prisma__FamilyClient<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Families that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FamilyFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Families
+     * const families = await prisma.family.findMany()
+     * 
+     * // Get first 10 Families
+     * const families = await prisma.family.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const familyWithIdOnly = await prisma.family.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FamilyFindManyArgs>(args?: SelectSubset<T, FamilyFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Family.
+     * @param {FamilyCreateArgs} args - Arguments to create a Family.
+     * @example
+     * // Create one Family
+     * const Family = await prisma.family.create({
+     *   data: {
+     *     // ... data to create a Family
+     *   }
+     * })
+     * 
+     */
+    create<T extends FamilyCreateArgs>(args: SelectSubset<T, FamilyCreateArgs<ExtArgs>>): Prisma__FamilyClient<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Families.
+     * @param {FamilyCreateManyArgs} args - Arguments to create many Families.
+     * @example
+     * // Create many Families
+     * const family = await prisma.family.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FamilyCreateManyArgs>(args?: SelectSubset<T, FamilyCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Families and returns the data saved in the database.
+     * @param {FamilyCreateManyAndReturnArgs} args - Arguments to create many Families.
+     * @example
+     * // Create many Families
+     * const family = await prisma.family.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Families and only return the `id`
+     * const familyWithIdOnly = await prisma.family.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FamilyCreateManyAndReturnArgs>(args?: SelectSubset<T, FamilyCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Family.
+     * @param {FamilyDeleteArgs} args - Arguments to delete one Family.
+     * @example
+     * // Delete one Family
+     * const Family = await prisma.family.delete({
+     *   where: {
+     *     // ... filter to delete one Family
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FamilyDeleteArgs>(args: SelectSubset<T, FamilyDeleteArgs<ExtArgs>>): Prisma__FamilyClient<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Family.
+     * @param {FamilyUpdateArgs} args - Arguments to update one Family.
+     * @example
+     * // Update one Family
+     * const family = await prisma.family.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FamilyUpdateArgs>(args: SelectSubset<T, FamilyUpdateArgs<ExtArgs>>): Prisma__FamilyClient<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Families.
+     * @param {FamilyDeleteManyArgs} args - Arguments to filter Families to delete.
+     * @example
+     * // Delete a few Families
+     * const { count } = await prisma.family.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FamilyDeleteManyArgs>(args?: SelectSubset<T, FamilyDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Families.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FamilyUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Families
+     * const family = await prisma.family.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FamilyUpdateManyArgs>(args: SelectSubset<T, FamilyUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Families and returns the data updated in the database.
+     * @param {FamilyUpdateManyAndReturnArgs} args - Arguments to update many Families.
+     * @example
+     * // Update many Families
+     * const family = await prisma.family.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Families and only return the `id`
+     * const familyWithIdOnly = await prisma.family.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FamilyUpdateManyAndReturnArgs>(args: SelectSubset<T, FamilyUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Family.
+     * @param {FamilyUpsertArgs} args - Arguments to update or create a Family.
+     * @example
+     * // Update or create a Family
+     * const family = await prisma.family.upsert({
+     *   create: {
+     *     // ... data to create a Family
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Family we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FamilyUpsertArgs>(args: SelectSubset<T, FamilyUpsertArgs<ExtArgs>>): Prisma__FamilyClient<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Families.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FamilyCountArgs} args - Arguments to filter Families to count.
+     * @example
+     * // Count the number of Families
+     * const count = await prisma.family.count({
+     *   where: {
+     *     // ... the filter for the Families we want to count
+     *   }
+     * })
+    **/
+    count<T extends FamilyCountArgs>(
+      args?: Subset<T, FamilyCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FamilyCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Family.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FamilyAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FamilyAggregateArgs>(args: Subset<T, FamilyAggregateArgs>): Prisma.PrismaPromise<GetFamilyAggregateType<T>>
+
+    /**
+     * Group by Family.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FamilyGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FamilyGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FamilyGroupByArgs['orderBy'] }
+        : { orderBy?: FamilyGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FamilyGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFamilyGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Family model
+   */
+  readonly fields: FamilyFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Family.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FamilyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    rootPerson<T extends PersonDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PersonDefaultArgs<ExtArgs>>): Prisma__PersonClient<$Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Family model
+   */
+  interface FamilyFieldRefs {
+    readonly id: FieldRef<"Family", 'Int'>
+    readonly name: FieldRef<"Family", 'String'>
+    readonly rootPersonId: FieldRef<"Family", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Family findUnique
+   */
+  export type FamilyFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyInclude<ExtArgs> | null
+    /**
+     * Filter, which Family to fetch.
+     */
+    where: FamilyWhereUniqueInput
+  }
+
+  /**
+   * Family findUniqueOrThrow
+   */
+  export type FamilyFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyInclude<ExtArgs> | null
+    /**
+     * Filter, which Family to fetch.
+     */
+    where: FamilyWhereUniqueInput
+  }
+
+  /**
+   * Family findFirst
+   */
+  export type FamilyFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyInclude<ExtArgs> | null
+    /**
+     * Filter, which Family to fetch.
+     */
+    where?: FamilyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Families to fetch.
+     */
+    orderBy?: FamilyOrderByWithRelationInput | FamilyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Families.
+     */
+    cursor?: FamilyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Families from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Families.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Families.
+     */
+    distinct?: FamilyScalarFieldEnum | FamilyScalarFieldEnum[]
+  }
+
+  /**
+   * Family findFirstOrThrow
+   */
+  export type FamilyFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyInclude<ExtArgs> | null
+    /**
+     * Filter, which Family to fetch.
+     */
+    where?: FamilyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Families to fetch.
+     */
+    orderBy?: FamilyOrderByWithRelationInput | FamilyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Families.
+     */
+    cursor?: FamilyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Families from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Families.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Families.
+     */
+    distinct?: FamilyScalarFieldEnum | FamilyScalarFieldEnum[]
+  }
+
+  /**
+   * Family findMany
+   */
+  export type FamilyFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyInclude<ExtArgs> | null
+    /**
+     * Filter, which Families to fetch.
+     */
+    where?: FamilyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Families to fetch.
+     */
+    orderBy?: FamilyOrderByWithRelationInput | FamilyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Families.
+     */
+    cursor?: FamilyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Families from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Families.
+     */
+    skip?: number
+    distinct?: FamilyScalarFieldEnum | FamilyScalarFieldEnum[]
+  }
+
+  /**
+   * Family create
+   */
+  export type FamilyCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Family.
+     */
+    data: XOR<FamilyCreateInput, FamilyUncheckedCreateInput>
+  }
+
+  /**
+   * Family createMany
+   */
+  export type FamilyCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Families.
+     */
+    data: FamilyCreateManyInput | FamilyCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Family createManyAndReturn
+   */
+  export type FamilyCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * The data used to create many Families.
+     */
+    data: FamilyCreateManyInput | FamilyCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Family update
+   */
+  export type FamilyUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Family.
+     */
+    data: XOR<FamilyUpdateInput, FamilyUncheckedUpdateInput>
+    /**
+     * Choose, which Family to update.
+     */
+    where: FamilyWhereUniqueInput
+  }
+
+  /**
+   * Family updateMany
+   */
+  export type FamilyUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Families.
+     */
+    data: XOR<FamilyUpdateManyMutationInput, FamilyUncheckedUpdateManyInput>
+    /**
+     * Filter which Families to update
+     */
+    where?: FamilyWhereInput
+    /**
+     * Limit how many Families to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Family updateManyAndReturn
+   */
+  export type FamilyUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * The data used to update Families.
+     */
+    data: XOR<FamilyUpdateManyMutationInput, FamilyUncheckedUpdateManyInput>
+    /**
+     * Filter which Families to update
+     */
+    where?: FamilyWhereInput
+    /**
+     * Limit how many Families to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Family upsert
+   */
+  export type FamilyUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Family to update in case it exists.
+     */
+    where: FamilyWhereUniqueInput
+    /**
+     * In case the Family found by the `where` argument doesn't exist, create a new Family with this data.
+     */
+    create: XOR<FamilyCreateInput, FamilyUncheckedCreateInput>
+    /**
+     * In case the Family was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FamilyUpdateInput, FamilyUncheckedUpdateInput>
+  }
+
+  /**
+   * Family delete
+   */
+  export type FamilyDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyInclude<ExtArgs> | null
+    /**
+     * Filter which Family to delete.
+     */
+    where: FamilyWhereUniqueInput
+  }
+
+  /**
+   * Family deleteMany
+   */
+  export type FamilyDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Families to delete
+     */
+    where?: FamilyWhereInput
+    /**
+     * Limit how many Families to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Family without action
+   */
+  export type FamilyDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Family
+     */
+    select?: FamilySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Family
+     */
+    omit?: FamilyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -4631,12 +7000,43 @@ export namespace Prisma {
   export type SpouseRelationshipScalarFieldEnum = (typeof SpouseRelationshipScalarFieldEnum)[keyof typeof SpouseRelationshipScalarFieldEnum]
 
 
+  export const ChangeRequestScalarFieldEnum: {
+    id: 'id',
+    requesterName: 'requesterName',
+    requesterPhone: 'requesterPhone',
+    action: 'action',
+    targetId: 'targetId',
+    data: 'data',
+    status: 'status',
+    createdAt: 'createdAt'
+  };
+
+  export type ChangeRequestScalarFieldEnum = (typeof ChangeRequestScalarFieldEnum)[keyof typeof ChangeRequestScalarFieldEnum]
+
+
+  export const FamilyScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    rootPersonId: 'rootPersonId'
+  };
+
+  export type FamilyScalarFieldEnum = (typeof FamilyScalarFieldEnum)[keyof typeof FamilyScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
   export const QueryMode: {
@@ -4653,6 +7053,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -4734,6 +7143,48 @@ export namespace Prisma {
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
+   * Reference to a field of type 'ChangeRequestAction'
+   */
+  export type EnumChangeRequestActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChangeRequestAction'>
+    
+
+
+  /**
+   * Reference to a field of type 'ChangeRequestAction[]'
+   */
+  export type ListEnumChangeRequestActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChangeRequestAction[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'ChangeRequestStatus'
+   */
+  export type EnumChangeRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChangeRequestStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ChangeRequestStatus[]'
+   */
+  export type ListEnumChangeRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChangeRequestStatus[]'>
     
 
 
@@ -4830,6 +7281,7 @@ export namespace Prisma {
     motherChildren?: PersonListRelationFilter
     spouseConnections?: SpouseRelationshipListRelationFilter
     spousedByConnections?: SpouseRelationshipListRelationFilter
+    family?: XOR<FamilyNullableScalarRelationFilter, FamilyWhereInput> | null
   }
 
   export type PersonOrderByWithRelationInput = {
@@ -4848,6 +7300,7 @@ export namespace Prisma {
     motherChildren?: PersonOrderByRelationAggregateInput
     spouseConnections?: SpouseRelationshipOrderByRelationAggregateInput
     spousedByConnections?: SpouseRelationshipOrderByRelationAggregateInput
+    family?: FamilyOrderByWithRelationInput
   }
 
   export type PersonWhereUniqueInput = Prisma.AtLeast<{
@@ -4869,6 +7322,7 @@ export namespace Prisma {
     motherChildren?: PersonListRelationFilter
     spouseConnections?: SpouseRelationshipListRelationFilter
     spousedByConnections?: SpouseRelationshipListRelationFilter
+    family?: XOR<FamilyNullableScalarRelationFilter, FamilyWhereInput> | null
   }, "id">
 
   export type PersonOrderByWithAggregationInput = {
@@ -4969,6 +7423,122 @@ export namespace Prisma {
     isActive?: BoolWithAggregatesFilter<"SpouseRelationship"> | boolean
   }
 
+  export type ChangeRequestWhereInput = {
+    AND?: ChangeRequestWhereInput | ChangeRequestWhereInput[]
+    OR?: ChangeRequestWhereInput[]
+    NOT?: ChangeRequestWhereInput | ChangeRequestWhereInput[]
+    id?: IntFilter<"ChangeRequest"> | number
+    requesterName?: StringFilter<"ChangeRequest"> | string
+    requesterPhone?: StringFilter<"ChangeRequest"> | string
+    action?: EnumChangeRequestActionFilter<"ChangeRequest"> | $Enums.ChangeRequestAction
+    targetId?: IntNullableFilter<"ChangeRequest"> | number | null
+    data?: JsonNullableFilter<"ChangeRequest">
+    status?: EnumChangeRequestStatusFilter<"ChangeRequest"> | $Enums.ChangeRequestStatus
+    createdAt?: DateTimeFilter<"ChangeRequest"> | Date | string
+  }
+
+  export type ChangeRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    requesterName?: SortOrder
+    requesterPhone?: SortOrder
+    action?: SortOrder
+    targetId?: SortOrderInput | SortOrder
+    data?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ChangeRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: ChangeRequestWhereInput | ChangeRequestWhereInput[]
+    OR?: ChangeRequestWhereInput[]
+    NOT?: ChangeRequestWhereInput | ChangeRequestWhereInput[]
+    requesterName?: StringFilter<"ChangeRequest"> | string
+    requesterPhone?: StringFilter<"ChangeRequest"> | string
+    action?: EnumChangeRequestActionFilter<"ChangeRequest"> | $Enums.ChangeRequestAction
+    targetId?: IntNullableFilter<"ChangeRequest"> | number | null
+    data?: JsonNullableFilter<"ChangeRequest">
+    status?: EnumChangeRequestStatusFilter<"ChangeRequest"> | $Enums.ChangeRequestStatus
+    createdAt?: DateTimeFilter<"ChangeRequest"> | Date | string
+  }, "id">
+
+  export type ChangeRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    requesterName?: SortOrder
+    requesterPhone?: SortOrder
+    action?: SortOrder
+    targetId?: SortOrderInput | SortOrder
+    data?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    _count?: ChangeRequestCountOrderByAggregateInput
+    _avg?: ChangeRequestAvgOrderByAggregateInput
+    _max?: ChangeRequestMaxOrderByAggregateInput
+    _min?: ChangeRequestMinOrderByAggregateInput
+    _sum?: ChangeRequestSumOrderByAggregateInput
+  }
+
+  export type ChangeRequestScalarWhereWithAggregatesInput = {
+    AND?: ChangeRequestScalarWhereWithAggregatesInput | ChangeRequestScalarWhereWithAggregatesInput[]
+    OR?: ChangeRequestScalarWhereWithAggregatesInput[]
+    NOT?: ChangeRequestScalarWhereWithAggregatesInput | ChangeRequestScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ChangeRequest"> | number
+    requesterName?: StringWithAggregatesFilter<"ChangeRequest"> | string
+    requesterPhone?: StringWithAggregatesFilter<"ChangeRequest"> | string
+    action?: EnumChangeRequestActionWithAggregatesFilter<"ChangeRequest"> | $Enums.ChangeRequestAction
+    targetId?: IntNullableWithAggregatesFilter<"ChangeRequest"> | number | null
+    data?: JsonNullableWithAggregatesFilter<"ChangeRequest">
+    status?: EnumChangeRequestStatusWithAggregatesFilter<"ChangeRequest"> | $Enums.ChangeRequestStatus
+    createdAt?: DateTimeWithAggregatesFilter<"ChangeRequest"> | Date | string
+  }
+
+  export type FamilyWhereInput = {
+    AND?: FamilyWhereInput | FamilyWhereInput[]
+    OR?: FamilyWhereInput[]
+    NOT?: FamilyWhereInput | FamilyWhereInput[]
+    id?: IntFilter<"Family"> | number
+    name?: StringFilter<"Family"> | string
+    rootPersonId?: IntFilter<"Family"> | number
+    rootPerson?: XOR<PersonScalarRelationFilter, PersonWhereInput>
+  }
+
+  export type FamilyOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    rootPersonId?: SortOrder
+    rootPerson?: PersonOrderByWithRelationInput
+  }
+
+  export type FamilyWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    rootPersonId?: number
+    AND?: FamilyWhereInput | FamilyWhereInput[]
+    OR?: FamilyWhereInput[]
+    NOT?: FamilyWhereInput | FamilyWhereInput[]
+    name?: StringFilter<"Family"> | string
+    rootPerson?: XOR<PersonScalarRelationFilter, PersonWhereInput>
+  }, "id" | "rootPersonId">
+
+  export type FamilyOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    rootPersonId?: SortOrder
+    _count?: FamilyCountOrderByAggregateInput
+    _avg?: FamilyAvgOrderByAggregateInput
+    _max?: FamilyMaxOrderByAggregateInput
+    _min?: FamilyMinOrderByAggregateInput
+    _sum?: FamilySumOrderByAggregateInput
+  }
+
+  export type FamilyScalarWhereWithAggregatesInput = {
+    AND?: FamilyScalarWhereWithAggregatesInput | FamilyScalarWhereWithAggregatesInput[]
+    OR?: FamilyScalarWhereWithAggregatesInput[]
+    NOT?: FamilyScalarWhereWithAggregatesInput | FamilyScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Family"> | number
+    name?: StringWithAggregatesFilter<"Family"> | string
+    rootPersonId?: IntWithAggregatesFilter<"Family"> | number
+  }
+
   export type UserCreateInput = {
     id?: string
     email?: string | null
@@ -5045,6 +7615,7 @@ export namespace Prisma {
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
     spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
     spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    family?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateInput = {
@@ -5061,6 +7632,7 @@ export namespace Prisma {
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
     spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
     spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    family?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUpdateInput = {
@@ -5076,6 +7648,7 @@ export namespace Prisma {
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
     spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
     spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateInput = {
@@ -5092,6 +7665,7 @@ export namespace Prisma {
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
     spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
     spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonCreateManyInput = {
@@ -5183,6 +7757,118 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type ChangeRequestCreateInput = {
+    requesterName: string
+    requesterPhone: string
+    action: $Enums.ChangeRequestAction
+    targetId?: number | null
+    data?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.ChangeRequestStatus
+    createdAt?: Date | string
+  }
+
+  export type ChangeRequestUncheckedCreateInput = {
+    id?: number
+    requesterName: string
+    requesterPhone: string
+    action: $Enums.ChangeRequestAction
+    targetId?: number | null
+    data?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.ChangeRequestStatus
+    createdAt?: Date | string
+  }
+
+  export type ChangeRequestUpdateInput = {
+    requesterName?: StringFieldUpdateOperationsInput | string
+    requesterPhone?: StringFieldUpdateOperationsInput | string
+    action?: EnumChangeRequestActionFieldUpdateOperationsInput | $Enums.ChangeRequestAction
+    targetId?: NullableIntFieldUpdateOperationsInput | number | null
+    data?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumChangeRequestStatusFieldUpdateOperationsInput | $Enums.ChangeRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChangeRequestUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    requesterName?: StringFieldUpdateOperationsInput | string
+    requesterPhone?: StringFieldUpdateOperationsInput | string
+    action?: EnumChangeRequestActionFieldUpdateOperationsInput | $Enums.ChangeRequestAction
+    targetId?: NullableIntFieldUpdateOperationsInput | number | null
+    data?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumChangeRequestStatusFieldUpdateOperationsInput | $Enums.ChangeRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChangeRequestCreateManyInput = {
+    id?: number
+    requesterName: string
+    requesterPhone: string
+    action: $Enums.ChangeRequestAction
+    targetId?: number | null
+    data?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.ChangeRequestStatus
+    createdAt?: Date | string
+  }
+
+  export type ChangeRequestUpdateManyMutationInput = {
+    requesterName?: StringFieldUpdateOperationsInput | string
+    requesterPhone?: StringFieldUpdateOperationsInput | string
+    action?: EnumChangeRequestActionFieldUpdateOperationsInput | $Enums.ChangeRequestAction
+    targetId?: NullableIntFieldUpdateOperationsInput | number | null
+    data?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumChangeRequestStatusFieldUpdateOperationsInput | $Enums.ChangeRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChangeRequestUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    requesterName?: StringFieldUpdateOperationsInput | string
+    requesterPhone?: StringFieldUpdateOperationsInput | string
+    action?: EnumChangeRequestActionFieldUpdateOperationsInput | $Enums.ChangeRequestAction
+    targetId?: NullableIntFieldUpdateOperationsInput | number | null
+    data?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumChangeRequestStatusFieldUpdateOperationsInput | $Enums.ChangeRequestStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FamilyCreateInput = {
+    name: string
+    rootPerson: PersonCreateNestedOneWithoutFamilyInput
+  }
+
+  export type FamilyUncheckedCreateInput = {
+    id?: number
+    name: string
+    rootPersonId: number
+  }
+
+  export type FamilyUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    rootPerson?: PersonUpdateOneRequiredWithoutFamilyNestedInput
+  }
+
+  export type FamilyUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    rootPersonId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type FamilyCreateManyInput = {
+    id?: number
+    name: string
+    rootPersonId: number
+  }
+
+  export type FamilyUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FamilyUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    rootPersonId?: IntFieldUpdateOperationsInput | number
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -5355,6 +8041,11 @@ export namespace Prisma {
     every?: SpouseRelationshipWhereInput
     some?: SpouseRelationshipWhereInput
     none?: SpouseRelationshipWhereInput
+  }
+
+  export type FamilyNullableScalarRelationFilter = {
+    is?: FamilyWhereInput | null
+    isNot?: FamilyWhereInput | null
   }
 
   export type PersonOrderByRelationAggregateInput = {
@@ -5531,6 +8222,183 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type EnumChangeRequestActionFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChangeRequestAction | EnumChangeRequestActionFieldRefInput<$PrismaModel>
+    in?: $Enums.ChangeRequestAction[] | ListEnumChangeRequestActionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChangeRequestAction[] | ListEnumChangeRequestActionFieldRefInput<$PrismaModel>
+    not?: NestedEnumChangeRequestActionFilter<$PrismaModel> | $Enums.ChangeRequestAction
+  }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type EnumChangeRequestStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChangeRequestStatus | EnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChangeRequestStatus[] | ListEnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChangeRequestStatus[] | ListEnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChangeRequestStatusFilter<$PrismaModel> | $Enums.ChangeRequestStatus
+  }
+
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type ChangeRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    requesterName?: SortOrder
+    requesterPhone?: SortOrder
+    action?: SortOrder
+    targetId?: SortOrder
+    data?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ChangeRequestAvgOrderByAggregateInput = {
+    id?: SortOrder
+    targetId?: SortOrder
+  }
+
+  export type ChangeRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    requesterName?: SortOrder
+    requesterPhone?: SortOrder
+    action?: SortOrder
+    targetId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ChangeRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    requesterName?: SortOrder
+    requesterPhone?: SortOrder
+    action?: SortOrder
+    targetId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ChangeRequestSumOrderByAggregateInput = {
+    id?: SortOrder
+    targetId?: SortOrder
+  }
+
+  export type EnumChangeRequestActionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChangeRequestAction | EnumChangeRequestActionFieldRefInput<$PrismaModel>
+    in?: $Enums.ChangeRequestAction[] | ListEnumChangeRequestActionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChangeRequestAction[] | ListEnumChangeRequestActionFieldRefInput<$PrismaModel>
+    not?: NestedEnumChangeRequestActionWithAggregatesFilter<$PrismaModel> | $Enums.ChangeRequestAction
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumChangeRequestActionFilter<$PrismaModel>
+    _max?: NestedEnumChangeRequestActionFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type EnumChangeRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChangeRequestStatus | EnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChangeRequestStatus[] | ListEnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChangeRequestStatus[] | ListEnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChangeRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.ChangeRequestStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumChangeRequestStatusFilter<$PrismaModel>
+    _max?: NestedEnumChangeRequestStatusFilter<$PrismaModel>
+  }
+
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type FamilyCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    rootPersonId?: SortOrder
+  }
+
+  export type FamilyAvgOrderByAggregateInput = {
+    id?: SortOrder
+    rootPersonId?: SortOrder
+  }
+
+  export type FamilyMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    rootPersonId?: SortOrder
+  }
+
+  export type FamilyMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    rootPersonId?: SortOrder
+  }
+
+  export type FamilySumOrderByAggregateInput = {
+    id?: SortOrder
+    rootPersonId?: SortOrder
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -5583,6 +8451,12 @@ export namespace Prisma {
     connect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
   }
 
+  export type FamilyCreateNestedOneWithoutRootPersonInput = {
+    create?: XOR<FamilyCreateWithoutRootPersonInput, FamilyUncheckedCreateWithoutRootPersonInput>
+    connectOrCreate?: FamilyCreateOrConnectWithoutRootPersonInput
+    connect?: FamilyWhereUniqueInput
+  }
+
   export type PersonUncheckedCreateNestedManyWithoutFatherInput = {
     create?: XOR<PersonCreateWithoutFatherInput, PersonUncheckedCreateWithoutFatherInput> | PersonCreateWithoutFatherInput[] | PersonUncheckedCreateWithoutFatherInput[]
     connectOrCreate?: PersonCreateOrConnectWithoutFatherInput | PersonCreateOrConnectWithoutFatherInput[]
@@ -5609,6 +8483,12 @@ export namespace Prisma {
     connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutSpouseInput | SpouseRelationshipCreateOrConnectWithoutSpouseInput[]
     createMany?: SpouseRelationshipCreateManySpouseInputEnvelope
     connect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
+  }
+
+  export type FamilyUncheckedCreateNestedOneWithoutRootPersonInput = {
+    create?: XOR<FamilyCreateWithoutRootPersonInput, FamilyUncheckedCreateWithoutRootPersonInput>
+    connectOrCreate?: FamilyCreateOrConnectWithoutRootPersonInput
+    connect?: FamilyWhereUniqueInput
   }
 
   export type EnumGenderFieldUpdateOperationsInput = {
@@ -5695,6 +8575,16 @@ export namespace Prisma {
     deleteMany?: SpouseRelationshipScalarWhereInput | SpouseRelationshipScalarWhereInput[]
   }
 
+  export type FamilyUpdateOneWithoutRootPersonNestedInput = {
+    create?: XOR<FamilyCreateWithoutRootPersonInput, FamilyUncheckedCreateWithoutRootPersonInput>
+    connectOrCreate?: FamilyCreateOrConnectWithoutRootPersonInput
+    upsert?: FamilyUpsertWithoutRootPersonInput
+    disconnect?: FamilyWhereInput | boolean
+    delete?: FamilyWhereInput | boolean
+    connect?: FamilyWhereUniqueInput
+    update?: XOR<XOR<FamilyUpdateToOneWithWhereWithoutRootPersonInput, FamilyUpdateWithoutRootPersonInput>, FamilyUncheckedUpdateWithoutRootPersonInput>
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -5767,6 +8657,16 @@ export namespace Prisma {
     deleteMany?: SpouseRelationshipScalarWhereInput | SpouseRelationshipScalarWhereInput[]
   }
 
+  export type FamilyUncheckedUpdateOneWithoutRootPersonNestedInput = {
+    create?: XOR<FamilyCreateWithoutRootPersonInput, FamilyUncheckedCreateWithoutRootPersonInput>
+    connectOrCreate?: FamilyCreateOrConnectWithoutRootPersonInput
+    upsert?: FamilyUpsertWithoutRootPersonInput
+    disconnect?: FamilyWhereInput | boolean
+    delete?: FamilyWhereInput | boolean
+    connect?: FamilyWhereUniqueInput
+    update?: XOR<XOR<FamilyUpdateToOneWithWhereWithoutRootPersonInput, FamilyUpdateWithoutRootPersonInput>, FamilyUncheckedUpdateWithoutRootPersonInput>
+  }
+
   export type PersonCreateNestedOneWithoutSpouseConnectionsInput = {
     create?: XOR<PersonCreateWithoutSpouseConnectionsInput, PersonUncheckedCreateWithoutSpouseConnectionsInput>
     connectOrCreate?: PersonCreateOrConnectWithoutSpouseConnectionsInput
@@ -5797,6 +8697,32 @@ export namespace Prisma {
     upsert?: PersonUpsertWithoutSpousedByConnectionsInput
     connect?: PersonWhereUniqueInput
     update?: XOR<XOR<PersonUpdateToOneWithWhereWithoutSpousedByConnectionsInput, PersonUpdateWithoutSpousedByConnectionsInput>, PersonUncheckedUpdateWithoutSpousedByConnectionsInput>
+  }
+
+  export type EnumChangeRequestActionFieldUpdateOperationsInput = {
+    set?: $Enums.ChangeRequestAction
+  }
+
+  export type EnumChangeRequestStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ChangeRequestStatus
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
+  }
+
+  export type PersonCreateNestedOneWithoutFamilyInput = {
+    create?: XOR<PersonCreateWithoutFamilyInput, PersonUncheckedCreateWithoutFamilyInput>
+    connectOrCreate?: PersonCreateOrConnectWithoutFamilyInput
+    connect?: PersonWhereUniqueInput
+  }
+
+  export type PersonUpdateOneRequiredWithoutFamilyNestedInput = {
+    create?: XOR<PersonCreateWithoutFamilyInput, PersonUncheckedCreateWithoutFamilyInput>
+    connectOrCreate?: PersonCreateOrConnectWithoutFamilyInput
+    upsert?: PersonUpsertWithoutFamilyInput
+    connect?: PersonWhereUniqueInput
+    update?: XOR<XOR<PersonUpdateToOneWithWhereWithoutFamilyInput, PersonUpdateWithoutFamilyInput>, PersonUncheckedUpdateWithoutFamilyInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -6009,6 +8935,88 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type NestedEnumChangeRequestActionFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChangeRequestAction | EnumChangeRequestActionFieldRefInput<$PrismaModel>
+    in?: $Enums.ChangeRequestAction[] | ListEnumChangeRequestActionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChangeRequestAction[] | ListEnumChangeRequestActionFieldRefInput<$PrismaModel>
+    not?: NestedEnumChangeRequestActionFilter<$PrismaModel> | $Enums.ChangeRequestAction
+  }
+
+  export type NestedEnumChangeRequestStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChangeRequestStatus | EnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChangeRequestStatus[] | ListEnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChangeRequestStatus[] | ListEnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChangeRequestStatusFilter<$PrismaModel> | $Enums.ChangeRequestStatus
+  }
+
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedEnumChangeRequestActionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChangeRequestAction | EnumChangeRequestActionFieldRefInput<$PrismaModel>
+    in?: $Enums.ChangeRequestAction[] | ListEnumChangeRequestActionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChangeRequestAction[] | ListEnumChangeRequestActionFieldRefInput<$PrismaModel>
+    not?: NestedEnumChangeRequestActionWithAggregatesFilter<$PrismaModel> | $Enums.ChangeRequestAction
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumChangeRequestActionFilter<$PrismaModel>
+    _max?: NestedEnumChangeRequestActionFilter<$PrismaModel>
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedEnumChangeRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChangeRequestStatus | EnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChangeRequestStatus[] | ListEnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChangeRequestStatus[] | ListEnumChangeRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChangeRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.ChangeRequestStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumChangeRequestStatusFilter<$PrismaModel>
+    _max?: NestedEnumChangeRequestStatusFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
   export type PersonCreateWithoutFatherChildrenInput = {
     firstName: string
     familyName: string
@@ -6021,6 +9029,7 @@ export namespace Prisma {
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
     spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
     spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    family?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateWithoutFatherChildrenInput = {
@@ -6036,6 +9045,7 @@ export namespace Prisma {
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
     spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
     spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    family?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonCreateOrConnectWithoutFatherChildrenInput = {
@@ -6055,6 +9065,7 @@ export namespace Prisma {
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
     spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    family?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateWithoutMotherChildrenInput = {
@@ -6070,6 +9081,7 @@ export namespace Prisma {
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
     spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    family?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonCreateOrConnectWithoutMotherChildrenInput = {
@@ -6089,6 +9101,7 @@ export namespace Prisma {
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
     spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
     spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    family?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateWithoutFatherInput = {
@@ -6104,6 +9117,7 @@ export namespace Prisma {
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
     spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
     spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    family?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonCreateOrConnectWithoutFatherInput = {
@@ -6128,6 +9142,7 @@ export namespace Prisma {
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
     spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
     spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    family?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateWithoutMotherInput = {
@@ -6143,6 +9158,7 @@ export namespace Prisma {
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
     spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
     spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    family?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonCreateOrConnectWithoutMotherInput = {
@@ -6205,6 +9221,20 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type FamilyCreateWithoutRootPersonInput = {
+    name: string
+  }
+
+  export type FamilyUncheckedCreateWithoutRootPersonInput = {
+    id?: number
+    name: string
+  }
+
+  export type FamilyCreateOrConnectWithoutRootPersonInput = {
+    where: FamilyWhereUniqueInput
+    create: XOR<FamilyCreateWithoutRootPersonInput, FamilyUncheckedCreateWithoutRootPersonInput>
+  }
+
   export type PersonUpsertWithoutFatherChildrenInput = {
     update: XOR<PersonUpdateWithoutFatherChildrenInput, PersonUncheckedUpdateWithoutFatherChildrenInput>
     create: XOR<PersonCreateWithoutFatherChildrenInput, PersonUncheckedCreateWithoutFatherChildrenInput>
@@ -6228,6 +9258,7 @@ export namespace Prisma {
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
     spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
     spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutFatherChildrenInput = {
@@ -6243,6 +9274,7 @@ export namespace Prisma {
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
     spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
     spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUpsertWithoutMotherChildrenInput = {
@@ -6268,6 +9300,7 @@ export namespace Prisma {
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
     spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutMotherChildrenInput = {
@@ -6283,6 +9316,7 @@ export namespace Prisma {
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
     spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUpsertWithWhereUniqueWithoutFatherInput = {
@@ -6376,6 +9410,26 @@ export namespace Prisma {
     data: XOR<SpouseRelationshipUpdateManyMutationInput, SpouseRelationshipUncheckedUpdateManyWithoutSpouseInput>
   }
 
+  export type FamilyUpsertWithoutRootPersonInput = {
+    update: XOR<FamilyUpdateWithoutRootPersonInput, FamilyUncheckedUpdateWithoutRootPersonInput>
+    create: XOR<FamilyCreateWithoutRootPersonInput, FamilyUncheckedCreateWithoutRootPersonInput>
+    where?: FamilyWhereInput
+  }
+
+  export type FamilyUpdateToOneWithWhereWithoutRootPersonInput = {
+    where?: FamilyWhereInput
+    data: XOR<FamilyUpdateWithoutRootPersonInput, FamilyUncheckedUpdateWithoutRootPersonInput>
+  }
+
+  export type FamilyUpdateWithoutRootPersonInput = {
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FamilyUncheckedUpdateWithoutRootPersonInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
   export type PersonCreateWithoutSpouseConnectionsInput = {
     firstName: string
     familyName: string
@@ -6388,6 +9442,7 @@ export namespace Prisma {
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
     spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    family?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateWithoutSpouseConnectionsInput = {
@@ -6403,6 +9458,7 @@ export namespace Prisma {
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
     spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    family?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonCreateOrConnectWithoutSpouseConnectionsInput = {
@@ -6422,6 +9478,7 @@ export namespace Prisma {
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
     spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
+    family?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateWithoutSpousedByConnectionsInput = {
@@ -6437,6 +9494,7 @@ export namespace Prisma {
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
     spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
+    family?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonCreateOrConnectWithoutSpousedByConnectionsInput = {
@@ -6467,6 +9525,7 @@ export namespace Prisma {
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
     spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutSpouseConnectionsInput = {
@@ -6482,6 +9541,7 @@ export namespace Prisma {
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
     spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUpsertWithoutSpousedByConnectionsInput = {
@@ -6507,6 +9567,7 @@ export namespace Prisma {
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
     spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
+    family?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutSpousedByConnectionsInput = {
@@ -6522,6 +9583,85 @@ export namespace Prisma {
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
     spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
+    family?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
+  }
+
+  export type PersonCreateWithoutFamilyInput = {
+    firstName: string
+    familyName: string
+    gender: $Enums.Gender
+    birthDate?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
+    father?: PersonCreateNestedOneWithoutFatherChildrenInput
+    mother?: PersonCreateNestedOneWithoutMotherChildrenInput
+    fatherChildren?: PersonCreateNestedManyWithoutFatherInput
+    motherChildren?: PersonCreateNestedManyWithoutMotherInput
+    spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
+    spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+  }
+
+  export type PersonUncheckedCreateWithoutFamilyInput = {
+    id?: number
+    firstName: string
+    familyName: string
+    gender: $Enums.Gender
+    birthDate?: Date | string | null
+    deathDate?: Date | string | null
+    phone?: string | null
+    fatherId?: number | null
+    motherId?: number | null
+    fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
+    motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
+    spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
+    spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+  }
+
+  export type PersonCreateOrConnectWithoutFamilyInput = {
+    where: PersonWhereUniqueInput
+    create: XOR<PersonCreateWithoutFamilyInput, PersonUncheckedCreateWithoutFamilyInput>
+  }
+
+  export type PersonUpsertWithoutFamilyInput = {
+    update: XOR<PersonUpdateWithoutFamilyInput, PersonUncheckedUpdateWithoutFamilyInput>
+    create: XOR<PersonCreateWithoutFamilyInput, PersonUncheckedCreateWithoutFamilyInput>
+    where?: PersonWhereInput
+  }
+
+  export type PersonUpdateToOneWithWhereWithoutFamilyInput = {
+    where?: PersonWhereInput
+    data: XOR<PersonUpdateWithoutFamilyInput, PersonUncheckedUpdateWithoutFamilyInput>
+  }
+
+  export type PersonUpdateWithoutFamilyInput = {
+    firstName?: StringFieldUpdateOperationsInput | string
+    familyName?: StringFieldUpdateOperationsInput | string
+    gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    father?: PersonUpdateOneWithoutFatherChildrenNestedInput
+    mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
+    fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
+    motherChildren?: PersonUpdateManyWithoutMotherNestedInput
+    spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
+    spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+  }
+
+  export type PersonUncheckedUpdateWithoutFamilyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    firstName?: StringFieldUpdateOperationsInput | string
+    familyName?: StringFieldUpdateOperationsInput | string
+    gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
+    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
+    motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
+    spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
+    spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
   }
 
   export type PersonCreateManyFatherInput = {
@@ -6574,6 +9714,7 @@ export namespace Prisma {
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
     spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
     spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutFatherInput = {
@@ -6589,6 +9730,7 @@ export namespace Prisma {
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
     spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
     spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateManyWithoutFatherInput = {
@@ -6614,6 +9756,7 @@ export namespace Prisma {
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
     spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
     spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutMotherInput = {
@@ -6629,6 +9772,7 @@ export namespace Prisma {
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
     spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
     spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    family?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateManyWithoutMotherInput = {
