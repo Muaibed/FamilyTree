@@ -1,6 +1,6 @@
 // src/app/api/spouseRelationship/route.ts
 
-import {createSpouseRelationship, deleteRelation, getAllRelations} from '@/lib/spouseRelationship';
+import {createSpouseRelationship, deleteRelation, getAllRelations, updateRelationStatus} from '@/lib/spouseRelationship';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -26,13 +26,34 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
-    const persons = await getAllRelations();
-    return NextResponse.json(persons);
+    const relations = await getAllRelations();
+    return NextResponse.json(relations);
   } catch (error: unknown) {
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
     return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const { personId, spouseId, isActive, startDate, endDate } = await req.json();
+
+    const data = {
+      personId,
+      spouseId,
+      isActive,
+      startDate,
+      endDate
+    }
+
+    await updateRelationStatus(data);
+
+    return NextResponse.json("Updated successfully", { status: 201 });
+  } catch (error) {
+    console.error(error);
+    return new Response("Failed to update person", { status: 500 });
   }
 }
 

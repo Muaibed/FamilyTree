@@ -1,20 +1,20 @@
 "use client";
 
-import { Person } from "@/types/family";
+import { Family } from "@/types/family";
 import { toast } from "sonner";
 
-const DeletePerson = ({
-  person,
+const DeleteFamily = ({
+  family,
   onSubmit,
 }: {
-  person: Person;
+  family: Family;
   onSubmit: () => void;
 }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
 
-      const response = await fetch(`api/person/${person.id}`, {
+      const response = await fetch(`api/family/${family.id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -23,12 +23,12 @@ const DeletePerson = ({
 
       if (response.ok) {
         onSubmit();
-        toast(`${person.name} has been deleted successfully.`);
+        toast(`${family.name} has been deleted successfully.`);
       } else {
-        toast(`Deleting ${person.name} Failed.`);
+        toast(`Deleting ${family.name} Failed.`);
       }
     } catch (error) {
-      toast(`Deleting ${person.name} Failed.`, {
+      toast(`Deleting ${family.name} Failed.`, {
         description: `${error}`,
       });
     } finally {
@@ -39,7 +39,7 @@ const DeletePerson = ({
   return (
     <div className="text-center">
       <h2 className="text-xl font-bold mb-2">
-        Are you sure to delete {person.name}?
+        Are you sure to delete {family.name}?
       </h2>
       <button
         className="bg-rose-700 dark:bg-rose-700 rounded hover:cursor-pointer p-1 pl-4 pr-4"
@@ -53,4 +53,4 @@ const DeletePerson = ({
   );
 };
 
-export default DeletePerson;
+export default DeleteFamily;

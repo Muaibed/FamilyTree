@@ -1,4 +1,4 @@
-import { deleteRelationById, getRelationById, updateRelationStatus, updateRelationStatusById } from '@/lib/spouseRelationship';
+import { deleteFamily, getFamilyById, updateFamily } from '@/lib/family';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req:NextRequest) {
@@ -7,12 +7,12 @@ export async function GET(req:NextRequest) {
     const id = searchParams.get("id");
 
     if (!id) {
-        return new Response("Relation ID is required", { status: 400 });
+        return new Response("Family ID is required", { status: 400 });
     }
 
-    const relation = await getRelationById(+id);
+    const family = await getFamilyById(+id);
 
-    return NextResponse.json(relation);
+    return NextResponse.json(family);
   } catch (error: unknown) {
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -23,26 +23,25 @@ export async function GET(req:NextRequest) {
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-     const id = Number(params.id);
+     const id = params.id;
 
-    const { isActive, startDate, endDate } = await req.json();
+    const { name, rootPersonId } = await req.json();
 
     const data = {
-      isActive,
-      startDate,
-      endDate
+      name,
+      rootPersonId
     }
 
     if (!id) {
-      return new Response("Relation ID is required", { status: 400});
+      return new Response("Family ID is required", { status: 400});
     }
 
-    await updateRelationStatusById(id, data);
+    await updateFamily(+id, data);
 
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
     console.error(error);
-    return new Response("Failed to update person", { status: 500 });
+    return NextResponse.json("Failed to update family" + error, { status: 500 });
   }
 }
 
@@ -52,14 +51,14 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
   
       if (!id) {
-        return new Response("Relation ID is required", { status: 400 });
+        return new Response("Family ID is required", { status: 400 });
       }
-
-      await deleteRelationById(+id);
   
-      return new Response("Relation deleted successfully", { status: 200 });
+      await deleteFamily(+id);
+  
+      return new Response("Family deleted successfully", { status: 200 });
     } catch (error) {
       console.error(error);
-      return new Response("Failed to delete relation", { status: 500 });
+      return new Response("Failed to delete family", { status: 500 });
     }
   }

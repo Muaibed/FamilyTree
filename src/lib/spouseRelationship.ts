@@ -10,6 +10,12 @@ export const getAllRelations = async () => {
   return formattedRelations;
 };
 
+export const getRelationById = async (id: number) => {
+  return prisma.spouseRelationship.findUnique({
+    where: { id },
+  })
+}
+
 export const createSpouseRelationship = async (data: {
   person1Id: number;
   person2Id: number;
@@ -29,7 +35,15 @@ export const createSpouseRelationship = async (data: {
 };
 
 
-export const updateRelationStatus = async (personId: number, spouseId: number, isActive: boolean, startDate: Date, endDate: Date) => {
+export const updateRelationStatus = async (data: {
+  personId: number;
+  spouseId: number;
+  isActive: boolean;
+  startDate?: Date;
+  endDate?: Date;
+}) => {
+    const { personId, spouseId, isActive, startDate, endDate } = data;
+
     await prisma.spouseRelationship.update({
       where: {
         personId_spouseId: {
@@ -37,6 +51,24 @@ export const updateRelationStatus = async (personId: number, spouseId: number, i
           spouseId: spouseId,
         },
       },
+      data: {
+        isActive: isActive,
+        startDate: startDate,
+        endDate: endDate,
+      },
+    });
+
+}
+
+export const updateRelationStatusById = async (id:number, data: {
+  isActive: boolean;
+  startDate?: Date;
+  endDate?: Date;
+}) => {
+    const { isActive, startDate, endDate } = data;
+
+    await prisma.spouseRelationship.update({
+      where: { id },
       data: {
         isActive: isActive,
         startDate: startDate,

@@ -11,6 +11,12 @@ export interface Person {
     childrenIds: string[];
     spouses: [string, boolean][];
   }
+
+  export interface Family {
+    id: string;
+    name: string;
+    rootPersonId: number;
+  }
   
   export interface FamilyTreeData {
     people: Record<string, Person>;

@@ -54,6 +54,8 @@ model Person {
 
   spouseConnections SpouseRelationship[] @relation("PersonToSpouse")
   spousedByConnections SpouseRelationship[] @relation("SpouseToPersons")
+
+  family       Family?   @relation("RootPersonRelation")
 }
 
 model SpouseRelationship {
@@ -69,4 +71,34 @@ model SpouseRelationship {
   isActive        Boolean     @default(true)
   
   @@unique([personId, spouseId])
+}
+
+enum ChangeRequestAction {
+  ADD
+  DELETE
+  UPDATE
+}
+
+enum ChangeRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model ChangeRequest {
+  id         Int      @id @default(autoincrement())
+  requesterName  String
+  requesterPhone String
+  action     ChangeRequestAction   
+  targetId   Int?     
+  data       Json?    
+  status     ChangeRequestStatus   @default(PENDING) 
+  createdAt  DateTime @default(now())
+}
+
+model Family {
+  id             Int     @id     @default(autoincrement()) 
+  name           String
+  rootPerson     Person  @relation("RootPersonRelation", fields: [rootPersonId], references: [id])
+  rootPersonId   Int     @unique
 }

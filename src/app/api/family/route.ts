@@ -1,0 +1,34 @@
+// src/app/api/family/route.ts
+
+import { createFamily, getAllFamilies } from '@/lib/family';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(req: NextRequest) {
+  try {
+    const { name, rootPersonId } = await req.json();
+
+    const newFamily = await createFamily({
+      name,
+      rootPersonId: +rootPersonId,
+    });
+
+    return NextResponse.json(newFamily, { status: 201 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    const families = await getAllFamilies();
+    return NextResponse.json(families);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+  }
+}
