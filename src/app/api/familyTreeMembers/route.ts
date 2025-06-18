@@ -16,7 +16,7 @@ export async function GET() {
       },
     });
 
-    const familyTreeData: FamilyTreeData = { people: {}, rootPersonId: '1'}
+    const familyTreeData: FamilyTreeData = { people: {}, rootPersonId: ""}
 
     people.forEach((person) => {
       let children;

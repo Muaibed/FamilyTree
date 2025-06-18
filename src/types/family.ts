@@ -13,7 +13,7 @@ export interface Person {
   }
 
   export interface Family {
-    id: string;
+    id: number;
     name: string;
     rootPersonId: number;
   }

@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner"
 import SessionProviderWrapper from "@/components/client/SessionProviderWrapper";
 import MembersContextProvider from "@/components/client/MembersContextProvider";
 import useSWR from "swr";
+import ThemeToggle from "@/theme/theme-toggle";
 
 export default function RootLayout({
   children,
@@ -21,6 +22,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <ThemeToggle />
             <MembersContextProvider>
               {children}
             </MembersContextProvider>
