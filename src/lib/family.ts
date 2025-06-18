@@ -21,6 +21,12 @@ export const getFamilyById = async (id: number) => {
   });
 };
 
+export const getFamilyByName = async (name: string) => {
+  return prisma.family.findFirst({
+    where: { name },
+  });
+};
+
 export const getAllFamilies = async () => {
   return prisma.family.findMany();
 };

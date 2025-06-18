@@ -1,6 +1,6 @@
 // src/app/api/family/route.ts
 
-import { createFamily, getAllFamilies } from '@/lib/family';
+import { createFamily, getAllFamilies, getFamilyByName } from '@/lib/family';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -21,8 +21,14 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req:NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const name = searchParams.get("name")
+    
+    if (name)
+      return NextResponse.json(await getFamilyByName(name));
+    
     const families = await getAllFamilies();
     return NextResponse.json(families);
   } catch (error: unknown) {

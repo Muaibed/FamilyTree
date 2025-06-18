@@ -16,7 +16,7 @@ const AddSpouseForm = ({
   onAdd: any;
 }) => {
   const [spouseId, setSpouseId] = useState<string | undefined>();
-  const [isActive, setIsActive] = useState<boolean>()
+  const [isActive, setIsActive] = useState<boolean>(true)
 
   const person = personId ? members.people[personId] : null;
   const gender = person?.gender;
@@ -79,7 +79,7 @@ const AddSpouseForm = ({
           </select>
         )}
         <select
-            onChange={(e) => e.target.value === 'true' ? setIsActive(true) : setIsActive(false)}
+            onChange={(e) => e.target.value == 'true' ? setIsActive(true) : setIsActive(false)}
             required
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >

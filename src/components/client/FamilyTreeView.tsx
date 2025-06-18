@@ -7,7 +7,7 @@ import Tree, {
   CustomNodeElementProps,
   RenderCustomNodeElementFn,
 } from "react-d3-tree";
-import { FamilyTreeData, Person } from "@/types/family";
+import { Family, FamilyTreeData, Person } from "@/types/family";
 import { toast } from "sonner"
 import { Modal, PersonModal } from "@/components/client/Modal";
 import AddChildForm from "@/components/client/AddChildForm";
@@ -18,6 +18,9 @@ import { TreeNode } from "@/types/tree";
 import { prepareTreeData } from "@/lib/tree";
 import DeletePerson from "./DeletePerson";
 import isValidDateString from "@/lib/date";
+import ThemeToggle from "@/theme/theme-toggle";
+import SearchSelect from "./SearchSelect";
+import { Option } from "@/types/ui" 
 
 const renderCustomNode: RenderCustomNodeElementFn = (
   rd3tNodeProps: CustomNodeElementProps
@@ -60,7 +63,7 @@ const renderCustomNode: RenderCustomNodeElementFn = (
   );
 };
 
-export default function FamilyTreeView({ data, onChange } : { data : FamilyTreeData, onChange : any }) {
+export default function FamilyTreeView({ data, family, onChange } : { data : FamilyTreeData, family:Family, onChange : any }) {
   const [treeData, setTreeData] = useState<TreeNode | null>(null);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [isCreatingPerson, setIsCreatingPerson] = useState(false);
@@ -70,19 +73,44 @@ export default function FamilyTreeView({ data, onChange } : { data : FamilyTreeD
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteStatus, setDeleteStatus] = useState<'success' | 'error' | null>(null);
-    
-  useEffect(() => {
-    if (data && data.rootPersonId) {
-      const formattedData = prepareTreeData(data, data.rootPersonId);
+  const [selectedFamily, setSelectedFamily] = useState<Family | undefined>(family);
+  const [familyOptions, setFamilyOptions] = useState<Option[]>();
+
+  const fetcher = (url: string) => fetch(url).then(res => res.json());
+  const { data:families } = useSWR<Family[]>(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family`, fetcher);
+  
+  useEffect(() => { 
+    if (families) {
+      const options = families.map((f) => ({
+      id: f.id.toString(),
+      value: f.name,
+    }));
+
+    setFamilyOptions(options)
+    }
+
+    if (data && selectedFamily) {
+      const formattedData = prepareTreeData(data, selectedFamily.rootPersonId.toString());
       setTreeData(formattedData);
     }
-  }, [data]);
+  }, [data, family, families, selectedFamily]);
 
   if (!treeData) return <div>Loading tree...</div>;
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
+      <div className="flex flex-row">
+      <div>
+        <SearchSelect
+          options={familyOptions ?? []}
+          selected={selectedFamily ? { id: selectedFamily.id.toString(), value: selectedFamily.name } : null}
+          onSelect={(option) => {
+            const family = families?.find((f) => f.id.toString() === option.id);
+            setSelectedFamily(family || undefined);
+          }}
+          placeholder="Select family..."
+        />
+      </div>
       <button
         className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
         onClick={() => {
@@ -91,6 +119,7 @@ export default function FamilyTreeView({ data, onChange } : { data : FamilyTreeD
       >
         Create Person
       </button>
+      </div>
       <Modal
         isOpen={!!isCreatingPerson}
         onClose={() => setIsCreatingPerson(false)}

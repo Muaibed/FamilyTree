@@ -5,6 +5,8 @@
 import { FamilyTreeData, Person } from "@/types/family";
 import { toast } from "sonner"
 import { useEffect, useState } from "react";
+import SearchSelect from "./SearchSelect";
+import { Option } from "@/types/ui";
 
 const AddChildForm = ({
   parent,
@@ -23,16 +25,28 @@ const AddChildForm = ({
   const [motherId, setMotherId] = useState<string | undefined>();
   const [birthDate, setbirthDate] = useState<string | undefined>();
   const [deathDate, setDeathDate] = useState<string | undefined>();
+  const [spouseOptions, setSpouseOptions] = useState<Option[]>();
+  const [selectedSpouse, setSelectedSpouse] = useState<Person | undefined>();
+  
   
 
-  useEffect(() => {
+  useEffect(() => { 
     if (parent.gender === "MALE") {
       setFatherId(parent.id)
       setFamilyName(parent.familyName)
     }
-    else if (parent.gender === "FEMALE")
+    else if (parent.gender === "FEMALE") {
       setMotherId(parent.id)
-  }, []);
+      if (fatherId)
+        setFamilyName(members.people[fatherId].familyName)
+    }
+
+      const options = members.people[parent.id].spouses.map(([spouseId, isActive]) => ({
+      id: spouseId,
+      value: members.people[spouseId].name,
+    }));
+    setSpouseOptions(options)
+  }, [fatherId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,49 +110,22 @@ const AddChildForm = ({
           <option value="FEMALE">Female</option>
         </select>
 
-        {parent.gender === 'MALE' && fatherId && (
-          <select
-            value={motherId ?? ""}
-            onChange={(e) => setMotherId(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option>Select Mother (optional)</option>
-            {members.people[fatherId].spouses &&
-              members.people[fatherId].spouses.map(([spouseId, isActive]) => {
-                const spouse = members.people[spouseId];
-
-                return (
-                  <option value={spouseId} key={spouseId}>
-                    {spouse ? `${spouse.name} ${spouse.familyName} ${spouseId}` : "Unknown"}
-                  </option>
-                )
-              })}
-          </select>
-        )}
-
-        {parent.gender === 'FEMALE' && motherId && (
-          <select
-            value={fatherId ?? ""}
-            onChange={(e) => {
-              setFatherId(e.target.value)
-              setFamilyName(members.people[e.target.value].familyName)
+        {(
+          <SearchSelect
+            className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
+            options={spouseOptions ?? []}
+            selected={selectedSpouse ? { id: selectedSpouse.id.toString(), value: selectedSpouse.name } : null}
+            onSelect={(option) => {
+              const spouse = spouseOptions?.find((f) => f.id.toString() === option.id);
+              if (spouse) {
+                setSelectedSpouse(members.people[spouse.id]);
+                parent.gender == "MALE" ? setMotherId(spouse.id) : setFatherId(spouse.id)
+              }
             }}
-            required
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option>Select Father</option>
-            {members.people[motherId].spouses &&
-              members.people[motherId].spouses.map(([spouseId, isActive]) => {
-                const spouse = members.people[spouseId];
-
-                return (
-                  <option value={spouseId} key={spouseId}>
-                    {spouse ? `${spouse.name} ${spouse.familyName} ${spouseId}` : "Unknown"}
-                  </option>
-                )              
-            })}
-          </select>
+            placeholder={parent.gender == "MALE" ? "Select Mother" : "Select Father"}
+          />
         )}
+
         <input
           type="date"
           value={birthDate}
