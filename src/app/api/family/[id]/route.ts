@@ -1,5 +1,9 @@
 import { deleteFamily, getFamilyById, updateFamily } from '@/lib/family';
+import { getSessionSafe } from '@/lib/session';
 import { NextRequest, NextResponse } from 'next/server';
+
+const session = await getSessionSafe();
+const isAdmin = session?.user?.role === "ADMIN";
 
 export async function GET(req:NextRequest) {
   try {
@@ -23,6 +27,10 @@ export async function GET(req:NextRequest) {
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    if (!session || !isAdmin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+    
      const id = params.id;
 
     const { name, rootPersonId } = await req.json();
@@ -47,9 +55,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
-      const id = Number(params.id);
 
-  
+      if (!session || !isAdmin) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      }
+
+      const id = Number(params.id);
+      
       if (!id) {
         return new Response("Family ID is required", { status: 400 });
       }

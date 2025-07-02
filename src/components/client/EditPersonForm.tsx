@@ -4,13 +4,15 @@
 
 import { FamilyTreeData, Person } from "@/types/family";
 import { toast } from "sonner"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useMembersContext } from "./MembersContextProvider";
 import AddChildForm from "./AddChildForm";
 import AddSpouseForm from "./AddSpouseForm";
 import { Modal } from "./Modal";
 import DeletePerson from "./DeletePerson";
+import SearchSelect from "./SearchSelect";
+import { Option } from "@/types/ui";
 
 const EditPersonForm = ({
   person,
@@ -34,9 +36,33 @@ const EditPersonForm = ({
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteStatus, setDeleteStatus] = useState<'success' | 'error' | null>(null);
+  const [fatherOptions, setFatherOptions] = useState<Option[]>();
+  const [motherOptions, setMotherOptions] = useState<Option[]>();
+  const [selectedFather, setSelectedFather] = useState<Person | undefined>();
+  const [selectedMother, setSelectedMother] = useState<Person | undefined>();
+
 
   const { members, isLoading, error, mutate } = useMembersContext();
   
+  useEffect(() => { 
+    const fatherOptions = Object.entries(members.people)
+        .filter(([key, person]) => person.gender === "MALE")
+        .map(([key, person]) => ({
+            id: person.id,
+            value: person.name,
+        }));
+
+    setFatherOptions(fatherOptions)
+
+    const motherOptions = Object.entries(members.people)
+        .filter(([key, person]) => person.gender === "FEMALE")
+        .map(([key, person]) => ({
+            id: person.id,
+            value: person.name,
+        }));
+
+    setMotherOptions(motherOptions)
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,8 +78,8 @@ const EditPersonForm = ({
           familyName,
           gender,
           phone,
-          fatherId,
-          motherId,
+          fatherId: selectedFather?.id,
+          motherId: selectedMother?.id,
           birthDate,
           deathDate
         }),
@@ -136,7 +162,7 @@ const EditPersonForm = ({
           <option value="FEMALE">Female</option>
         </select>
 
-        <select
+        {/* <select
           value={fatherId}
           onChange={(e) => setFatherId(e.target.value)}
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -151,8 +177,20 @@ const EditPersonForm = ({
                 </option>
               );
             })}
-        </select>
-        <select
+        </select> */}
+        <SearchSelect
+          className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
+          options={fatherOptions ?? []}
+          selected={selectedFather ? { id: selectedFather.id.toString(), value: selectedFather.name } : null}
+          onSelect={(option) => {
+            const father = fatherOptions?.find((f) => f.id.toString() === option.id);
+            if (father) {
+              setSelectedFather(members.people[father.id]);
+            }
+          }}
+          placeholder="Select Father"
+        />
+        {/* <select
           value={motherId ?? ""}
           onChange={(e) => setMotherId(e.target.value)}
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -167,7 +205,19 @@ const EditPersonForm = ({
                 </option>
               );
             })}
-        </select>
+        </select> */}
+        <SearchSelect
+          className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
+          options={motherOptions ?? []}
+          selected={selectedMother ? { id: selectedMother.id.toString(), value: selectedMother.name } : null}
+          onSelect={(option) => {
+            const mother = motherOptions?.find((f) => f.id.toString() === option.id);
+            if (mother) {
+              setSelectedMother(members.people[mother.id]);
+            }
+          }}
+          placeholder="Select Father"
+        />
         <input
           type="date"
           value={birthDate}

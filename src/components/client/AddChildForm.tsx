@@ -27,8 +27,6 @@ const AddChildForm = ({
   const [deathDate, setDeathDate] = useState<string | undefined>();
   const [spouseOptions, setSpouseOptions] = useState<Option[]>();
   const [selectedSpouse, setSelectedSpouse] = useState<Person | undefined>();
-  
-  
 
   useEffect(() => { 
     if (parent.gender === "MALE") {
