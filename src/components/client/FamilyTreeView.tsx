@@ -21,6 +21,8 @@ import isValidDateString from "@/lib/date";
 import ThemeToggle from "@/theme/theme-toggle";
 import SearchSelect from "./SearchSelect";
 import { Option } from "@/types/ui" 
+import { useSession } from "next-auth/react";
+import { Button } from "../ui/button";
 
 const renderCustomNode: RenderCustomNodeElementFn = (
   rd3tNodeProps: CustomNodeElementProps
@@ -76,6 +78,9 @@ export default function FamilyTreeView({ data, family, onChange } : { data : Fam
   const [selectedFamily, setSelectedFamily] = useState<Family | undefined>(family);
   const [familyOptions, setFamilyOptions] = useState<Option[]>();
 
+  const { data: session, status } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
+
   const fetcher = (url: string) => fetch(url).then(res => res.json());
   const { data:families } = useSWR<Family[]>(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family`, fetcher);
   
@@ -99,6 +104,8 @@ export default function FamilyTreeView({ data, family, onChange } : { data : Fam
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
+      <div className="flex gap-4">
+      </div>
       <div className="flex flex-row">
       <div>
         <SearchSelect
@@ -111,6 +118,7 @@ export default function FamilyTreeView({ data, family, onChange } : { data : Fam
           placeholder="Select family..."
         />
       </div>
+      { isAdmin &&
       <button
         className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
         onClick={() => {
@@ -119,6 +127,7 @@ export default function FamilyTreeView({ data, family, onChange } : { data : Fam
       >
         Create Person
       </button>
+      }
       </div>
       <Modal
         isOpen={!!isCreatingPerson}
@@ -184,53 +193,65 @@ export default function FamilyTreeView({ data, family, onChange } : { data : Fam
             {selectedPerson.deathDate && isValidDateString(selectedPerson.deathDate) && (
               <p>Death Date: {selectedPerson.deathDate}</p>
             )}
-            <div>
-              <button
-                className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-                onClick={() => setIsAddingChild(!isAddingChild)}
-              >
-                ADD Child
-              </button>
-              <button
-                className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-                onClick={() => setIsAddingSpouse(!isAddingSpouse)}
-              >
-                ADD Spuose
-              </button>
-              <button
-                className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-                onClick={() => setIsDeleting(!isDeleting)}
-              >
-                DELETE
-              </button>
-            </div>
-            {isAddingChild && (
+
+            {isAdmin && ( 
               <div>
-                <AddChildForm
-                  parent={selectedPerson}
-                  members={data}
-                  onAdd={() => {
-                    onChange();
-                    setDetailModalOpen(false)
-                    setIsAddingChild(false);
-                    setSelectedPerson(null)
-                  }}
-                />
+                <div>
+                <button
+                  className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+                  onClick={() => setIsAddingChild(!isAddingChild)}
+                >
+                  ADD Child
+                </button>
+                <button
+                  className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+                  onClick={() => setIsAddingSpouse(!isAddingSpouse)}
+                >
+                  ADD Spuose
+                </button>
+                <button
+                  className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+                  onClick={() => setIsDeleting(!isDeleting)}
+                >
+                  DELETE
+                </button>
+              </div> 
+              {isAddingChild && (
+                <div>
+                  <AddChildForm
+                    parent={selectedPerson}
+                    members={data}
+                    onAdd={() => {
+                      onChange();
+                      setDetailModalOpen(false)
+                      setIsAddingChild(false);
+                      setSelectedPerson(null)
+                    }}
+                  />
+                </div>
+              )}
+              {isAddingSpouse && (
+                <div>
+                  <AddSpouseForm 
+                    personId={selectedPerson.id} 
+                    members={data} 
+                    onAdd={() => {
+                      onChange();
+                      setDetailModalOpen(false)
+                      setIsAddingSpouse(false);
+                      setSelectedPerson(null)
+                    }} 
+                  />
+                </div>
+              )}          
               </div>
             )}
-            {isAddingSpouse && (
-              <div>
-                <AddSpouseForm 
-                  personId={selectedPerson.id} 
-                  members={data} 
-                  onAdd={() => {
-                    onChange();
-                    setDetailModalOpen(false)
-                    setIsAddingSpouse(false);
-                    setSelectedPerson(null)
-                  }} 
-                />
-              </div>
+            { !isAdmin && (
+                <Button
+                  className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+                >
+                  Request Edit
+                </Button> 
             )}
           </div>
         )}

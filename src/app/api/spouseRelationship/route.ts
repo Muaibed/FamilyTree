@@ -1,10 +1,18 @@
 // src/app/api/spouseRelationship/route.ts
 
+import { getSessionSafe } from '@/lib/session';
 import {createSpouseRelationship, deleteRelation, getAllRelations, updateRelationStatus} from '@/lib/spouseRelationship';
 import { NextRequest, NextResponse } from 'next/server';
 
+const session = await getSessionSafe();
+const isAdmin = session?.user?.role === "ADMIN";
+
 export async function POST(req: NextRequest) {
   try {
+    if (!session || !isAdmin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
     const { personId, spouseId, startDate, endDate, isActive } = await req.json();
 
     const newRelation = await createSpouseRelationship({
@@ -59,6 +67,10 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
     try {
+      if (!session || !isAdmin) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      }
+
       const { person1Id, person2Id } = await req.json();
   
       if (!person1Id || !person2Id) {

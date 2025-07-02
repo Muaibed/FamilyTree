@@ -1,5 +1,9 @@
-import { deleteUser, getUserByEmail, getUserById, updateUser } from '@/lib/user';
+import { getSessionSafe } from '@/lib/session';
+import { deleteUser, getUserById, updateUser } from '@/lib/user';
 import { NextRequest, NextResponse } from 'next/server';
+
+const session = await getSessionSafe();
+const isAdmin = session?.user?.role === "ADMIN";
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -22,11 +26,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-     const id = params.id;
+    if (!session || !isAdmin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    const id = params.id;
 
     const { email, phone, name } = await req.json();
 
-    
     const data = {
       email,
       phone,
@@ -48,6 +55,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
+      if (!session || !isAdmin) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      }
+
       const id = params.id;
   
       if (!id) {

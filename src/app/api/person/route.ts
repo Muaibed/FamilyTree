@@ -2,9 +2,16 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createPerson, getAllPersons } from '@/lib/person';
+import { getSessionSafe } from '@/lib/session';
+
+const session = await getSessionSafe();
+const isAdmin = session?.user?.role === "ADMIN";
 
 export async function POST(req: NextRequest) {
   try {
+    if (!session || !isAdmin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
     const { firstName, familyName, gender, birthDate, fatherId, motherId } = await req.json();
 
     const newPerson = await createPerson({
