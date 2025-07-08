@@ -1,5 +1,3 @@
-// src/app/api/person/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 import { createAddRequest, createDeleteRequest, createUpdateRequest, getAllChangeRequests } from '@/lib/changeRequest';
 import { isAdmin } from '@/lib/session';
