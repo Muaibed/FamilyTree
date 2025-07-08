@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { FamilyTreeData } from '@/types/family';
-import { SpouseRelationship } from '@/generated/prisma';
 
 export async function GET() {
   try {
@@ -13,6 +12,7 @@ export async function GET() {
         motherChildren: true,
         spouseConnections: true,
         spousedByConnections: true,
+        family: true,
       },
     });
 
@@ -21,7 +21,7 @@ export async function GET() {
     people.forEach((person) => {
       let children;
       if (person.gender == 'MALE') 
-        children  = person.fatherChildren;
+        children = person.fatherChildren;
       else if (person.gender == 'FEMALE')
         children = person.motherChildren;
 
@@ -37,7 +37,7 @@ export async function GET() {
         deathDate: `${person.deathDate?.toISOString().split('T')[0]}`,
         fatherId: `${person.fatherId}`,
         motherId: `${person.motherId}`,
-        familyName: person.familyName,
+        family: person.family,
         spouses,
         childrenIds: children ? children.map(child => `${child.id}`) : []
       };
@@ -45,6 +45,6 @@ export async function GET() {
 
     return NextResponse.json(familyTreeData);
   } catch (err) {
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+    return NextResponse.json({ error: 'Something went wrong ' + err }, { status: 500 });
   }
 }

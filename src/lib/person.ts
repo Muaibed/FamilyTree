@@ -1,24 +1,29 @@
-// src/lib/person.ts
 import { FamilyTreeData } from '@/types/family';
 import { prisma } from './prisma';
 import isValidDateString from './date';
 
 export const createPerson = async (data: {
   firstName: string;
-  familyName: string;
+  familyId: string;
   gender: 'MALE' | 'FEMALE';
+  phone?: string;
   birthDate?: Date;
+  deathDate?: Date;
   fatherId?: number;
   motherId?: number;
 }) => {
+  const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
+
   return prisma.person.create({
     data: {
-      firstName: data.firstName,
-      familyName: data.familyName,
-      gender: data.gender,
-      birthDate: data.birthDate ? data.birthDate : null,
-      father: data.fatherId ? { connect: { id: data.fatherId } } : undefined,
-      mother: data.motherId ? { connect: { id: data.motherId } } : undefined,
+      firstName: firstName,
+      family: { connect: { id: +familyId } },
+      gender: gender,
+      phone: phone,
+      birthDate: birthDate,
+      deathDate: deathDate,
+      father: fatherId ? { connect: { id: fatherId } } : undefined,
+      mother: motherId ? { connect: { id: motherId } } : undefined,
     },
   });
 };
@@ -32,6 +37,7 @@ export const getPersonById = async (id: number) => {
       fatherChildren: true,
       motherChildren: true,
       spouseConnections: true,
+      family: true,
     },
   });
 };
@@ -43,7 +49,8 @@ export const getAllPersons = async () => {
       mother: true,
       fatherChildren: true,
       motherChildren: true,
-      spouseConnections: true
+      spouseConnections: true,
+      family: true,
     }
   });
 };
@@ -52,10 +59,9 @@ export const getAncestors = (
   data: FamilyTreeData,
   personId: string
 ): string | null => {
-  // const data = await getFamilyTreeData();
   let person = personId ? data.people[personId] : null;
   if (!person) return null;
-  const familyName = person.familyName;
+  const familyName = person.family.name;
   let theChildOf = person.gender === "MALE" ? " بن " : " بنت ";
   let fullName = "";
 
@@ -72,7 +78,7 @@ export const getAncestors = (
     counter++;
   }
 
-  if (counter > 0) return fullName + " " + familyName;
+  if (counter >= 0) return fullName + " " + familyName;
 
   return "";
 };
@@ -118,7 +124,7 @@ export const getAllSpouses = async (personId: number) => {
 
 export const updatePerson = async (id: number, data: {
   firstName?: string;
-  familyName?: string;
+  familyId?: number;
   gender?: 'MALE' | 'FEMALE';
   phone?: string;
   fatherId?: number;
@@ -126,12 +132,12 @@ export const updatePerson = async (id: number, data: {
   birthDate?: string;
   deathDate?: string;
 }) => {
-  const { firstName, familyName, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
+  const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
   return prisma.person.update({
     where: { id },
     data: {
       firstName,
-      familyName,
+      family: familyId ? { connect: { id: familyId } } : undefined,
       gender,
       phone,
       birthDate: birthDate && isValidDateString(birthDate) ? new Date(birthDate) : null,

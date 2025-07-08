@@ -10,6 +10,9 @@ CREATE TYPE "ChangeRequestAction" AS ENUM ('ADD', 'DELETE', 'UPDATE');
 -- CreateEnum
 CREATE TYPE "ChangeRequestStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 
+-- CreateEnum
+CREATE TYPE "ChangeRequestTargetModel" AS ENUM ('PERSON', 'SPOUSERELATIONSHIP');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -26,11 +29,11 @@ CREATE TABLE "User" (
 CREATE TABLE "Person" (
     "id" SERIAL NOT NULL,
     "firstName" TEXT NOT NULL,
-    "familyName" TEXT NOT NULL,
     "gender" "Gender" NOT NULL,
     "birthDate" TIMESTAMP(3),
     "deathDate" TIMESTAMP(3),
     "phone" TEXT,
+    "familyId" INTEGER NOT NULL,
     "fatherId" INTEGER,
     "motherId" INTEGER,
 
@@ -52,15 +55,26 @@ CREATE TABLE "SpouseRelationship" (
 -- CreateTable
 CREATE TABLE "ChangeRequest" (
     "id" SERIAL NOT NULL,
-    "requesterName" TEXT NOT NULL,
-    "requesterPhone" TEXT NOT NULL,
     "action" "ChangeRequestAction" NOT NULL,
-    "targetId" INTEGER,
-    "data" JSONB,
     "status" "ChangeRequestStatus" NOT NULL DEFAULT 'PENDING',
+    "targetModel" "ChangeRequestTargetModel" NOT NULL,
+    "targetId" TEXT,
+    "data" JSONB,
+    "requesterId" TEXT,
+    "requesterName" TEXT,
+    "requesterPhone" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "ChangeRequest_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Family" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "rootPersonId" INTEGER,
+
+    CONSTRAINT "Family_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -71,6 +85,12 @@ CREATE UNIQUE INDEX "User_phone_key" ON "User"("phone");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "SpouseRelationship_personId_spouseId_key" ON "SpouseRelationship"("personId", "spouseId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Family_rootPersonId_key" ON "Family"("rootPersonId");
+
+-- AddForeignKey
+ALTER TABLE "Person" ADD CONSTRAINT "Person_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "Family"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Person" ADD CONSTRAINT "Person_fatherId_fkey" FOREIGN KEY ("fatherId") REFERENCES "Person"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -83,3 +103,9 @@ ALTER TABLE "SpouseRelationship" ADD CONSTRAINT "SpouseRelationship_personId_fke
 
 -- AddForeignKey
 ALTER TABLE "SpouseRelationship" ADD CONSTRAINT "SpouseRelationship_spouseId_fkey" FOREIGN KEY ("spouseId") REFERENCES "Person"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ChangeRequest" ADD CONSTRAINT "ChangeRequest_requesterId_fkey" FOREIGN KEY ("requesterId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Family" ADD CONSTRAINT "Family_rootPersonId_fkey" FOREIGN KEY ("rootPersonId") REFERENCES "Person"("id") ON DELETE SET NULL ON UPDATE CASCADE;

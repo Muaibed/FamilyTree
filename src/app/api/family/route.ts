@@ -1,16 +1,12 @@
-// src/app/api/family/route.ts
-
 import { createFamily, getAllFamilies, getFamilyByName } from '@/lib/family';
+import { isAdmin } from '@/lib/session';
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionSafe } from '@/lib/session';
-
-
-const session = await getSessionSafe();
-const isAdmin = session?.user?.role === "ADMIN";
 
 export async function POST(req: NextRequest) {
   try {
-    if (!session || !isAdmin) {
+    const isPermitted = await isAdmin();
+    
+    if (!isPermitted) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

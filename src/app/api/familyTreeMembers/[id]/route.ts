@@ -1,6 +1,7 @@
 import { deletePerson, getPersonById, updatePerson } from '@/lib/person';
 import { prisma } from '@/lib/prisma';
 import { FamilyTreeData } from '@/types/family';
+import { CodeSquare } from 'lucide-react';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req:NextRequest) {
@@ -19,10 +20,11 @@ export async function GET(req:NextRequest) {
            motherChildren: true,
            spouseConnections: true,
            spousedByConnections: true,
+           family: true,
          },
        });
    
-       const familyTreeData: FamilyTreeData = { people: {}, rootPersonId: id}
+       const familyTreeData: FamilyTreeData = { people: {}, rootPersonId: "" }
    
        people.forEach((person) => {
          let children;
@@ -34,6 +36,7 @@ export async function GET(req:NextRequest) {
          let spouses: [string, boolean][] = person.spouseConnections.map(connection => [`${connection.spouseId}`, connection.isActive])
          person.spousedByConnections.map(connection => spouses.push([`${connection.personId}`, connection.isActive]))
    
+        console.log(person.firstName)
          familyTreeData.people[`${person.id}`] = {
            id: `${person.id}`,
            name: person.firstName,
@@ -43,7 +46,7 @@ export async function GET(req:NextRequest) {
            deathDate: `${person.deathDate?.toISOString().split('T')[0]}`,
            fatherId: `${person.fatherId}`,
            motherId: `${person.motherId}`,
-           familyName: person.familyName,
+           family: person.family,
            spouses,
            childrenIds: children ? children.map(child => `${child.id}`) : []
          };
@@ -51,6 +54,6 @@ export async function GET(req:NextRequest) {
    
        return NextResponse.json(familyTreeData);
      } catch (err) {
-       return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+       return NextResponse.json({ error: 'Something went wrong ' + err }, { status: 500 });
      }
 }

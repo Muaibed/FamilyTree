@@ -1,26 +1,25 @@
-// src/app/components/EditPersonForm.tsx
-
 "use client";
 
 import { Family } from "@/types/family";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import { useState } from "react";
-import { useMembersContext } from "./MembersContextProvider";
-import { Modal } from "./Modal";
-import DeleteFamily from "./DeleteFamily";
+import { useMembersContext } from "../client/MembersContextProvider";
+import { Modal } from "../client/Modal";
+import DeleteFamily from "../client/DeleteFamily";
 
 const EditFamilyForm = ({
   family,
   onEdit,
 }: {
   family: Family;
-  onEdit: any;
+  onEdit?: any;
 }) => {
   const [name, setName] = useState(family.name);
-  const [rootPersonId, setRootPersonId] = useState<string>(family.rootPersonId.toString())
+  const [rootPersonId, setRootPersonId] = useState<string | undefined>(
+    family.rootPersonId?.toString()
+  );
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);  
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { members, isLoading, error, mutate } = useMembersContext();
 
@@ -35,24 +34,23 @@ const EditFamilyForm = ({
         },
         body: JSON.stringify({
           name,
-          rootPersonId: +rootPersonId
+          rootPersonId,
         }),
       });
-  
+
       if (response.ok) {
-        toast(`${name} has been updated successfully.`)
+        toast(`${name} has been updated successfully.`);
         onEdit();
       } else {
-        const error = await response.json()
-        toast(`Updating ${name} Failed.` + error)
+        const error = await response.json();
+        toast(`Updating ${name} Failed.` + error);
       }
     } catch (error) {
-      console.error(error)
-    }  
-  }
+      console.error(error);
+    }
+  };
 
   return (
-    
     <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
         Edit Family
@@ -67,19 +65,18 @@ const EditFamilyForm = ({
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <select
-          value={rootPersonId}
+          value={rootPersonId ?? ""}
           onChange={(e) => setRootPersonId(e.target.value)}
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Select Root Person</option>
-          {Object.entries(members.people)
-            .map(([key, person]) => {
-              return (
-                <option value={person.id} key={person.id}>
-                  {person.name} {person.familyName} {person.id}
-                </option>
-              );
-            })}
+          {Object.entries(members.people).map(([key, person]) => {
+            return (
+              <option value={person.id} key={person.id}>
+                {person.name} {person.family.name} {person.id}
+              </option>
+            );
+          })}
         </select>
 
         <button
@@ -90,34 +87,34 @@ const EditFamilyForm = ({
         </button>
       </form>
       <div>
-          <div>
-            <button
-              className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-              onClick={() => setIsDeleting(!isDeleting)}
-            >
-              DELETE
-            </button>
-          </div>
+        <div>
+          <button
+            className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+            onClick={() => setIsDeleting(!isDeleting)}
+          >
+            DELETE
+          </button>
         </div>
-    
-        <Modal
-          isOpen={!!isDeleting}
-          onClose={() => {
-            setIsDeleting(false);
-            setDeleteModalOpen(false);
-          }}
-        >
-          {isDeleting && (
-            <DeleteFamily 
-              family={family} 
-              onSubmit={() => {
-                  onEdit();
-                  setIsDeleting(false);
-                  setDeleteModalOpen(false);
-              }}
-            />
-          )}
-        </Modal>
+      </div>
+
+      <Modal
+        isOpen={!!isDeleting}
+        onClose={() => {
+          setIsDeleting(false);
+          setDeleteModalOpen(false);
+        }}
+      >
+        {isDeleting && (
+          <DeleteFamily
+            family={family}
+            onSubmit={() => {
+              onEdit();
+              setIsDeleting(false);
+              setDeleteModalOpen(false);
+            }}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

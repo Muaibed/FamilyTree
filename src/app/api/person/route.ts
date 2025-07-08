@@ -1,22 +1,20 @@
-// src/app/api/person/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 import { createPerson, getAllPersons } from '@/lib/person';
-import { getSessionSafe } from '@/lib/session';
-
-const session = await getSessionSafe();
-const isAdmin = session?.user?.role === "ADMIN";
+import { isAdmin } from '@/lib/session';
 
 export async function POST(req: NextRequest) {
   try {
-    if (!session || !isAdmin) {
+    const isPermitted = await isAdmin()
+    
+    if (!isPermitted) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
-    const { firstName, familyName, gender, birthDate, fatherId, motherId } = await req.json();
+
+    const { firstName, familyId, gender, birthDate, fatherId, motherId } = await req.json();
 
     const newPerson = await createPerson({
       firstName,
-      familyName,
+      familyId,
       gender,
       ...(birthDate ? { birthDate: new Date(birthDate) } : {}),
       ...(fatherId ? { fatherId: Number(fatherId) } : {}),

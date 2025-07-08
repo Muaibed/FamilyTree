@@ -1,4 +1,3 @@
-// components/BlurBackground.tsx
 import React, { ReactNode } from 'react';
 
 interface BlurBackgroundProps {

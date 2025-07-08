@@ -1,7 +1,6 @@
 'use client';
 
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button";
 
@@ -18,7 +17,6 @@ export default function SignupPage() {
     });
 
     if (!res.ok) {
-      const errorData = await res.json();
       toast(`Creating User Failed.`)
     } else {
         window.location.href = "/auth/signin";

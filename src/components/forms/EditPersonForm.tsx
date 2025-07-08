@@ -1,17 +1,15 @@
-// src/app/components/EditPersonForm.tsx
-
 "use client";
 
-import { FamilyTreeData, Person } from "@/types/family";
-import { toast } from "sonner"
+import { Person } from "@/types/family";
+import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { useMembersContext } from "./MembersContextProvider";
+import { useMembersContext } from "../client/MembersContextProvider";
 import AddChildForm from "./AddChildForm";
 import AddSpouseForm from "./AddSpouseForm";
-import { Modal } from "./Modal";
-import DeletePerson from "./DeletePerson";
-import SearchSelect from "./SearchSelect";
+import { Modal } from "../client/Modal";
+import DeletePerson from "../client/DeletePerson";
+import SearchSelect from "../client/SearchSelect";
 import { Option } from "@/types/ui";
 
 const EditPersonForm = ({
@@ -22,46 +20,47 @@ const EditPersonForm = ({
   onEdit: any;
 }) => {
   const [firstName, setFirstName] = useState(person.name);
-  const [familyName, setFamilyName] = useState(person.familyName);
+  const [familyName, setFamilyName] = useState(person.family.name);
   const [gender, setGender] = useState<"MALE" | "FEMALE">(person.gender);
-  const [phone, setPhone] = useState<string | undefined>(person.phone)
-  const [fatherId, setFatherId] = useState<string | undefined>(person.fatherId);
-  const [motherId, setMotherId] = useState<string | undefined>(person.motherId);
-  const [birthDate, setBirthDate] = useState<string | undefined>(person.birthDate);
-  const [deathDate, setDeathDate] = useState<string | undefined>(person.deathDate);
-  const [spouses, setSpouses] = useState<string[]>(person.spouses.map((s) => s[0]))
+  const [phone, setPhone] = useState<string | undefined>(person.phone);
+  const [birthDate, setBirthDate] = useState<string | undefined>(
+    person.birthDate
+  );
+  const [deathDate, setDeathDate] = useState<string | undefined>(
+    person.deathDate
+  );
+  const [spouses, setSpouses] = useState<string[]>(
+    person.spouses.map((s) => s[0])
+  );
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteStatus, setDeleteStatus] = useState<'success' | 'error' | null>(null);
   const [fatherOptions, setFatherOptions] = useState<Option[]>();
   const [motherOptions, setMotherOptions] = useState<Option[]>();
   const [selectedFather, setSelectedFather] = useState<Person | undefined>();
   const [selectedMother, setSelectedMother] = useState<Person | undefined>();
 
-
   const { members, isLoading, error, mutate } = useMembersContext();
-  
-  useEffect(() => { 
-    const fatherOptions = Object.entries(members.people)
-        .filter(([key, person]) => person.gender === "MALE")
-        .map(([key, person]) => ({
-            id: person.id,
-            value: person.name,
-        }));
 
-    setFatherOptions(fatherOptions)
+  useEffect(() => {
+    const fatherOptions = Object.entries(members.people)
+      .filter(([key, person]) => person.gender === "MALE")
+      .map(([key, person]) => ({
+        id: person.id,
+        value: person.name,
+      }));
+
+    setFatherOptions(fatherOptions);
 
     const motherOptions = Object.entries(members.people)
-        .filter(([key, person]) => person.gender === "FEMALE")
-        .map(([key, person]) => ({
-            id: person.id,
-            value: person.name,
-        }));
+      .filter(([key, person]) => person.gender === "FEMALE")
+      .map(([key, person]) => ({
+        id: person.id,
+        value: person.name,
+      }));
 
-    setMotherOptions(motherOptions)
+    setMotherOptions(motherOptions);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,56 +80,54 @@ const EditPersonForm = ({
           fatherId: selectedFather?.id,
           motherId: selectedMother?.id,
           birthDate,
-          deathDate
+          deathDate,
         }),
       });
-  
+
       if (response.ok) {
-        toast(`${firstName} has been updated successfully.`)
+        toast(`${firstName} has been updated successfully.`);
         onEdit();
       } else {
         const errorData = await response.json();
-        toast(`Updating ${firstName} Failed.`)
+        toast(`Updating ${firstName} Failed.`);
       }
     } catch (error) {
-      console.error(error)
-    }  
-  }
+      console.error(error);
+    }
+  };
 
-  const getOtherSpouses = (spouse:string) => {
-    const spousess : string[] = []
+  const getOtherSpouses = (spouse: string) => {
+    const spousess: string[] = [];
     spouses.forEach(function (s) {
-      if (s !== spouse)
-          spousess.push(s)
-    })
+      if (s !== spouse) spousess.push(s);
+    });
 
-      return spousess;
-  }
+    return spousess;
+  };
 
   const deleteRelation = async (person1Id: string, person2Id: string) => {
     try {
-      const response = await fetch('api/spouseRelationship', {
+      const response = await fetch("api/spouseRelationship", {
         method: "DELETE",
         body: JSON.stringify({
           person1Id,
-          person2Id
-        })
-      })
-  
+          person2Id,
+        }),
+      });
+
       if (response.ok) {
-        toast(`Relataion has been deleted successfully.`)
+        toast(`Relataion has been deleted successfully.`);
         onEdit();
-        mutate
+        mutate;
       } else {
-        toast(`Deletetion Failed.`)
+        toast(`Deletetion Failed.`);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  } 
+  };
 
   return (
-    
     <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
         Edit Person
@@ -181,9 +178,15 @@ const EditPersonForm = ({
         <SearchSelect
           className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
           options={fatherOptions ?? []}
-          selected={selectedFather ? { id: selectedFather.id.toString(), value: selectedFather.name } : null}
+          selected={
+            selectedFather
+              ? { id: selectedFather.id.toString(), value: selectedFather.name }
+              : null
+          }
           onSelect={(option) => {
-            const father = fatherOptions?.find((f) => f.id.toString() === option.id);
+            const father = fatherOptions?.find(
+              (f) => f.id.toString() === option.id
+            );
             if (father) {
               setSelectedFather(members.people[father.id]);
             }
@@ -209,9 +212,15 @@ const EditPersonForm = ({
         <SearchSelect
           className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
           options={motherOptions ?? []}
-          selected={selectedMother ? { id: selectedMother.id.toString(), value: selectedMother.name } : null}
+          selected={
+            selectedMother
+              ? { id: selectedMother.id.toString(), value: selectedMother.name }
+              : null
+          }
           onSelect={(option) => {
-            const mother = motherOptions?.find((f) => f.id.toString() === option.id);
+            const mother = motherOptions?.find(
+              (f) => f.id.toString() === option.id
+            );
             if (mother) {
               setSelectedMother(members.people[mother.id]);
             }
@@ -235,18 +244,20 @@ const EditPersonForm = ({
         <div className="text-white">
           {spouses.map((s) => {
             return (
-            <div className="flex flex-col-2 justify-between" key={s}>
-              <p className="alig">{s + ""}</p>
-              <Button type="button" onClick={() => {
-                deleteRelation(person.id, s.toString())
-                setSpouses(getOtherSpouses(s.toString()))
-                }}>
-                Remove
-              </Button>
-            </div>
-            )
+              <div className="flex flex-col-2 justify-between" key={s}>
+                <p className="alig">{s + ""}</p>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    deleteRelation(person.id, s.toString());
+                    setSpouses(getOtherSpouses(s.toString()));
+                  }}
+                >
+                  Remove
+                </Button>
+              </div>
+            );
           })}
-
         </div>
 
         <button
@@ -257,85 +268,85 @@ const EditPersonForm = ({
         </button>
       </form>
       <div>
-                    <div>
-                      <button
-                        className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-                        onClick={() => setIsAddingChild(!isAddingChild)}
-                      >
-                        ADD Child
-                      </button>
-                      <button
-                        className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-                        onClick={() => setIsAddingSpouse(!isAddingSpouse)}
-                      >
-                        ADD Spuose
-                      </button>
-                      <button
-                        className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-                        onClick={() => setIsDeleting(!isDeleting)}
-                      >
-                        DELETE
-                      </button>
-                    </div>
-                  </div>
-                    <Modal
-                      isOpen={!!isAddingChild}
-                      onClose={() => {
-                        setIsAddingChild(false);
-                      }}
-                    >
-                      <div>
-                        <AddChildForm
-                          parent={person}
-                          members={members}
-                          onAdd={() => {
-                            onEdit()
-                            setIsAddingChild(false);
-                          }}
-                        />
-                      </div>
-                      </Modal>
-                    
-                   <Modal
-                      isOpen={!!isAddingSpouse}
-                      onClose={() => {
-                        setIsAddingSpouse(false);
-                      }}
-                    >
-                      <div>
-                        <AddSpouseForm 
-                          personId={person.id} 
-                          members={members} 
-                          onAdd={(s:string) => {
-                            onEdit();
-                            mutate
-                            setIsAddingSpouse(false);
-                            spouses.push(s)
-                            setSpouses(spouses)
-                          }} 
-                        />
-                      </div>
-                    </Modal>
-        
-              <Modal
-                isOpen={!!isDeleting}
-                onClose={() => {
-                  setIsDeleting(false);
-                  setDeleteModalOpen(false);
-                }}
-              >
-                {isDeleting && (
-                  <DeletePerson 
-                    person={person} 
-                    onSubmit={() => {
-                        onEdit();
-                        setIsDeleting(false);
-                        setDeleteModalOpen(false);
-                    }}
-                  />
-                )}
-              </Modal>
+        <div>
+          <button
+            className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+            onClick={() => setIsAddingChild(!isAddingChild)}
+          >
+            ADD Child
+          </button>
+          <button
+            className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+            onClick={() => setIsAddingSpouse(!isAddingSpouse)}
+          >
+            ADD Spuose
+          </button>
+          <button
+            className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+            onClick={() => setIsDeleting(!isDeleting)}
+          >
+            DELETE
+          </button>
+        </div>
       </div>
+      <Modal
+        isOpen={!!isAddingChild}
+        onClose={() => {
+          setIsAddingChild(false);
+        }}
+      >
+        <div>
+          <AddChildForm
+            parent={person}
+            members={members}
+            onAdd={() => {
+              onEdit();
+              setIsAddingChild(false);
+            }}
+          />
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={!!isAddingSpouse}
+        onClose={() => {
+          setIsAddingSpouse(false);
+        }}
+      >
+        <div>
+          <AddSpouseForm
+            personId={person.id}
+            members={members}
+            onAdd={(s: string) => {
+              onEdit();
+              mutate;
+              setIsAddingSpouse(false);
+              spouses.push(s);
+              setSpouses(spouses);
+            }}
+          />
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={!!isDeleting}
+        onClose={() => {
+          setIsDeleting(false);
+          setDeleteModalOpen(false);
+        }}
+      >
+        {isDeleting && (
+          <DeletePerson
+            person={person}
+            onSubmit={() => {
+              onEdit();
+              setIsDeleting(false);
+              setDeleteModalOpen(false);
+            }}
+          />
+        )}
+      </Modal>
+    </div>
   );
 };
 

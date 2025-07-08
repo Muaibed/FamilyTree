@@ -21,6 +21,9 @@ export default function MembersContextProvider({
   children: React.ReactNode;
 }) {
   const { data, isLoading, error, mutate } = useSWR(`${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers`, fetcher)
+
+  if (!data) return null
+  
   return <MembersContext.Provider value={{ members: data, isLoading, error, mutate }}>
             {children}
         </MembersContext.Provider>;

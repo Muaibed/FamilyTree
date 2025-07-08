@@ -2,7 +2,6 @@
 
 import useSWR from "swr";
 import { FamilyTableClient } from "./FamilyTableClient";
-import { useMembersContext } from "@/components/client/MembersContextProvider";
 
 export default function Page() {
 
