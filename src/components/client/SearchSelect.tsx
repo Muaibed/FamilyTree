@@ -31,8 +31,7 @@ export default function SearchSelect({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          // className="w-[200px] justify-between border px-3 py-2 text-left text-sm border-input rounded-md flex items-center"
-          className={className}
+          className={`w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center ${className ?? ""}`}
           aria-expanded={open}
         >
           {selected ? selected.value : placeholder}

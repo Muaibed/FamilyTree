@@ -6,9 +6,15 @@ import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { Modal } from "../../components/client/Modal";
 import { FamilyTreeData, Person } from "../../types/family";
-import EditPersonForm from "../../components/client/EditPersonForm";
+import EditPersonForm from "../../components/forms/EditPersonForm";
 
-export function FamilyTableClient({ data, onChange }: { data: FamilyTreeData, onChange: any }) {
+export function FamilyTableClient({
+  data,
+  onChange,
+}: {
+  data: FamilyTreeData;
+  onChange: any;
+}) {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const tableColumns = columns({
     onEdit: (person: Person) => setSelectedPerson(person),

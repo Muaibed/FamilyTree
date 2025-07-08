@@ -1,9 +1,6 @@
 import { deletePerson, getPersonById, updatePerson } from '@/lib/person';
-import { getSessionSafe } from '@/lib/session';
+import { isAdmin } from '@/lib/session';
 import { NextRequest, NextResponse } from 'next/server';
-
-const session = await getSessionSafe();
-const isAdmin = session?.user?.role === "ADMIN";
 
 export async function GET(req:NextRequest) {
   try {
@@ -27,8 +24,9 @@ export async function GET(req:NextRequest) {
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const isPermitted = await isAdmin()
 
-    if (!session || !isAdmin) {
+    if (!isPermitted) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     
@@ -61,7 +59,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
-      if (!session || !isAdmin) {
+      const isPermitted = await isAdmin()
+
+      if (!isPermitted) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
     

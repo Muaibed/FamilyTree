@@ -15,12 +15,13 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(uuid())
-  email    String?  @unique
-  phone    String?  @unique
-  password String
-  role     Role    @default(USER)
-  name     String?
+  id             String          @id @default(uuid())
+  email          String?         @unique
+  phone          String?         @unique
+  password       String
+  role           Role            @default(USER)
+  name           String?
+  changeRequests ChangeRequest[] @relation("ChangeRequester")
 }
 
 enum Role {
@@ -28,48 +29,49 @@ enum Role {
   USER
 }
 
-
 enum Gender {
   MALE
   FEMALE
 }
 
 model Person {
-  id        Int       @id @default(autoincrement())
-  firstName String
-  familyName String
-  gender    Gender
-  birthDate DateTime?
-  deathDate DateTime?
-  phone     String?
+  id         Int       @id @default(autoincrement())
+  firstName  String
+  gender     Gender
+  birthDate  DateTime?
+  deathDate  DateTime?
+  phone      String?
+  
+  family     Family    @relation("FamilyMembers", fields: [familyId], references: [id])
+  familyId   Int
 
-  fatherId  Int?
-  motherId  Int?
+  fatherId Int?
+  motherId Int?
 
-  father    Person?   @relation("FatherRelation", fields: [fatherId], references: [id])
-  mother    Person?   @relation("MotherRelation", fields: [motherId], references: [id])
+  father Person? @relation("FatherRelation", fields: [fatherId], references: [id])
+  mother Person? @relation("MotherRelation", fields: [motherId], references: [id])
 
   fatherChildren Person[] @relation("FatherRelation")
   motherChildren Person[] @relation("MotherRelation")
 
-  spouseConnections SpouseRelationship[] @relation("PersonToSpouse")
+  spouseConnections    SpouseRelationship[] @relation("PersonToSpouse")
   spousedByConnections SpouseRelationship[] @relation("SpouseToPersons")
 
-  family       Family?   @relation("RootPersonRelation")
+  rootOfFamily Family? @relation("RootPersonRelation")
 }
 
 model SpouseRelationship {
-  id              Int         @id @default(autoincrement())
-  
-  person          Person      @relation("PersonToSpouse", fields: [personId], references: [id])
-  personId        Int
-  spouse          Person      @relation("SpouseToPersons", fields: [spouseId], references: [id])
-  spouseId        Int
-  
-  startDate       DateTime?
-  endDate         DateTime?
-  isActive        Boolean     @default(true)
-  
+  id Int @id @default(autoincrement())
+
+  person   Person @relation("PersonToSpouse", fields: [personId], references: [id])
+  personId Int
+  spouse   Person @relation("SpouseToPersons", fields: [spouseId], references: [id])
+  spouseId Int
+
+  startDate DateTime?
+  endDate   DateTime?
+  isActive  Boolean   @default(true)
+
   @@unique([personId, spouseId])
 }
 
@@ -85,20 +87,29 @@ enum ChangeRequestStatus {
   REJECTED
 }
 
+enum ChangeRequestTargetModel {
+  PERSON
+  SPOUSERELATIONSHIP
+}
+
 model ChangeRequest {
-  id         Int      @id @default(autoincrement())
-  requesterName  String
-  requesterPhone String
-  action     ChangeRequestAction   
-  targetId   Int?     
-  data       Json?    
-  status     ChangeRequestStatus   @default(PENDING) 
-  createdAt  DateTime @default(now())
+  id             Int                 @id @default(autoincrement())
+  action         ChangeRequestAction
+  status         ChangeRequestStatus @default(PENDING)
+  targetModel    ChangeRequestTargetModel
+  targetId       String?
+  data           Json?
+  requester      User?               @relation("ChangeRequester", fields: [requesterId], references: [id])
+  requesterId    String?
+  requesterName  String?
+  requesterPhone String?
+  createdAt      DateTime            @default(now())
 }
 
 model Family {
-  id             Int     @id     @default(autoincrement()) 
-  name           String
-  rootPerson     Person  @relation("RootPersonRelation", fields: [rootPersonId], references: [id])
-  rootPersonId   Int     @unique
+  id           Int    @id @default(autoincrement())
+  name         String
+  rootPerson   Person? @relation("RootPersonRelation", fields: [rootPersonId], references: [id])
+  rootPersonId Int?    @unique
+  members      Person[]   @relation("FamilyMembers")
 }

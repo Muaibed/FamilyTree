@@ -1,7 +1,7 @@
 export interface Person {
     id: string;
     name: string;
-    familyName: string;
+    family: Family;
     gender: 'MALE' | 'FEMALE';
     phone: string;
     birthDate?: string;
@@ -15,7 +15,7 @@ export interface Person {
   export interface Family {
     id: number;
     name: string;
-    rootPersonId: number;
+    rootPersonId: number | null;
   }
   
   export interface FamilyTreeData {

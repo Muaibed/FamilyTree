@@ -129,11 +129,11 @@ exports.Prisma.UserScalarFieldEnum = {
 exports.Prisma.PersonScalarFieldEnum = {
   id: 'id',
   firstName: 'firstName',
-  familyName: 'familyName',
   gender: 'gender',
   birthDate: 'birthDate',
   deathDate: 'deathDate',
   phone: 'phone',
+  familyId: 'familyId',
   fatherId: 'fatherId',
   motherId: 'motherId'
 };
@@ -149,12 +149,14 @@ exports.Prisma.SpouseRelationshipScalarFieldEnum = {
 
 exports.Prisma.ChangeRequestScalarFieldEnum = {
   id: 'id',
-  requesterName: 'requesterName',
-  requesterPhone: 'requesterPhone',
   action: 'action',
+  status: 'status',
+  targetModel: 'targetModel',
   targetId: 'targetId',
   data: 'data',
-  status: 'status',
+  requesterId: 'requesterId',
+  requesterName: 'requesterName',
+  requesterPhone: 'requesterPhone',
   createdAt: 'createdAt'
 };
 
@@ -209,6 +211,11 @@ exports.ChangeRequestStatus = exports.$Enums.ChangeRequestStatus = {
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
   REJECTED: 'REJECTED'
+};
+
+exports.ChangeRequestTargetModel = exports.$Enums.ChangeRequestTargetModel = {
+  PERSON: 'PERSON',
+  SPOUSERELATIONSHIP: 'SPOUSERELATIONSHIP'
 };
 
 exports.Prisma.ModelName = {

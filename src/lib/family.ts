@@ -2,15 +2,17 @@ import { prisma } from './prisma';
 
 export const createFamily = async (data: {
   name: string,
-  rootPersonId?: number
+  rootPersonId?: number | string
 }) => {
+  
   const { name, rootPersonId } = data;
+
   return prisma.family.create({
     data: {
-        name,
-        rootPerson: {
-            connect: { id: rootPersonId },
-        },
+      name,
+      ...(rootPersonId && {
+        rootPerson: { connect: { id: +rootPersonId } }
+      })
     }
   });
 };
@@ -33,15 +35,18 @@ export const getAllFamilies = async () => {
 
 export const updateFamily = async (id: number, data: {
   name?: string,
-  rootPersonId?: number
+  rootPersonId?: number | string
 }) => {
+  
   const { name, rootPersonId } = data;
 
   return prisma.family.update({
     where: { id },
     data: {
       name,
-      rootPersonId
+      ...(rootPersonId
+      ? { rootPerson: { connect: { id: +rootPersonId } } }
+      : { rootPerson: { disconnect: true } }),
     },
   });
 };
