@@ -4,8 +4,8 @@ import { prisma } from './prisma';
 export const createAddRequest = async (data: {
   targetModel: ChangeRequestTargetModel
   dataJSON: Prisma.JsonObject,
-  requesterName: string,
-  requesterPhone: string,
+  requesterName?: string,
+  requesterPhone?: string,
   requesterId?: string,
 }) => {
   const { targetModel, dataJSON, requesterName, requesterPhone, requesterId } = data;

@@ -11,19 +11,22 @@ import { useSearchParams } from "next/navigation";
 import ErrorAlert from "@/components/alerts/ErrorAlert";
 import {
   Loader2,
-  Loader2Icon,
-  LoaderCircle,
-  LucideLoader,
-  LucideLoader2,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 
 const PersonChangeRequestForm = () => {
+  const session = useSession()
+
   const { members, isLoading, error, mutate } = useMembersContext();
 
   const searchParams = useSearchParams();
   const personId = searchParams.get("personId");
   const person = personId ? members?.people[personId] : undefined;
 
+  const [requesterId, setRequesterId] = useState<string | undefined>(session.data?.user.id);
+  const [requesterName, setRequesterName] = useState(session.data?.user.name);
+  const [requesterPhone, setRequesterPhone] = useState(session.data?.user.phone);
   const [firstName, setFirstName] = useState(person?.name);
   const [familyId, setFamilyId] = useState<string | undefined>(
     person?.family.id.toString()
@@ -41,8 +44,6 @@ const PersonChangeRequestForm = () => {
   const [deathDate, setDeathDate] = useState<string | undefined>(
     person?.deathDate
   );
-  const [spouseOptions, setSpouseOptions] = useState<Option[]>();
-  const [selectedSpouse, setSelectedSpouse] = useState<Person | undefined>();
   const [familyOptions, setFamilyOptions] = useState<Option[]>();
   const [fatherOptions, setFatherOptions] = useState<Option[]>();
   const [motherOptions, setMonterOptions] = useState<Option[]>();
@@ -73,10 +74,6 @@ const PersonChangeRequestForm = () => {
           value: memberId + " " + member.name + " " + member.family.name,
         }));
       setFatherOptions(maleOptions);
-
-      if (person?.gender === "MALE") setSpouseOptions(femaleOptions);
-
-      if (person?.gender === "FEMALE") setSpouseOptions(maleOptions);
     }
 
     if (families) {
@@ -96,31 +93,35 @@ const PersonChangeRequestForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const response = await fetch("api/person", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/changeRequest`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        firstName,
-        familyId,
-        gender,
-        birthDate,
-        fatherId: selectedFather?.id,
-        motherId: selectedMother?.id,
+        action: "UPDATE",
+        targetModel: "PERSON",
+        targetId: personId,
+        dataJSON: {
+          firstName,
+          familyId,
+          gender,
+          birthDate,
+          deathDate,
+          fatherId: selectedFather?.id,
+          motherId: selectedMother?.id,
+        },
+        requesterId,
+        requesterName,
+        requesterPhone,
       }),
     });
 
     if (response.ok) {
       toast(`A change request for ${firstName} has been added successfully.`);
-      setFirstName("");
-      setGender("MALE");
-      setSelectedFather(undefined);
-      setSelectedMother(undefined);
-      setbirthDate(undefined);
-      setDeathDate(undefined);
+      window.location.href = "/changeRequestForm";
     } else {
-      toast(`Adding ${firstName} Failed.`);
+      toast(`Adding a change request for ${firstName} Failed. `);
     }
   };
 
@@ -134,7 +135,7 @@ const PersonChangeRequestForm = () => {
   if (familiesLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
-        <LoaderCircle />
+        <Loader2 />
       </div>
     );
   }
@@ -242,25 +243,6 @@ const PersonChangeRequestForm = () => {
           <option value="FEMALE">Female</option>
         </select>
 
-        <SearchSelect
-          className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
-          options={spouseOptions ?? []}
-          selected={
-            selectedSpouse
-              ? { id: selectedSpouse.id.toString(), value: selectedSpouse.name }
-              : null
-          }
-          onSelect={(option) => {
-            const spouse = spouseOptions?.find(
-              (f) => f.id.toString() === option.id
-            );
-            if (spouse) {
-              setSelectedSpouse(members.people[spouse.id]);
-            }
-          }}
-          placeholder="Select Spouse"
-        />
-
         <input
           type="date"
           value={birthDate}
@@ -275,12 +257,31 @@ const PersonChangeRequestForm = () => {
           placeholder="Death Date"
           className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
         />
-        <button
+        {!session.data && 
+          <div className="flex flex-col gap-2">
+            <hr className="w-60 h-0.5 mx-auto my-4 bg-gray-200 dark:bg-gray-700" />
+            <input 
+              type="text" 
+              value={requesterName ?? ""}
+              onChange={(e) => setRequesterName(e.target.value)}
+              placeholder="Requester Name (optional)"
+              className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            />
+            <input 
+              type="text" 
+              value={requesterPhone ?? ""}
+              onChange={(e) => setRequesterPhone(e.target.value)}
+              placeholder="Requester Phone (optional)"
+              className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            />
+          </div>
+        }
+        <Button
           type="submit"
           className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-semibold rounded-md transition"
         >
           Submit
-        </button>
+        </Button>
       </form>
     </div>
   );
