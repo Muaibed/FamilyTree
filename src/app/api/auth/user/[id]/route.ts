@@ -4,6 +4,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const isPermitted = await isAdmin();
+
+    if (!isPermitted) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
     const id = params.id;
 
     if (!id) {
