@@ -52,6 +52,12 @@ export default function SignIn() {
                 Login
               </Button>
             </div>
+            <div className="flex flex-row items-center justify-center gap-2 pt-2">
+              <div>
+                Doesn't have an account? 
+                </div>
+                <a href="/auth/signup" className="text-blue-500">Signup</a>
+            </div>
           </div>
         </form>
       </div>
