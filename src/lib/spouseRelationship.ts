@@ -16,6 +16,17 @@ export const getRelationById = async (id: number) => {
   })
 }
 
+export const getAllRelationsForPerson = async (personId: number | string) => {
+  return prisma.spouseRelationship.findMany({
+    where: {
+      OR: [
+        { personId: +personId },
+        { spouseId: +personId },
+      ]
+    },
+  })
+}
+
 export const createSpouseRelationship = async (data: {
   person1Id: number;
   person2Id: number;

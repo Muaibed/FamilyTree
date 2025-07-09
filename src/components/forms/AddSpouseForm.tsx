@@ -72,58 +72,30 @@ const AddSpouseForm = ({
         Add Spouse
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {gender && (
-          // <select
-          //   value={spouseId ?? ""}
-          //   onChange={(e) => setSpouseId(e.target.value)}
-          //   required
-          //   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          // >
-          //   <option value="">Select a Spouse</option>
-          //   {gender === "MALE" &&
-          //     Object.entries(members.people)
-          //       .filter(([key, member]) => member.gender === "FEMALE")
-          //       .map(([key, member]) => {
-          //         return (
-          //           <option key={member.id} value={member.id}>
-          //             {member.id} {member.name} {member.familyName}
-          //           </option>
-          //         );
-          //       })}
-          //   {gender === "FEMALE" &&
-          //     Object.entries(members.people)
-          //       .filter(([key, member]) => member.gender === "MALE")
-          //       .map(([key, member]) => {
-          //         return (
-          //           <option key={member.id} value={member.id}>
-          //             {member.id} {member.name} {member.familyName}
-          //           </option>
-          //         );
-          //       })}
-          // </select>
-          <SearchSelect
-            className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
-            options={spouseOptions ?? []}
-            selected={
-              selectedSpouse
-                ? {
-                    id: selectedSpouse.id.toString(),
-                    value: selectedSpouse.name,
-                  }
-                : null
+        
+        <SearchSelect
+          className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
+          options={spouseOptions ?? []}
+          selected={
+            selectedSpouse
+              ? {
+                  id: selectedSpouse.id.toString(),
+                  value: selectedSpouse.name,
+                }
+              : null
+          }
+          onSelect={(option) => {
+            const spouse = spouseOptions?.find(
+              (f) => f.id.toString() === option.id
+            );
+            if (spouse) {
+              setSelectedSpouse(members.people[spouse.id]);
+              setSpouseId(spouse.id);
             }
-            onSelect={(option) => {
-              const spouse = spouseOptions?.find(
-                (f) => f.id.toString() === option.id
-              );
-              if (spouse) {
-                setSelectedSpouse(members.people[spouse.id]);
-                setSpouseId(spouse.id);
-              }
-            }}
-            placeholder="Select Spouse"
-          />
-        )}
+          }}
+          placeholder="Select Spouse"
+        />
+        
         <select
           onChange={(e) =>
             e.target.value == "true" ? setIsActive(true) : setIsActive(false)

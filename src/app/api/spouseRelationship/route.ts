@@ -1,5 +1,5 @@
 import { isAdmin } from '@/lib/session';
-import {createSpouseRelationship, deleteRelation, getAllRelations, updateRelationStatus} from '@/lib/spouseRelationship';
+import {createSpouseRelationship, deleteRelation, getAllRelations, getAllRelationsForPerson, updateRelationStatus} from '@/lib/spouseRelationship';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -29,8 +29,16 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const personId = searchParams.get("personId");
+
+    if (personId) {
+      const relations = await getAllRelationsForPerson(+personId)
+      return NextResponse.json(relations)
+    }
+
     const relations = await getAllRelations();
     return NextResponse.json(relations);
   } catch (error: unknown) {
