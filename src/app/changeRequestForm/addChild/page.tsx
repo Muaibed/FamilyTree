@@ -101,7 +101,7 @@ const AddChild = () => {
 
     if (response.ok) {
       toast(`A change request for ${firstName} has been added successfully.`);
-      window.location.href = "/changeRequestForm";
+      window.location.href = "/";
     } else {
       toast(`Adding a change request for ${firstName} Failed.`);
     }

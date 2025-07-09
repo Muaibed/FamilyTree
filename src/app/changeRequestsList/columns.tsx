@@ -35,6 +35,10 @@ export function columns({
       header: "Requester Name",
     },
     {
+      accessorKey: "status",
+      header: "Status",
+    },
+    {
       id: "actions",
       cell: ({ row }) => {
         const request = row.original;

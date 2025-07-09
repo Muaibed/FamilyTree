@@ -9,8 +9,8 @@ export const createPerson = async (data: {
   phone?: string;
   birthDate?: Date;
   deathDate?: Date;
-  fatherId?: number;
-  motherId?: number;
+  fatherId?: number | string;
+  motherId?: number | string;
 }) => {
   const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
 
@@ -22,8 +22,8 @@ export const createPerson = async (data: {
       phone: phone,
       birthDate: birthDate,
       deathDate: deathDate,
-      father: fatherId ? { connect: { id: fatherId } } : undefined,
-      mother: motherId ? { connect: { id: motherId } } : undefined,
+      father: fatherId ? { connect: { id: +fatherId } } : undefined,
+      mother: motherId ? { connect: { id: +motherId } } : undefined,
     },
   });
 };

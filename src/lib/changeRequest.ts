@@ -74,9 +74,9 @@ export const getAllChangeRequests = async () => {
   return prisma.changeRequest.findMany();
 };
 
-export const updateChangeRequest = async (id: number, status: ChangeRequestStatus) => {
+export const updateChangeRequest = async (id: number | string, status: ChangeRequestStatus) => {
   return prisma.changeRequest.update({
-    where: { id },
+    where: { id: +id },
     data: {
       status
     },

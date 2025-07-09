@@ -67,8 +67,8 @@ const AddSpouseRelationship = () => {
         action: "ADD",
         targetModel: "SPOUSERELATIONSHIP",
         dataJSON: {
-          personId,
-          spouseId,
+          person1Id: personId,
+          person2Id: spouseId,
           isActive,
         },
         requesterId,
@@ -79,7 +79,7 @@ const AddSpouseRelationship = () => {
 
     if (response.ok) {
       toast(`A change request for ${spouseId} has been added successfully.`);
-      window.location.href = "/changeRequestForm";
+      window.location.href = "/";
     } else {
       toast(`Adding a change request for ${spouseId} Failed.`);
     }
