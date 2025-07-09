@@ -38,9 +38,6 @@ const PersonChangeRequestForm = () => {
   const [selectedMother, setSelectedMother] = useState<Person | undefined>(
     person?.motherId ? members.people[person.motherId] : undefined
   );
-  const [birthDate, setbirthDate] = useState<string | undefined>(
-    person?.birthDate
-  );
   const [deathDate, setDeathDate] = useState<string | undefined>(
     person?.deathDate
   );
@@ -106,7 +103,6 @@ const PersonChangeRequestForm = () => {
           firstName,
           familyId,
           gender,
-          birthDate,
           deathDate,
           fatherId: selectedFather?.id,
           motherId: selectedMother?.id,
@@ -242,14 +238,6 @@ const PersonChangeRequestForm = () => {
           <option value="MALE">Male</option>
           <option value="FEMALE">Female</option>
         </select>
-
-        <input
-          type="date"
-          value={birthDate}
-          onChange={(e) => setbirthDate(e.target.value)}
-          placeholder="Birth Date"
-          className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
-        />
         <input
           type="date"
           value={deathDate}
