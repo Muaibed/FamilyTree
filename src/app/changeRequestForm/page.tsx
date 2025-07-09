@@ -26,7 +26,7 @@ const changeRequestForm = () => {
                     className="hover:cursor-pointer"
                     onClick={() => window.location.href = `/changeRequestForm/addSpouseRelationship?personId=${personId}`}
                 >
-                    Change Request for a Spouse Relationship
+                    Add Spouse
                 </Button>
             </div>
         </div>
