@@ -4,12 +4,10 @@ import ErrorAlert from "@/components/alerts/ErrorAlert";
 import { useMembersContext } from "@/components/client/MembersContextProvider";
 import SearchSelect from "@/components/client/SearchSelect";
 import { Person } from "@/types/family";
-import { SpouseRelationship } from "@/generated/prisma";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 import { Option } from "@/types/ui";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -34,17 +32,6 @@ const AddSpouseRelationship = () => {
   const [isActive, setIsActive] = useState<boolean>(true);
   const [spouseOptions, setSpouseOptions] = useState<Option[]>();
   const [selectedSpouse, setSelectedSpouse] = useState<Person | undefined>();
-
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const {
-    data: relations,
-    isLoading: relationsLoading,
-    error: relationsError,
-    mutate: mutateRelations,
-  } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/spouseRelationship?personId=${personId}`,
-    fetcher
-  );
 
   useEffect(() => {
     if (person?.gender == "MALE") {
@@ -98,20 +85,13 @@ const AddSpouseRelationship = () => {
     }
   };
 
-  if (relationsLoading || isLoading) {
+  if (isLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
         <Loader2 />
       </div>
     );
   }
-  if (!relations || relationsError)
-    return (
-      <ErrorAlert
-        title="Something wrong happened!"
-        message="Relations are missing."
-      ></ErrorAlert>
-    );
   if (!members || error)
     return (
       <ErrorAlert
@@ -125,18 +105,6 @@ const AddSpouseRelationship = () => {
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
         Create Change Request
       </h2>    <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="p-4">
-          <ul>
-            {relations.map((r: SpouseRelationship) => {
-              return (
-                <li key={r.id}>
-                  {person?.name} - {members.people[r.spouseId].name} -{" "}
-                  {r.isActive}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
         {
             <SearchSelect
             className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
