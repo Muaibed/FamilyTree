@@ -28,16 +28,16 @@ export const getAllRelationsForPerson = async (personId: number | string) => {
 }
 
 export const createSpouseRelationship = async (data: {
-  person1Id: number;
-  person2Id: number;
+  person1Id: number | string; 
+  person2Id: number | string;
   isActive: boolean;
   startDate?: Date;
   endDate?: Date;
 }) => {
   return prisma.spouseRelationship.create({
     data: {
-      personId: data.person1Id,
-      spouseId: data.person2Id,
+      personId: +data.person1Id,
+      spouseId: +data.person2Id,
       isActive: data.isActive,
       startDate: data.startDate,
       endDate: data.endDate,
