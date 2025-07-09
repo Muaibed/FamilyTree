@@ -12,6 +12,7 @@ const AddChangeRequest = ({request, onChange}: {request: ChangeRequest, onChange
                     <div>Target ID: {request.targetId}</div>
                 </div>
             )}
+            <div>Status: {request.status}</div>
             <JSONtoHTML data={request.data}/>
             {request.requesterId &&
                 <div>Requester ID: {request.requesterId}</div>
