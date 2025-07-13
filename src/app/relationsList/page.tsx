@@ -13,7 +13,7 @@ export default function Page() {
 
   return (
     <div className="container mx-auto py-10">
-      <FamilyTableClient data={data} />
+      <FamilyTableClient data={data} onChange={mutate} />
     </div>
   );
 }
