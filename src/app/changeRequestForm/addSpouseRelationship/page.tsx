@@ -3,7 +3,6 @@
 import ErrorAlert from "@/components/alerts/ErrorAlert";
 import { useMembersContext } from "@/components/client/MembersContextProvider";
 import SearchSelect from "@/components/client/SearchSelect";
-import { Person } from "@/types/family";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -11,6 +10,7 @@ import { useEffect, useState } from "react";
 import { Option } from "@/types/ui";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { PersonWithRelations } from "@/types/family";
 
 const AddSpouseRelationship = () => {
   const session = useSession();
@@ -19,7 +19,7 @@ const AddSpouseRelationship = () => {
 
   const searchParams = useSearchParams();
   const personId = searchParams.get("personId");
-  const person = personId ? members?.people[personId] : undefined;
+  const person = personId ? members.find((m) => m.id === personId) : undefined;
 
   const [requesterId, setRequesterId] = useState<string | undefined>(
     session.data?.user.id
@@ -28,30 +28,29 @@ const AddSpouseRelationship = () => {
   const [requesterPhone, setRequesterPhone] = useState(
     session.data?.user.phone
   );
-  const [spouseId, setSpouseId] = useState<string | undefined>();
   const [isActive, setIsActive] = useState<boolean>(true);
   const [spouseOptions, setSpouseOptions] = useState<Option[]>();
-  const [selectedSpouse, setSelectedSpouse] = useState<Person | undefined>();
+  const [selectedSpouse, setSelectedSpouse] = useState<PersonWithRelations | undefined>();
 
   useEffect(() => {
-    if (person?.gender == "MALE") {
-      const options = Object.entries(members.people)
-        .filter(([key, member]) => member.gender === "FEMALE")
-        .map(([memberId, isActive]) => ({
-          id: memberId,
-          value: members.people[memberId].name,
-        }));
-      setSpouseOptions(options);
-    }
-
-    if (person?.gender == "FEMALE") {
-      const options = Object.entries(members.people)
-        .filter(([key, member]) => member.gender === "MALE")
-        .map(([memberId, isActive]) => ({
-          id: memberId,
-          value: members.people[memberId].name,
-        }));
-      setSpouseOptions(options);
+    if (person && members) {
+        if (person.gender === "MALE") {
+          const options = members.filter((member) => member.gender === "FEMALE").map((member) => {
+            return {
+              id: member.id,
+              value: member.fullName,
+            };
+          });
+          setSpouseOptions(options);
+        } else if (person.gender === "FEMALE") {
+          const options = members.filter((member) => member.gender === "MALE").map((member) => {
+            return {
+              id: member.id,
+              value: member.fullName
+            };
+          });
+          setSpouseOptions(options);
+        }
     }
   }, []);
 
@@ -68,7 +67,7 @@ const AddSpouseRelationship = () => {
         targetModel: "SPOUSERELATIONSHIP",
         dataJSON: {
           person1Id: personId,
-          person2Id: spouseId,
+          person2Id: selectedSpouse?.id,
           isActive,
         },
         requesterId,
@@ -78,10 +77,10 @@ const AddSpouseRelationship = () => {
     });
 
     if (response.ok) {
-      toast(`A change request for ${spouseId} has been added successfully.`);
+      toast(`A change request for ${selectedSpouse?.fullName} has been added successfully.`);
       window.location.href = "/";
     } else {
-      toast(`Adding a change request for ${spouseId} Failed.`);
+      toast(`Adding a change request for ${selectedSpouse?.fullName} Failed.`);
     }
   };
 
@@ -113,20 +112,20 @@ const AddSpouseRelationship = () => {
                 selectedSpouse
                 ? {
                     id: selectedSpouse.id.toString(),
-                    value: selectedSpouse.name,
+                    value: selectedSpouse.fullName,
                     }
                 : null
             }
             onSelect={(option) => {
-                const spouse = spouseOptions?.find(
-                (f) => f.id.toString() === option.id
+              const spouseOption = spouseOptions?.find(
+                  (f) => f.id.toString() === option.id
                 );
+                const spouse = members.find((m:PersonWithRelations) => m.id === option.id)
                 if (spouse) {
-                    setSelectedSpouse(members.people[spouse.id]);
-                    setSpouseId(spouse.id)
+                  setSelectedSpouse(spouse);
                 }
-            }}
-            placeholder="Select a spouse"
+              }}
+              placeholder="Select a Spouse"
             />
         }
         {!session.data && (

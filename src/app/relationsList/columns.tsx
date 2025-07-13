@@ -1,10 +1,7 @@
 "use client";
 
-import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { SpouseRelationship } from "../../types/family";
-import { PersonModal } from "../../components/client/Modal";
+import { SpouseRelationship } from "@/generated/prisma";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -16,12 +13,12 @@ export function columns(): ColumnDef<SpouseRelationship>[] {
       header: 'ID',
     },
     {
-      accessorKey: "person",
-      header: "Person",
+      accessorKey: "male.fullName",
+      header: "Male",
     },
     {
-      accessorKey: "spouse",
-      header: "Spouse",
+      accessorKey: "female.fullName",
+      header: "Female",
     },
     {
       accessorKey: "isActive",

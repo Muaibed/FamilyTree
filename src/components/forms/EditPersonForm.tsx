@@ -1,6 +1,5 @@
 "use client";
 
-import { Person } from "@/types/family";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
@@ -11,57 +10,60 @@ import { Modal } from "../client/Modal";
 import DeletePerson from "../client/DeletePerson";
 import SearchSelect from "../client/SearchSelect";
 import { Option } from "@/types/ui";
+import { PersonWithRelations } from "@/types/family";
+import { Person } from "@/generated/prisma";
 
 const EditPersonForm = ({
   person,
   onEdit,
 }: {
-  person: Person;
+  person: PersonWithRelations;
   onEdit: any;
 }) => {
-  const [firstName, setFirstName] = useState(person.name);
+  const [firstName, setFirstName] = useState(person.firstName);
   const [familyName, setFamilyName] = useState(person.family.name);
   const [gender, setGender] = useState<"MALE" | "FEMALE">(person.gender);
-  const [phone, setPhone] = useState<string | undefined>(person.phone);
-  const [birthDate, setBirthDate] = useState<string | undefined>(
-    person.birthDate
+  const [phone, setPhone] = useState<string | undefined>(person.phone ?? "");
+  const [birthDate, setBirthDate] = useState<Date | undefined>(
+    person.birthDate ? person.birthDate : undefined
   );
-  const [deathDate, setDeathDate] = useState<string | undefined>(
-    person.deathDate
+  const [deathDate, setDeathDate] = useState<Date | undefined>(
+    person.deathDate ? person.deathDate : undefined
   );
-  const [spouses, setSpouses] = useState<string[]>(
-    person.spouses.map((s) => s[0])
-  );
+  const [spouses, setSpouses] = useState<Person[]>([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [fatherOptions, setFatherOptions] = useState<Option[]>();
   const [motherOptions, setMotherOptions] = useState<Option[]>();
-  const [selectedFather, setSelectedFather] = useState<Person | undefined>();
-  const [selectedMother, setSelectedMother] = useState<Person | undefined>();
+  const [selectedFather, setSelectedFather] = useState<Person | undefined>(person.father ?? undefined);
+  const [selectedMother, setSelectedMother] = useState<Person | undefined>(person.mother ?? undefined);
 
   const { members, isLoading, error, mutate } = useMembersContext();
 
   useEffect(() => {
-    const fatherOptions = Object.entries(members.people)
-      .filter(([key, person]) => person.gender === "MALE")
-      .map(([key, person]) => ({
-        id: person.id,
-        value: person.name,
+    const motherOptions = members
+      .filter((member) => member.gender === "FEMALE")
+      .map((member) => ({
+        id: member.id,
+        value: member.fullName,
       }));
+    setMotherOptions(motherOptions);
 
+    const fatherOptions = members
+      .filter((member) => member.gender === "MALE")
+      .map((member) => ({
+        id: member.id,
+        value: member.fullName,
+      }));
     setFatherOptions(fatherOptions);
 
-    const motherOptions = Object.entries(members.people)
-      .filter(([key, person]) => person.gender === "FEMALE")
-      .map(([key, person]) => ({
-        id: person.id,
-        value: person.name,
-      }));
-
-    setMotherOptions(motherOptions);
-  }, []);
+    if (person.gender === "MALE") {
+      const spouses = person.femaleSpouses.map((f) => f.female)
+      setSpouses(spouses)
+    }
+  }, [members]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,15 +96,6 @@ const EditPersonForm = ({
     } catch (error) {
       console.error(error);
     }
-  };
-
-  const getOtherSpouses = (spouse: string) => {
-    const spousess: string[] = [];
-    spouses.forEach(function (s) {
-      if (s !== spouse) spousess.push(s);
-    });
-
-    return spousess;
   };
 
   const deleteRelation = async (person1Id: string, person2Id: string) => {
@@ -159,98 +152,66 @@ const EditPersonForm = ({
           <option value="FEMALE">Female</option>
         </select>
 
-        {/* <select
-          value={fatherId}
-          onChange={(e) => setFatherId(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Select Father</option>
-          {Object.entries(members.people)
-            .filter(([key, person]) => person.gender === "MALE")
-            .map(([key, person]) => {
-              return (
-                <option value={person.id} key={person.id}>
-                  {person.name} {person.familyName} {person.id}
-                </option>
-              );
-            })}
-        </select> */}
         <SearchSelect
-          className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
           options={fatherOptions ?? []}
           selected={
             selectedFather
-              ? { id: selectedFather.id.toString(), value: selectedFather.name }
+              ? {
+                  id: selectedFather.id,
+                  value: selectedFather.fullName,
+                }
               : null
           }
           onSelect={(option) => {
-            const father = fatherOptions?.find(
-              (f) => f.id.toString() === option.id
-            );
+            const father = members.find((m: PersonWithRelations) => m.id === option.id)
             if (father) {
-              setSelectedFather(members.people[father.id]);
+              setSelectedFather(father);
             }
           }}
-          placeholder="Select Father"
+          placeholder="Select a Father"
         />
-        {/* <select
-          value={motherId ?? ""}
-          onChange={(e) => setMotherId(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Select Mother (optional)</option>
-          {Object.entries(members.people)
-            .filter(([key, person]) => person.gender === "FEMALE")
-            .map(([key, person]) => {
-              return (
-                <option value={person.id} key={person.id}>
-                  {person.name} {person.familyName} {person.id}
-                </option>
-              );
-            })}
-        </select> */}
         <SearchSelect
-          className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
           options={motherOptions ?? []}
           selected={
             selectedMother
-              ? { id: selectedMother.id.toString(), value: selectedMother.name }
+              ? {
+                  id: selectedMother.id.toString(),
+                  value: selectedMother.fullName,
+                }
               : null
           }
           onSelect={(option) => {
-            const mother = motherOptions?.find(
-              (f) => f.id.toString() === option.id
-            );
+            const mother = members.find((m) => m.id === option.id)
             if (mother) {
-              setSelectedMother(members.people[mother.id]);
+              setSelectedMother(mother);
             }
           }}
-          placeholder="Select Father"
+          placeholder="Select a Mother"
         />
         <input
           type="date"
-          value={birthDate}
-          onChange={(e) => setBirthDate(e.target.value)}
+          value={birthDate?.toDateString()}
+          onChange={(e) => setBirthDate(new Date(e.target.value))}
           placeholder="Birth Date"
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="date"
-          value={deathDate}
-          onChange={(e) => setDeathDate(e.target.value)}
+          value={deathDate?.toISOString()}
+          onChange={(e) => setDeathDate(new Date(e.target.value))}
           placeholder="Death Date"
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <div className="text-white">
-          {spouses.map((s) => {
+          {spouses?.map((s) => {
             return (
-              <div className="flex flex-col-2 justify-between" key={s}>
+              <div className="flex flex-col-2 justify-between">
                 <p className="alig">{s + ""}</p>
                 <Button
                   type="button"
                   onClick={() => {
                     deleteRelation(person.id, s.toString());
-                    setSpouses(getOtherSpouses(s.toString()));
+                    setSpouses(spouses => spouses?.filter(s => person.id !== s.id));
                   }}
                 >
                   Remove
@@ -315,14 +276,13 @@ const EditPersonForm = ({
       >
         <div>
           <AddSpouseForm
-            personId={person.id}
+            person={person}
             members={members}
-            onAdd={(s: string) => {
+            onAdd={(s: PersonWithRelations) => {
               onEdit();
               mutate;
               setIsAddingSpouse(false);
-              spouses.push(s);
-              setSpouses(spouses);
+              setSpouses(spouses => [...spouses, s]);
             }}
           />
         </div>

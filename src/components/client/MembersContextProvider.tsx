@@ -1,13 +1,13 @@
 'use client';
 
-import { FamilyTreeData } from "@/types/family";
+import { PersonWithRelations } from "@/types/family";
 import { createContext, useContext } from "react";
 import useSWR from "swr";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 interface MembersContextType {
-    members: FamilyTreeData;
+    members: PersonWithRelations[];
     isLoading: boolean;
     error: any;
     mutate: () => void;

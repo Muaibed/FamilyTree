@@ -1,49 +1,49 @@
 "use client";
 
-import { FamilyTreeData, Person } from "@/types/family";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { Option } from "@/types/ui";
 import SearchSelect from "../client/SearchSelect";
+import { PersonWithRelations } from "@/types/family";
 
 const AddSpouseForm = ({
-  personId,
+  person,
   members,
   onAdd,
 }: {
-  personId: string;
-  members: FamilyTreeData;
+  person: PersonWithRelations;
+  members: PersonWithRelations[];
   onAdd: any;
 }) => {
-  const [spouseId, setSpouseId] = useState<string | undefined>();
   const [isActive, setIsActive] = useState<boolean>(true);
   const [spouseOptions, setSpouseOptions] = useState<Option[]>();
-  const [selectedSpouse, setSelectedSpouse] = useState<Person | undefined>();
-
-  const person = personId ? members.people[personId] : null;
-  const gender = person?.gender;
+  const [selectedSpouse, setSelectedSpouse] = useState<PersonWithRelations | undefined>();
 
   useEffect(() => {
-    if (gender == "MALE") {
-      const options = Object.entries(members.people)
-        .filter(([key, member]) => member.gender === "FEMALE")
-        .map(([memberId, isActive]) => ({
-          id: memberId,
-          value: members.people[memberId].name,
-        }));
+     if (person.gender === "MALE") {
+      const options = members
+        .filter(member => member.gender === "FEMALE")
+        .map((s) => {
+        return {
+          id: s.id,
+          value: s.fullName,
+        };
+      });
+    
       setSpouseOptions(options);
-    }
 
-    if (gender == "FEMALE") {
-      const options = Object.entries(members.people)
-        .filter(([key, member]) => member.gender === "MALE")
-        .map(([memberId, isActive]) => ({
-          id: memberId,
-          value: members.people[memberId].name,
-        }));
-      setSpouseOptions(options);
+    } else if (person.gender === "FEMALE") {
+      const options = members
+        .filter(member => member.gender === "MALE")
+        .map((s) => {
+      return {
+        id: s.id,
+        value: s.fullName
+      };
+    });
+    setSpouseOptions(options);
     }
-  }, []);
+  }, [members]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,16 +53,20 @@ const AddSpouseForm = ({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ personId, spouseId, isActive }),
+      body: JSON.stringify({ 
+        maleId: person.gender === "MALE" ? person.id : selectedSpouse?.id, 
+        femaleId: person.gender === "FEMALE" ? person.id : selectedSpouse?.id, 
+        isActive, 
+      }),
     });
 
     if (response.ok) {
-      toast(`${spouseId} has been added successfully.`);
-      setSpouseId(undefined);
-      onAdd(spouseId);
+      toast(`${selectedSpouse?.firstName} has been added successfully.`);
+      setSelectedSpouse(undefined);
+      onAdd(selectedSpouse);
     } else {
       const errorData = await response.json();
-      toast(`Adding ${spouseId} Failed.`);
+      toast(`Adding ${selectedSpouse?.firstName} Failed.`);
     }
   };
 
@@ -79,18 +83,17 @@ const AddSpouseForm = ({
           selected={
             selectedSpouse
               ? {
-                  id: selectedSpouse.id.toString(),
-                  value: selectedSpouse.name,
+                  id: selectedSpouse.id,
+                  value: selectedSpouse.firstName,
                 }
               : null
           }
           onSelect={(option) => {
-            const spouse = spouseOptions?.find(
-              (f) => f.id.toString() === option.id
+            const spouse = members.find(
+              (f) => f.id === option.id
             );
             if (spouse) {
-              setSelectedSpouse(members.people[spouse.id]);
-              setSpouseId(spouse.id);
+              setSelectedSpouse(spouse);
             }
           }}
           placeholder="Select Spouse"

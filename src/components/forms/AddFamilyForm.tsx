@@ -1,16 +1,17 @@
 "use client";
 
-import { FamilyTreeData, Person } from "@/types/family";
+import { PersonWithRelations } from "@/types/family";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import SearchSelect from "../client/SearchSelect";
 import { Option } from "@/types/ui";
+import { Person } from "@/generated/prisma";
 
 const AddChildForm = ({
   members,
   onAdd,
 }: {
-  members: FamilyTreeData;
+  members: PersonWithRelations[];
   onAdd: any;
 }) => {
   const [name, setName] = useState("");
@@ -20,12 +21,13 @@ const AddChildForm = ({
   >();
 
   useEffect(() => {
-    const options = Object.entries(members.people).map(([id]) => ({
-      id: id,
-      value: members.people[id].name,
+    const options = members.map((member) => ({
+      id: member.id,
+      value: member.fullName,
     }));
     setMembersOptions(options);
   }, [members]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const rootPersonId = selectedRootPerson?.id;
@@ -75,16 +77,16 @@ const AddChildForm = ({
               selectedRootPerson
                 ? {
                     id: selectedRootPerson.id.toString(),
-                    value: selectedRootPerson.name,
+                    value: selectedRootPerson.firstName,
                   }
                 : null
             }
             onSelect={(option) => {
-              const spouse = membersOptions?.find(
+              const spouse = members?.find(
                 (f) => f.id.toString() === option.id
               );
               if (spouse) {
-                setSelectedRootPerson(members.people[spouse.id]);
+                setSelectedRootPerson(spouse);
               }
             }}
             placeholder={"Select root person"}

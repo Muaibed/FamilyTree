@@ -11,7 +11,7 @@ export async function GET(req:NextRequest) {
         return new Response("Relation ID is required", { status: 400 });
     }
 
-    const relation = await getRelationById(+id);
+    const relation = await getRelationById(id);
 
     return NextResponse.json(relation);
   } catch (error: unknown) {
@@ -30,8 +30,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const id = Number(params.id);
-
     const { isActive, startDate, endDate } = await req.json();
 
     const data = {
@@ -40,11 +38,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       endDate
     }
 
-    if (!id) {
+    if (!params.id) {
       return new Response("Relation ID is required", { status: 400});
     }
 
-    await updateRelationStatusById(id, data);
+    await updateRelationStatusById(params.id, data);
 
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
@@ -60,14 +58,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       if (!isPermitted) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
-
-      const id = Number(params.id);
   
-      if (!id) {
+      if (!params.id) {
         return new Response("Relation ID is required", { status: 400 });
       }
 
-      await deleteRelationById(+id);
+      await deleteRelationById(params.id);
   
       return new Response("Relation deleted successfully", { status: 200 });
     } catch (error) {

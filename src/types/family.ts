@@ -1,31 +1,39 @@
-export interface Person {
-    id: string;
-    name: string;
-    family: Family;
-    gender: 'MALE' | 'FEMALE';
-    phone: string;
-    birthDate?: string;
-    deathDate?: string;
-    fatherId?: string;
-    motherId?: string;
-    childrenIds: string[];
-    spouses: [string, boolean][];
-  }
+import { Prisma } from "@/generated/prisma";
 
-  export interface Family {
-    id: number;
-    name: string;
-    rootPersonId: number | null;
-  }
-  
-  export interface FamilyTreeData {
-    people: Record<string, Person>;
-    rootPersonId: string; 
-  }
+const personWithRelations = Prisma.validator<Prisma.PersonInclude>()({
+  father: true,
+  mother: true,
+  fatherChildren: true,
+  motherChildren: true,
+  maleSpouses: {
+    include: { male: true, female: true }
+  },
+  femaleSpouses: {
+    include: { male: true, female: true }
+  },
+  family: {
+    include: { rootPerson: true }
+  },
+});
 
-  export interface SpouseRelationship {
-    id: string,
-    person: string;
-    spouse: string;
-    isActive: boolean;
-  }
+export type PersonWithRelations = Prisma.PersonGetPayload<{
+  include: typeof personWithRelations;
+}>;
+
+const familyWithRootPerson = Prisma.validator<Prisma.FamilyInclude>()({
+  rootPerson: true,
+})
+
+export type FamilyWithRootPerson = Prisma.FamilyGetPayload<{
+  include: typeof familyWithRootPerson;
+}>;
+
+const spouseRelationshipWithPartners = Prisma.validator<Prisma.SpouseRelationshipInclude>()({
+  male: true,
+  female: true,
+})
+
+export type SpouseRelationshipWithPartners = Prisma.SpouseRelationshipGetPayload<{
+  include: typeof spouseRelationshipWithPartners
+}>
+

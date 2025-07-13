@@ -129,6 +129,7 @@ exports.Prisma.UserScalarFieldEnum = {
 exports.Prisma.PersonScalarFieldEnum = {
   id: 'id',
   firstName: 'firstName',
+  fullName: 'fullName',
   gender: 'gender',
   birthDate: 'birthDate',
   deathDate: 'deathDate',
@@ -140,8 +141,8 @@ exports.Prisma.PersonScalarFieldEnum = {
 
 exports.Prisma.SpouseRelationshipScalarFieldEnum = {
   id: 'id',
-  personId: 'personId',
-  spouseId: 'spouseId',
+  maleId: 'maleId',
+  femaleId: 'femaleId',
   startDate: 'startDate',
   endDate: 'endDate',
   isActive: 'isActive'
@@ -149,6 +150,7 @@ exports.Prisma.SpouseRelationshipScalarFieldEnum = {
 
 exports.Prisma.ChangeRequestScalarFieldEnum = {
   id: 'id',
+  displayId: 'displayId',
   action: 'action',
   status: 'status',
   targetModel: 'targetModel',

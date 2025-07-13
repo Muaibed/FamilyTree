@@ -1333,15 +1333,15 @@ export namespace Prisma {
   export type PersonCountOutputType = {
     fatherChildren: number
     motherChildren: number
-    spouseConnections: number
-    spousedByConnections: number
+    maleSpouses: number
+    femaleSpouses: number
   }
 
   export type PersonCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     fatherChildren?: boolean | PersonCountOutputTypeCountFatherChildrenArgs
     motherChildren?: boolean | PersonCountOutputTypeCountMotherChildrenArgs
-    spouseConnections?: boolean | PersonCountOutputTypeCountSpouseConnectionsArgs
-    spousedByConnections?: boolean | PersonCountOutputTypeCountSpousedByConnectionsArgs
+    maleSpouses?: boolean | PersonCountOutputTypeCountMaleSpousesArgs
+    femaleSpouses?: boolean | PersonCountOutputTypeCountFemaleSpousesArgs
   }
 
   // Custom InputTypes
@@ -1372,14 +1372,14 @@ export namespace Prisma {
   /**
    * PersonCountOutputType without action
    */
-  export type PersonCountOutputTypeCountSpouseConnectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PersonCountOutputTypeCountMaleSpousesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SpouseRelationshipWhereInput
   }
 
   /**
    * PersonCountOutputType without action
    */
-  export type PersonCountOutputTypeCountSpousedByConnectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PersonCountOutputTypeCountFemaleSpousesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SpouseRelationshipWhereInput
   }
 
@@ -2508,53 +2508,40 @@ export namespace Prisma {
 
   export type AggregatePerson = {
     _count: PersonCountAggregateOutputType | null
-    _avg: PersonAvgAggregateOutputType | null
-    _sum: PersonSumAggregateOutputType | null
     _min: PersonMinAggregateOutputType | null
     _max: PersonMaxAggregateOutputType | null
   }
 
-  export type PersonAvgAggregateOutputType = {
-    id: number | null
-    familyId: number | null
-    fatherId: number | null
-    motherId: number | null
-  }
-
-  export type PersonSumAggregateOutputType = {
-    id: number | null
-    familyId: number | null
-    fatherId: number | null
-    motherId: number | null
-  }
-
   export type PersonMinAggregateOutputType = {
-    id: number | null
+    id: string | null
     firstName: string | null
+    fullName: string | null
     gender: $Enums.Gender | null
     birthDate: Date | null
     deathDate: Date | null
     phone: string | null
-    familyId: number | null
-    fatherId: number | null
-    motherId: number | null
+    familyId: string | null
+    fatherId: string | null
+    motherId: string | null
   }
 
   export type PersonMaxAggregateOutputType = {
-    id: number | null
+    id: string | null
     firstName: string | null
+    fullName: string | null
     gender: $Enums.Gender | null
     birthDate: Date | null
     deathDate: Date | null
     phone: string | null
-    familyId: number | null
-    fatherId: number | null
-    motherId: number | null
+    familyId: string | null
+    fatherId: string | null
+    motherId: string | null
   }
 
   export type PersonCountAggregateOutputType = {
     id: number
     firstName: number
+    fullName: number
     gender: number
     birthDate: number
     deathDate: number
@@ -2566,23 +2553,10 @@ export namespace Prisma {
   }
 
 
-  export type PersonAvgAggregateInputType = {
-    id?: true
-    familyId?: true
-    fatherId?: true
-    motherId?: true
-  }
-
-  export type PersonSumAggregateInputType = {
-    id?: true
-    familyId?: true
-    fatherId?: true
-    motherId?: true
-  }
-
   export type PersonMinAggregateInputType = {
     id?: true
     firstName?: true
+    fullName?: true
     gender?: true
     birthDate?: true
     deathDate?: true
@@ -2595,6 +2569,7 @@ export namespace Prisma {
   export type PersonMaxAggregateInputType = {
     id?: true
     firstName?: true
+    fullName?: true
     gender?: true
     birthDate?: true
     deathDate?: true
@@ -2607,6 +2582,7 @@ export namespace Prisma {
   export type PersonCountAggregateInputType = {
     id?: true
     firstName?: true
+    fullName?: true
     gender?: true
     birthDate?: true
     deathDate?: true
@@ -2655,18 +2631,6 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Select which fields to average
-    **/
-    _avg?: PersonAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: PersonSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
      * Select which fields to find the minimum value
     **/
     _min?: PersonMinAggregateInputType
@@ -2697,25 +2661,22 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: PersonCountAggregateInputType | true
-    _avg?: PersonAvgAggregateInputType
-    _sum?: PersonSumAggregateInputType
     _min?: PersonMinAggregateInputType
     _max?: PersonMaxAggregateInputType
   }
 
   export type PersonGroupByOutputType = {
-    id: number
+    id: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate: Date | null
     deathDate: Date | null
     phone: string | null
-    familyId: number
-    fatherId: number | null
-    motherId: number | null
+    familyId: string
+    fatherId: string | null
+    motherId: string | null
     _count: PersonCountAggregateOutputType | null
-    _avg: PersonAvgAggregateOutputType | null
-    _sum: PersonSumAggregateOutputType | null
     _min: PersonMinAggregateOutputType | null
     _max: PersonMaxAggregateOutputType | null
   }
@@ -2737,6 +2698,7 @@ export namespace Prisma {
   export type PersonSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     firstName?: boolean
+    fullName?: boolean
     gender?: boolean
     birthDate?: boolean
     deathDate?: boolean
@@ -2749,8 +2711,8 @@ export namespace Prisma {
     mother?: boolean | Person$motherArgs<ExtArgs>
     fatherChildren?: boolean | Person$fatherChildrenArgs<ExtArgs>
     motherChildren?: boolean | Person$motherChildrenArgs<ExtArgs>
-    spouseConnections?: boolean | Person$spouseConnectionsArgs<ExtArgs>
-    spousedByConnections?: boolean | Person$spousedByConnectionsArgs<ExtArgs>
+    maleSpouses?: boolean | Person$maleSpousesArgs<ExtArgs>
+    femaleSpouses?: boolean | Person$femaleSpousesArgs<ExtArgs>
     rootOfFamily?: boolean | Person$rootOfFamilyArgs<ExtArgs>
     _count?: boolean | PersonCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["person"]>
@@ -2758,6 +2720,7 @@ export namespace Prisma {
   export type PersonSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     firstName?: boolean
+    fullName?: boolean
     gender?: boolean
     birthDate?: boolean
     deathDate?: boolean
@@ -2773,6 +2736,7 @@ export namespace Prisma {
   export type PersonSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     firstName?: boolean
+    fullName?: boolean
     gender?: boolean
     birthDate?: boolean
     deathDate?: boolean
@@ -2788,6 +2752,7 @@ export namespace Prisma {
   export type PersonSelectScalar = {
     id?: boolean
     firstName?: boolean
+    fullName?: boolean
     gender?: boolean
     birthDate?: boolean
     deathDate?: boolean
@@ -2797,15 +2762,15 @@ export namespace Prisma {
     motherId?: boolean
   }
 
-  export type PersonOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "gender" | "birthDate" | "deathDate" | "phone" | "familyId" | "fatherId" | "motherId", ExtArgs["result"]["person"]>
+  export type PersonOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "fullName" | "gender" | "birthDate" | "deathDate" | "phone" | "familyId" | "fatherId" | "motherId", ExtArgs["result"]["person"]>
   export type PersonInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     family?: boolean | FamilyDefaultArgs<ExtArgs>
     father?: boolean | Person$fatherArgs<ExtArgs>
     mother?: boolean | Person$motherArgs<ExtArgs>
     fatherChildren?: boolean | Person$fatherChildrenArgs<ExtArgs>
     motherChildren?: boolean | Person$motherChildrenArgs<ExtArgs>
-    spouseConnections?: boolean | Person$spouseConnectionsArgs<ExtArgs>
-    spousedByConnections?: boolean | Person$spousedByConnectionsArgs<ExtArgs>
+    maleSpouses?: boolean | Person$maleSpousesArgs<ExtArgs>
+    femaleSpouses?: boolean | Person$femaleSpousesArgs<ExtArgs>
     rootOfFamily?: boolean | Person$rootOfFamilyArgs<ExtArgs>
     _count?: boolean | PersonCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -2828,20 +2793,21 @@ export namespace Prisma {
       mother: Prisma.$PersonPayload<ExtArgs> | null
       fatherChildren: Prisma.$PersonPayload<ExtArgs>[]
       motherChildren: Prisma.$PersonPayload<ExtArgs>[]
-      spouseConnections: Prisma.$SpouseRelationshipPayload<ExtArgs>[]
-      spousedByConnections: Prisma.$SpouseRelationshipPayload<ExtArgs>[]
+      maleSpouses: Prisma.$SpouseRelationshipPayload<ExtArgs>[]
+      femaleSpouses: Prisma.$SpouseRelationshipPayload<ExtArgs>[]
       rootOfFamily: Prisma.$FamilyPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: number
+      id: string
       firstName: string
+      fullName: string
       gender: $Enums.Gender
       birthDate: Date | null
       deathDate: Date | null
       phone: string | null
-      familyId: number
-      fatherId: number | null
-      motherId: number | null
+      familyId: string
+      fatherId: string | null
+      motherId: string | null
     }, ExtArgs["result"]["person"]>
     composites: {}
   }
@@ -3241,8 +3207,8 @@ export namespace Prisma {
     mother<T extends Person$motherArgs<ExtArgs> = {}>(args?: Subset<T, Person$motherArgs<ExtArgs>>): Prisma__PersonClient<$Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     fatherChildren<T extends Person$fatherChildrenArgs<ExtArgs> = {}>(args?: Subset<T, Person$fatherChildrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     motherChildren<T extends Person$motherChildrenArgs<ExtArgs> = {}>(args?: Subset<T, Person$motherChildrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    spouseConnections<T extends Person$spouseConnectionsArgs<ExtArgs> = {}>(args?: Subset<T, Person$spouseConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SpouseRelationshipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    spousedByConnections<T extends Person$spousedByConnectionsArgs<ExtArgs> = {}>(args?: Subset<T, Person$spousedByConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SpouseRelationshipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    maleSpouses<T extends Person$maleSpousesArgs<ExtArgs> = {}>(args?: Subset<T, Person$maleSpousesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SpouseRelationshipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    femaleSpouses<T extends Person$femaleSpousesArgs<ExtArgs> = {}>(args?: Subset<T, Person$femaleSpousesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SpouseRelationshipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     rootOfFamily<T extends Person$rootOfFamilyArgs<ExtArgs> = {}>(args?: Subset<T, Person$rootOfFamilyArgs<ExtArgs>>): Prisma__FamilyClient<$Result.GetResult<Prisma.$FamilyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3273,15 +3239,16 @@ export namespace Prisma {
    * Fields of the Person model
    */
   interface PersonFieldRefs {
-    readonly id: FieldRef<"Person", 'Int'>
+    readonly id: FieldRef<"Person", 'String'>
     readonly firstName: FieldRef<"Person", 'String'>
+    readonly fullName: FieldRef<"Person", 'String'>
     readonly gender: FieldRef<"Person", 'Gender'>
     readonly birthDate: FieldRef<"Person", 'DateTime'>
     readonly deathDate: FieldRef<"Person", 'DateTime'>
     readonly phone: FieldRef<"Person", 'String'>
-    readonly familyId: FieldRef<"Person", 'Int'>
-    readonly fatherId: FieldRef<"Person", 'Int'>
-    readonly motherId: FieldRef<"Person", 'Int'>
+    readonly familyId: FieldRef<"Person", 'String'>
+    readonly fatherId: FieldRef<"Person", 'String'>
+    readonly motherId: FieldRef<"Person", 'String'>
   }
     
 
@@ -3764,9 +3731,9 @@ export namespace Prisma {
   }
 
   /**
-   * Person.spouseConnections
+   * Person.maleSpouses
    */
-  export type Person$spouseConnectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Person$maleSpousesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the SpouseRelationship
      */
@@ -3788,9 +3755,9 @@ export namespace Prisma {
   }
 
   /**
-   * Person.spousedByConnections
+   * Person.femaleSpouses
    */
-  export type Person$spousedByConnectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Person$femaleSpousesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the SpouseRelationship
      */
@@ -3855,37 +3822,23 @@ export namespace Prisma {
 
   export type AggregateSpouseRelationship = {
     _count: SpouseRelationshipCountAggregateOutputType | null
-    _avg: SpouseRelationshipAvgAggregateOutputType | null
-    _sum: SpouseRelationshipSumAggregateOutputType | null
     _min: SpouseRelationshipMinAggregateOutputType | null
     _max: SpouseRelationshipMaxAggregateOutputType | null
   }
 
-  export type SpouseRelationshipAvgAggregateOutputType = {
-    id: number | null
-    personId: number | null
-    spouseId: number | null
-  }
-
-  export type SpouseRelationshipSumAggregateOutputType = {
-    id: number | null
-    personId: number | null
-    spouseId: number | null
-  }
-
   export type SpouseRelationshipMinAggregateOutputType = {
-    id: number | null
-    personId: number | null
-    spouseId: number | null
+    id: string | null
+    maleId: string | null
+    femaleId: string | null
     startDate: Date | null
     endDate: Date | null
     isActive: boolean | null
   }
 
   export type SpouseRelationshipMaxAggregateOutputType = {
-    id: number | null
-    personId: number | null
-    spouseId: number | null
+    id: string | null
+    maleId: string | null
+    femaleId: string | null
     startDate: Date | null
     endDate: Date | null
     isActive: boolean | null
@@ -3893,8 +3846,8 @@ export namespace Prisma {
 
   export type SpouseRelationshipCountAggregateOutputType = {
     id: number
-    personId: number
-    spouseId: number
+    maleId: number
+    femaleId: number
     startDate: number
     endDate: number
     isActive: number
@@ -3902,22 +3855,10 @@ export namespace Prisma {
   }
 
 
-  export type SpouseRelationshipAvgAggregateInputType = {
-    id?: true
-    personId?: true
-    spouseId?: true
-  }
-
-  export type SpouseRelationshipSumAggregateInputType = {
-    id?: true
-    personId?: true
-    spouseId?: true
-  }
-
   export type SpouseRelationshipMinAggregateInputType = {
     id?: true
-    personId?: true
-    spouseId?: true
+    maleId?: true
+    femaleId?: true
     startDate?: true
     endDate?: true
     isActive?: true
@@ -3925,8 +3866,8 @@ export namespace Prisma {
 
   export type SpouseRelationshipMaxAggregateInputType = {
     id?: true
-    personId?: true
-    spouseId?: true
+    maleId?: true
+    femaleId?: true
     startDate?: true
     endDate?: true
     isActive?: true
@@ -3934,8 +3875,8 @@ export namespace Prisma {
 
   export type SpouseRelationshipCountAggregateInputType = {
     id?: true
-    personId?: true
-    spouseId?: true
+    maleId?: true
+    femaleId?: true
     startDate?: true
     endDate?: true
     isActive?: true
@@ -3980,18 +3921,6 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Select which fields to average
-    **/
-    _avg?: SpouseRelationshipAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: SpouseRelationshipSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
      * Select which fields to find the minimum value
     **/
     _min?: SpouseRelationshipMinAggregateInputType
@@ -4022,22 +3951,18 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: SpouseRelationshipCountAggregateInputType | true
-    _avg?: SpouseRelationshipAvgAggregateInputType
-    _sum?: SpouseRelationshipSumAggregateInputType
     _min?: SpouseRelationshipMinAggregateInputType
     _max?: SpouseRelationshipMaxAggregateInputType
   }
 
   export type SpouseRelationshipGroupByOutputType = {
-    id: number
-    personId: number
-    spouseId: number
+    id: string
+    maleId: string
+    femaleId: string
     startDate: Date | null
     endDate: Date | null
     isActive: boolean
     _count: SpouseRelationshipCountAggregateOutputType | null
-    _avg: SpouseRelationshipAvgAggregateOutputType | null
-    _sum: SpouseRelationshipSumAggregateOutputType | null
     _min: SpouseRelationshipMinAggregateOutputType | null
     _max: SpouseRelationshipMaxAggregateOutputType | null
   }
@@ -4058,70 +3983,70 @@ export namespace Prisma {
 
   export type SpouseRelationshipSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    personId?: boolean
-    spouseId?: boolean
+    maleId?: boolean
+    femaleId?: boolean
     startDate?: boolean
     endDate?: boolean
     isActive?: boolean
-    person?: boolean | PersonDefaultArgs<ExtArgs>
-    spouse?: boolean | PersonDefaultArgs<ExtArgs>
+    male?: boolean | PersonDefaultArgs<ExtArgs>
+    female?: boolean | PersonDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["spouseRelationship"]>
 
   export type SpouseRelationshipSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    personId?: boolean
-    spouseId?: boolean
+    maleId?: boolean
+    femaleId?: boolean
     startDate?: boolean
     endDate?: boolean
     isActive?: boolean
-    person?: boolean | PersonDefaultArgs<ExtArgs>
-    spouse?: boolean | PersonDefaultArgs<ExtArgs>
+    male?: boolean | PersonDefaultArgs<ExtArgs>
+    female?: boolean | PersonDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["spouseRelationship"]>
 
   export type SpouseRelationshipSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    personId?: boolean
-    spouseId?: boolean
+    maleId?: boolean
+    femaleId?: boolean
     startDate?: boolean
     endDate?: boolean
     isActive?: boolean
-    person?: boolean | PersonDefaultArgs<ExtArgs>
-    spouse?: boolean | PersonDefaultArgs<ExtArgs>
+    male?: boolean | PersonDefaultArgs<ExtArgs>
+    female?: boolean | PersonDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["spouseRelationship"]>
 
   export type SpouseRelationshipSelectScalar = {
     id?: boolean
-    personId?: boolean
-    spouseId?: boolean
+    maleId?: boolean
+    femaleId?: boolean
     startDate?: boolean
     endDate?: boolean
     isActive?: boolean
   }
 
-  export type SpouseRelationshipOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "personId" | "spouseId" | "startDate" | "endDate" | "isActive", ExtArgs["result"]["spouseRelationship"]>
+  export type SpouseRelationshipOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "maleId" | "femaleId" | "startDate" | "endDate" | "isActive", ExtArgs["result"]["spouseRelationship"]>
   export type SpouseRelationshipInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    person?: boolean | PersonDefaultArgs<ExtArgs>
-    spouse?: boolean | PersonDefaultArgs<ExtArgs>
+    male?: boolean | PersonDefaultArgs<ExtArgs>
+    female?: boolean | PersonDefaultArgs<ExtArgs>
   }
   export type SpouseRelationshipIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    person?: boolean | PersonDefaultArgs<ExtArgs>
-    spouse?: boolean | PersonDefaultArgs<ExtArgs>
+    male?: boolean | PersonDefaultArgs<ExtArgs>
+    female?: boolean | PersonDefaultArgs<ExtArgs>
   }
   export type SpouseRelationshipIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    person?: boolean | PersonDefaultArgs<ExtArgs>
-    spouse?: boolean | PersonDefaultArgs<ExtArgs>
+    male?: boolean | PersonDefaultArgs<ExtArgs>
+    female?: boolean | PersonDefaultArgs<ExtArgs>
   }
 
   export type $SpouseRelationshipPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SpouseRelationship"
     objects: {
-      person: Prisma.$PersonPayload<ExtArgs>
-      spouse: Prisma.$PersonPayload<ExtArgs>
+      male: Prisma.$PersonPayload<ExtArgs>
+      female: Prisma.$PersonPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: number
-      personId: number
-      spouseId: number
+      id: string
+      maleId: string
+      femaleId: string
       startDate: Date | null
       endDate: Date | null
       isActive: boolean
@@ -4519,8 +4444,8 @@ export namespace Prisma {
    */
   export interface Prisma__SpouseRelationshipClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    person<T extends PersonDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PersonDefaultArgs<ExtArgs>>): Prisma__PersonClient<$Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    spouse<T extends PersonDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PersonDefaultArgs<ExtArgs>>): Prisma__PersonClient<$Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    male<T extends PersonDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PersonDefaultArgs<ExtArgs>>): Prisma__PersonClient<$Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    female<T extends PersonDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PersonDefaultArgs<ExtArgs>>): Prisma__PersonClient<$Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4550,9 +4475,9 @@ export namespace Prisma {
    * Fields of the SpouseRelationship model
    */
   interface SpouseRelationshipFieldRefs {
-    readonly id: FieldRef<"SpouseRelationship", 'Int'>
-    readonly personId: FieldRef<"SpouseRelationship", 'Int'>
-    readonly spouseId: FieldRef<"SpouseRelationship", 'Int'>
+    readonly id: FieldRef<"SpouseRelationship", 'String'>
+    readonly maleId: FieldRef<"SpouseRelationship", 'String'>
+    readonly femaleId: FieldRef<"SpouseRelationship", 'String'>
     readonly startDate: FieldRef<"SpouseRelationship", 'DateTime'>
     readonly endDate: FieldRef<"SpouseRelationship", 'DateTime'>
     readonly isActive: FieldRef<"SpouseRelationship", 'Boolean'>
@@ -4983,15 +4908,16 @@ export namespace Prisma {
   }
 
   export type ChangeRequestAvgAggregateOutputType = {
-    id: number | null
+    displayId: number | null
   }
 
   export type ChangeRequestSumAggregateOutputType = {
-    id: number | null
+    displayId: number | null
   }
 
   export type ChangeRequestMinAggregateOutputType = {
-    id: number | null
+    id: string | null
+    displayId: number | null
     action: $Enums.ChangeRequestAction | null
     status: $Enums.ChangeRequestStatus | null
     targetModel: $Enums.ChangeRequestTargetModel | null
@@ -5003,7 +4929,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestMaxAggregateOutputType = {
-    id: number | null
+    id: string | null
+    displayId: number | null
     action: $Enums.ChangeRequestAction | null
     status: $Enums.ChangeRequestStatus | null
     targetModel: $Enums.ChangeRequestTargetModel | null
@@ -5016,6 +4943,7 @@ export namespace Prisma {
 
   export type ChangeRequestCountAggregateOutputType = {
     id: number
+    displayId: number
     action: number
     status: number
     targetModel: number
@@ -5030,15 +4958,16 @@ export namespace Prisma {
 
 
   export type ChangeRequestAvgAggregateInputType = {
-    id?: true
+    displayId?: true
   }
 
   export type ChangeRequestSumAggregateInputType = {
-    id?: true
+    displayId?: true
   }
 
   export type ChangeRequestMinAggregateInputType = {
     id?: true
+    displayId?: true
     action?: true
     status?: true
     targetModel?: true
@@ -5051,6 +4980,7 @@ export namespace Prisma {
 
   export type ChangeRequestMaxAggregateInputType = {
     id?: true
+    displayId?: true
     action?: true
     status?: true
     targetModel?: true
@@ -5063,6 +4993,7 @@ export namespace Prisma {
 
   export type ChangeRequestCountAggregateInputType = {
     id?: true
+    displayId?: true
     action?: true
     status?: true
     targetModel?: true
@@ -5162,7 +5093,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestGroupByOutputType = {
-    id: number
+    id: string
+    displayId: number
     action: $Enums.ChangeRequestAction
     status: $Enums.ChangeRequestStatus
     targetModel: $Enums.ChangeRequestTargetModel
@@ -5195,6 +5127,7 @@ export namespace Prisma {
 
   export type ChangeRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    displayId?: boolean
     action?: boolean
     status?: boolean
     targetModel?: boolean
@@ -5209,6 +5142,7 @@ export namespace Prisma {
 
   export type ChangeRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    displayId?: boolean
     action?: boolean
     status?: boolean
     targetModel?: boolean
@@ -5223,6 +5157,7 @@ export namespace Prisma {
 
   export type ChangeRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    displayId?: boolean
     action?: boolean
     status?: boolean
     targetModel?: boolean
@@ -5237,6 +5172,7 @@ export namespace Prisma {
 
   export type ChangeRequestSelectScalar = {
     id?: boolean
+    displayId?: boolean
     action?: boolean
     status?: boolean
     targetModel?: boolean
@@ -5248,7 +5184,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type ChangeRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "action" | "status" | "targetModel" | "targetId" | "data" | "requesterId" | "requesterName" | "requesterPhone" | "createdAt", ExtArgs["result"]["changeRequest"]>
+  export type ChangeRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "displayId" | "action" | "status" | "targetModel" | "targetId" | "data" | "requesterId" | "requesterName" | "requesterPhone" | "createdAt", ExtArgs["result"]["changeRequest"]>
   export type ChangeRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     requester?: boolean | ChangeRequest$requesterArgs<ExtArgs>
   }
@@ -5265,7 +5201,8 @@ export namespace Prisma {
       requester: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: number
+      id: string
+      displayId: number
       action: $Enums.ChangeRequestAction
       status: $Enums.ChangeRequestStatus
       targetModel: $Enums.ChangeRequestTargetModel
@@ -5699,7 +5636,8 @@ export namespace Prisma {
    * Fields of the ChangeRequest model
    */
   interface ChangeRequestFieldRefs {
-    readonly id: FieldRef<"ChangeRequest", 'Int'>
+    readonly id: FieldRef<"ChangeRequest", 'String'>
+    readonly displayId: FieldRef<"ChangeRequest", 'Int'>
     readonly action: FieldRef<"ChangeRequest", 'ChangeRequestAction'>
     readonly status: FieldRef<"ChangeRequest", 'ChangeRequestStatus'>
     readonly targetModel: FieldRef<"ChangeRequest", 'ChangeRequestTargetModel'>
@@ -6148,32 +6086,20 @@ export namespace Prisma {
 
   export type AggregateFamily = {
     _count: FamilyCountAggregateOutputType | null
-    _avg: FamilyAvgAggregateOutputType | null
-    _sum: FamilySumAggregateOutputType | null
     _min: FamilyMinAggregateOutputType | null
     _max: FamilyMaxAggregateOutputType | null
   }
 
-  export type FamilyAvgAggregateOutputType = {
-    id: number | null
-    rootPersonId: number | null
-  }
-
-  export type FamilySumAggregateOutputType = {
-    id: number | null
-    rootPersonId: number | null
-  }
-
   export type FamilyMinAggregateOutputType = {
-    id: number | null
+    id: string | null
     name: string | null
-    rootPersonId: number | null
+    rootPersonId: string | null
   }
 
   export type FamilyMaxAggregateOutputType = {
-    id: number | null
+    id: string | null
     name: string | null
-    rootPersonId: number | null
+    rootPersonId: string | null
   }
 
   export type FamilyCountAggregateOutputType = {
@@ -6183,16 +6109,6 @@ export namespace Prisma {
     _all: number
   }
 
-
-  export type FamilyAvgAggregateInputType = {
-    id?: true
-    rootPersonId?: true
-  }
-
-  export type FamilySumAggregateInputType = {
-    id?: true
-    rootPersonId?: true
-  }
 
   export type FamilyMinAggregateInputType = {
     id?: true
@@ -6251,18 +6167,6 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Select which fields to average
-    **/
-    _avg?: FamilyAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: FamilySumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
      * Select which fields to find the minimum value
     **/
     _min?: FamilyMinAggregateInputType
@@ -6293,19 +6197,15 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: FamilyCountAggregateInputType | true
-    _avg?: FamilyAvgAggregateInputType
-    _sum?: FamilySumAggregateInputType
     _min?: FamilyMinAggregateInputType
     _max?: FamilyMaxAggregateInputType
   }
 
   export type FamilyGroupByOutputType = {
-    id: number
+    id: string
     name: string
-    rootPersonId: number | null
+    rootPersonId: string | null
     _count: FamilyCountAggregateOutputType | null
-    _avg: FamilyAvgAggregateOutputType | null
-    _sum: FamilySumAggregateOutputType | null
     _min: FamilyMinAggregateOutputType | null
     _max: FamilyMaxAggregateOutputType | null
   }
@@ -6373,9 +6273,9 @@ export namespace Prisma {
       members: Prisma.$PersonPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: number
+      id: string
       name: string
-      rootPersonId: number | null
+      rootPersonId: string | null
     }, ExtArgs["result"]["family"]>
     composites: {}
   }
@@ -6801,9 +6701,9 @@ export namespace Prisma {
    * Fields of the Family model
    */
   interface FamilyFieldRefs {
-    readonly id: FieldRef<"Family", 'Int'>
+    readonly id: FieldRef<"Family", 'String'>
     readonly name: FieldRef<"Family", 'String'>
-    readonly rootPersonId: FieldRef<"Family", 'Int'>
+    readonly rootPersonId: FieldRef<"Family", 'String'>
   }
     
 
@@ -7290,6 +7190,7 @@ export namespace Prisma {
   export const PersonScalarFieldEnum: {
     id: 'id',
     firstName: 'firstName',
+    fullName: 'fullName',
     gender: 'gender',
     birthDate: 'birthDate',
     deathDate: 'deathDate',
@@ -7304,8 +7205,8 @@ export namespace Prisma {
 
   export const SpouseRelationshipScalarFieldEnum: {
     id: 'id',
-    personId: 'personId',
-    spouseId: 'spouseId',
+    maleId: 'maleId',
+    femaleId: 'femaleId',
     startDate: 'startDate',
     endDate: 'endDate',
     isActive: 'isActive'
@@ -7316,6 +7217,7 @@ export namespace Prisma {
 
   export const ChangeRequestScalarFieldEnum: {
     id: 'id',
+    displayId: 'displayId',
     action: 'action',
     status: 'status',
     targetModel: 'targetModel',
@@ -7414,20 +7316,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Gender'
    */
   export type EnumGenderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Gender'>
@@ -7459,6 +7347,20 @@ export namespace Prisma {
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -7539,7 +7441,7 @@ export namespace Prisma {
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
-    id?: StringFilter<"User"> | string
+    id?: UuidFilter<"User"> | string
     email?: StringNullableFilter<"User"> | string | null
     phone?: StringNullableFilter<"User"> | string | null
     password?: StringFilter<"User"> | string
@@ -7587,7 +7489,7 @@ export namespace Prisma {
     AND?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     OR?: UserScalarWhereWithAggregatesInput[]
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"User"> | string
+    id?: UuidWithAggregatesFilter<"User"> | string
     email?: StringNullableWithAggregatesFilter<"User"> | string | null
     phone?: StringNullableWithAggregatesFilter<"User"> | string | null
     password?: StringWithAggregatesFilter<"User"> | string
@@ -7599,28 +7501,30 @@ export namespace Prisma {
     AND?: PersonWhereInput | PersonWhereInput[]
     OR?: PersonWhereInput[]
     NOT?: PersonWhereInput | PersonWhereInput[]
-    id?: IntFilter<"Person"> | number
+    id?: UuidFilter<"Person"> | string
     firstName?: StringFilter<"Person"> | string
+    fullName?: StringFilter<"Person"> | string
     gender?: EnumGenderFilter<"Person"> | $Enums.Gender
     birthDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     deathDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     phone?: StringNullableFilter<"Person"> | string | null
-    familyId?: IntFilter<"Person"> | number
-    fatherId?: IntNullableFilter<"Person"> | number | null
-    motherId?: IntNullableFilter<"Person"> | number | null
+    familyId?: UuidFilter<"Person"> | string
+    fatherId?: UuidNullableFilter<"Person"> | string | null
+    motherId?: UuidNullableFilter<"Person"> | string | null
     family?: XOR<FamilyScalarRelationFilter, FamilyWhereInput>
     father?: XOR<PersonNullableScalarRelationFilter, PersonWhereInput> | null
     mother?: XOR<PersonNullableScalarRelationFilter, PersonWhereInput> | null
     fatherChildren?: PersonListRelationFilter
     motherChildren?: PersonListRelationFilter
-    spouseConnections?: SpouseRelationshipListRelationFilter
-    spousedByConnections?: SpouseRelationshipListRelationFilter
+    maleSpouses?: SpouseRelationshipListRelationFilter
+    femaleSpouses?: SpouseRelationshipListRelationFilter
     rootOfFamily?: XOR<FamilyNullableScalarRelationFilter, FamilyWhereInput> | null
   }
 
   export type PersonOrderByWithRelationInput = {
     id?: SortOrder
     firstName?: SortOrder
+    fullName?: SortOrder
     gender?: SortOrder
     birthDate?: SortOrderInput | SortOrder
     deathDate?: SortOrderInput | SortOrder
@@ -7633,37 +7537,39 @@ export namespace Prisma {
     mother?: PersonOrderByWithRelationInput
     fatherChildren?: PersonOrderByRelationAggregateInput
     motherChildren?: PersonOrderByRelationAggregateInput
-    spouseConnections?: SpouseRelationshipOrderByRelationAggregateInput
-    spousedByConnections?: SpouseRelationshipOrderByRelationAggregateInput
+    maleSpouses?: SpouseRelationshipOrderByRelationAggregateInput
+    femaleSpouses?: SpouseRelationshipOrderByRelationAggregateInput
     rootOfFamily?: FamilyOrderByWithRelationInput
   }
 
   export type PersonWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
+    id?: string
     AND?: PersonWhereInput | PersonWhereInput[]
     OR?: PersonWhereInput[]
     NOT?: PersonWhereInput | PersonWhereInput[]
     firstName?: StringFilter<"Person"> | string
+    fullName?: StringFilter<"Person"> | string
     gender?: EnumGenderFilter<"Person"> | $Enums.Gender
     birthDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     deathDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     phone?: StringNullableFilter<"Person"> | string | null
-    familyId?: IntFilter<"Person"> | number
-    fatherId?: IntNullableFilter<"Person"> | number | null
-    motherId?: IntNullableFilter<"Person"> | number | null
+    familyId?: UuidFilter<"Person"> | string
+    fatherId?: UuidNullableFilter<"Person"> | string | null
+    motherId?: UuidNullableFilter<"Person"> | string | null
     family?: XOR<FamilyScalarRelationFilter, FamilyWhereInput>
     father?: XOR<PersonNullableScalarRelationFilter, PersonWhereInput> | null
     mother?: XOR<PersonNullableScalarRelationFilter, PersonWhereInput> | null
     fatherChildren?: PersonListRelationFilter
     motherChildren?: PersonListRelationFilter
-    spouseConnections?: SpouseRelationshipListRelationFilter
-    spousedByConnections?: SpouseRelationshipListRelationFilter
+    maleSpouses?: SpouseRelationshipListRelationFilter
+    femaleSpouses?: SpouseRelationshipListRelationFilter
     rootOfFamily?: XOR<FamilyNullableScalarRelationFilter, FamilyWhereInput> | null
   }, "id">
 
   export type PersonOrderByWithAggregationInput = {
     id?: SortOrder
     firstName?: SortOrder
+    fullName?: SortOrder
     gender?: SortOrder
     birthDate?: SortOrderInput | SortOrder
     deathDate?: SortOrderInput | SortOrder
@@ -7672,88 +7578,85 @@ export namespace Prisma {
     fatherId?: SortOrderInput | SortOrder
     motherId?: SortOrderInput | SortOrder
     _count?: PersonCountOrderByAggregateInput
-    _avg?: PersonAvgOrderByAggregateInput
     _max?: PersonMaxOrderByAggregateInput
     _min?: PersonMinOrderByAggregateInput
-    _sum?: PersonSumOrderByAggregateInput
   }
 
   export type PersonScalarWhereWithAggregatesInput = {
     AND?: PersonScalarWhereWithAggregatesInput | PersonScalarWhereWithAggregatesInput[]
     OR?: PersonScalarWhereWithAggregatesInput[]
     NOT?: PersonScalarWhereWithAggregatesInput | PersonScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"Person"> | number
+    id?: UuidWithAggregatesFilter<"Person"> | string
     firstName?: StringWithAggregatesFilter<"Person"> | string
+    fullName?: StringWithAggregatesFilter<"Person"> | string
     gender?: EnumGenderWithAggregatesFilter<"Person"> | $Enums.Gender
     birthDate?: DateTimeNullableWithAggregatesFilter<"Person"> | Date | string | null
     deathDate?: DateTimeNullableWithAggregatesFilter<"Person"> | Date | string | null
     phone?: StringNullableWithAggregatesFilter<"Person"> | string | null
-    familyId?: IntWithAggregatesFilter<"Person"> | number
-    fatherId?: IntNullableWithAggregatesFilter<"Person"> | number | null
-    motherId?: IntNullableWithAggregatesFilter<"Person"> | number | null
+    familyId?: UuidWithAggregatesFilter<"Person"> | string
+    fatherId?: UuidNullableWithAggregatesFilter<"Person"> | string | null
+    motherId?: UuidNullableWithAggregatesFilter<"Person"> | string | null
   }
 
   export type SpouseRelationshipWhereInput = {
     AND?: SpouseRelationshipWhereInput | SpouseRelationshipWhereInput[]
     OR?: SpouseRelationshipWhereInput[]
     NOT?: SpouseRelationshipWhereInput | SpouseRelationshipWhereInput[]
-    id?: IntFilter<"SpouseRelationship"> | number
-    personId?: IntFilter<"SpouseRelationship"> | number
-    spouseId?: IntFilter<"SpouseRelationship"> | number
+    id?: UuidFilter<"SpouseRelationship"> | string
+    maleId?: UuidFilter<"SpouseRelationship"> | string
+    femaleId?: UuidFilter<"SpouseRelationship"> | string
     startDate?: DateTimeNullableFilter<"SpouseRelationship"> | Date | string | null
     endDate?: DateTimeNullableFilter<"SpouseRelationship"> | Date | string | null
     isActive?: BoolFilter<"SpouseRelationship"> | boolean
-    person?: XOR<PersonScalarRelationFilter, PersonWhereInput>
-    spouse?: XOR<PersonScalarRelationFilter, PersonWhereInput>
+    male?: XOR<PersonScalarRelationFilter, PersonWhereInput>
+    female?: XOR<PersonScalarRelationFilter, PersonWhereInput>
   }
 
   export type SpouseRelationshipOrderByWithRelationInput = {
     id?: SortOrder
-    personId?: SortOrder
-    spouseId?: SortOrder
+    maleId?: SortOrder
+    femaleId?: SortOrder
     startDate?: SortOrderInput | SortOrder
     endDate?: SortOrderInput | SortOrder
     isActive?: SortOrder
-    person?: PersonOrderByWithRelationInput
-    spouse?: PersonOrderByWithRelationInput
+    male?: PersonOrderByWithRelationInput
+    female?: PersonOrderByWithRelationInput
   }
 
   export type SpouseRelationshipWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
-    personId_spouseId?: SpouseRelationshipPersonIdSpouseIdCompoundUniqueInput
+    id?: string
+    maleId_femaleId?: SpouseRelationshipMaleIdFemaleIdCompoundUniqueInput
     AND?: SpouseRelationshipWhereInput | SpouseRelationshipWhereInput[]
     OR?: SpouseRelationshipWhereInput[]
     NOT?: SpouseRelationshipWhereInput | SpouseRelationshipWhereInput[]
-    personId?: IntFilter<"SpouseRelationship"> | number
-    spouseId?: IntFilter<"SpouseRelationship"> | number
+    maleId?: UuidFilter<"SpouseRelationship"> | string
+    femaleId?: UuidFilter<"SpouseRelationship"> | string
     startDate?: DateTimeNullableFilter<"SpouseRelationship"> | Date | string | null
     endDate?: DateTimeNullableFilter<"SpouseRelationship"> | Date | string | null
     isActive?: BoolFilter<"SpouseRelationship"> | boolean
-    person?: XOR<PersonScalarRelationFilter, PersonWhereInput>
-    spouse?: XOR<PersonScalarRelationFilter, PersonWhereInput>
-  }, "id" | "personId_spouseId">
+    male?: XOR<PersonScalarRelationFilter, PersonWhereInput>
+    female?: XOR<PersonScalarRelationFilter, PersonWhereInput>
+  }, "id" | "maleId_femaleId">
 
   export type SpouseRelationshipOrderByWithAggregationInput = {
     id?: SortOrder
-    personId?: SortOrder
-    spouseId?: SortOrder
+    maleId?: SortOrder
+    femaleId?: SortOrder
     startDate?: SortOrderInput | SortOrder
     endDate?: SortOrderInput | SortOrder
     isActive?: SortOrder
     _count?: SpouseRelationshipCountOrderByAggregateInput
-    _avg?: SpouseRelationshipAvgOrderByAggregateInput
     _max?: SpouseRelationshipMaxOrderByAggregateInput
     _min?: SpouseRelationshipMinOrderByAggregateInput
-    _sum?: SpouseRelationshipSumOrderByAggregateInput
   }
 
   export type SpouseRelationshipScalarWhereWithAggregatesInput = {
     AND?: SpouseRelationshipScalarWhereWithAggregatesInput | SpouseRelationshipScalarWhereWithAggregatesInput[]
     OR?: SpouseRelationshipScalarWhereWithAggregatesInput[]
     NOT?: SpouseRelationshipScalarWhereWithAggregatesInput | SpouseRelationshipScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"SpouseRelationship"> | number
-    personId?: IntWithAggregatesFilter<"SpouseRelationship"> | number
-    spouseId?: IntWithAggregatesFilter<"SpouseRelationship"> | number
+    id?: UuidWithAggregatesFilter<"SpouseRelationship"> | string
+    maleId?: UuidWithAggregatesFilter<"SpouseRelationship"> | string
+    femaleId?: UuidWithAggregatesFilter<"SpouseRelationship"> | string
     startDate?: DateTimeNullableWithAggregatesFilter<"SpouseRelationship"> | Date | string | null
     endDate?: DateTimeNullableWithAggregatesFilter<"SpouseRelationship"> | Date | string | null
     isActive?: BoolWithAggregatesFilter<"SpouseRelationship"> | boolean
@@ -7763,13 +7666,14 @@ export namespace Prisma {
     AND?: ChangeRequestWhereInput | ChangeRequestWhereInput[]
     OR?: ChangeRequestWhereInput[]
     NOT?: ChangeRequestWhereInput | ChangeRequestWhereInput[]
-    id?: IntFilter<"ChangeRequest"> | number
+    id?: UuidFilter<"ChangeRequest"> | string
+    displayId?: IntFilter<"ChangeRequest"> | number
     action?: EnumChangeRequestActionFilter<"ChangeRequest"> | $Enums.ChangeRequestAction
     status?: EnumChangeRequestStatusFilter<"ChangeRequest"> | $Enums.ChangeRequestStatus
     targetModel?: EnumChangeRequestTargetModelFilter<"ChangeRequest"> | $Enums.ChangeRequestTargetModel
-    targetId?: StringNullableFilter<"ChangeRequest"> | string | null
+    targetId?: UuidNullableFilter<"ChangeRequest"> | string | null
     data?: JsonNullableFilter<"ChangeRequest">
-    requesterId?: StringNullableFilter<"ChangeRequest"> | string | null
+    requesterId?: UuidNullableFilter<"ChangeRequest"> | string | null
     requesterName?: StringNullableFilter<"ChangeRequest"> | string | null
     requesterPhone?: StringNullableFilter<"ChangeRequest"> | string | null
     createdAt?: DateTimeFilter<"ChangeRequest"> | Date | string
@@ -7778,6 +7682,7 @@ export namespace Prisma {
 
   export type ChangeRequestOrderByWithRelationInput = {
     id?: SortOrder
+    displayId?: SortOrder
     action?: SortOrder
     status?: SortOrder
     targetModel?: SortOrder
@@ -7791,16 +7696,17 @@ export namespace Prisma {
   }
 
   export type ChangeRequestWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
+    id?: string
     AND?: ChangeRequestWhereInput | ChangeRequestWhereInput[]
     OR?: ChangeRequestWhereInput[]
     NOT?: ChangeRequestWhereInput | ChangeRequestWhereInput[]
+    displayId?: IntFilter<"ChangeRequest"> | number
     action?: EnumChangeRequestActionFilter<"ChangeRequest"> | $Enums.ChangeRequestAction
     status?: EnumChangeRequestStatusFilter<"ChangeRequest"> | $Enums.ChangeRequestStatus
     targetModel?: EnumChangeRequestTargetModelFilter<"ChangeRequest"> | $Enums.ChangeRequestTargetModel
-    targetId?: StringNullableFilter<"ChangeRequest"> | string | null
+    targetId?: UuidNullableFilter<"ChangeRequest"> | string | null
     data?: JsonNullableFilter<"ChangeRequest">
-    requesterId?: StringNullableFilter<"ChangeRequest"> | string | null
+    requesterId?: UuidNullableFilter<"ChangeRequest"> | string | null
     requesterName?: StringNullableFilter<"ChangeRequest"> | string | null
     requesterPhone?: StringNullableFilter<"ChangeRequest"> | string | null
     createdAt?: DateTimeFilter<"ChangeRequest"> | Date | string
@@ -7809,6 +7715,7 @@ export namespace Prisma {
 
   export type ChangeRequestOrderByWithAggregationInput = {
     id?: SortOrder
+    displayId?: SortOrder
     action?: SortOrder
     status?: SortOrder
     targetModel?: SortOrder
@@ -7829,13 +7736,14 @@ export namespace Prisma {
     AND?: ChangeRequestScalarWhereWithAggregatesInput | ChangeRequestScalarWhereWithAggregatesInput[]
     OR?: ChangeRequestScalarWhereWithAggregatesInput[]
     NOT?: ChangeRequestScalarWhereWithAggregatesInput | ChangeRequestScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"ChangeRequest"> | number
+    id?: UuidWithAggregatesFilter<"ChangeRequest"> | string
+    displayId?: IntWithAggregatesFilter<"ChangeRequest"> | number
     action?: EnumChangeRequestActionWithAggregatesFilter<"ChangeRequest"> | $Enums.ChangeRequestAction
     status?: EnumChangeRequestStatusWithAggregatesFilter<"ChangeRequest"> | $Enums.ChangeRequestStatus
     targetModel?: EnumChangeRequestTargetModelWithAggregatesFilter<"ChangeRequest"> | $Enums.ChangeRequestTargetModel
-    targetId?: StringNullableWithAggregatesFilter<"ChangeRequest"> | string | null
+    targetId?: UuidNullableWithAggregatesFilter<"ChangeRequest"> | string | null
     data?: JsonNullableWithAggregatesFilter<"ChangeRequest">
-    requesterId?: StringNullableWithAggregatesFilter<"ChangeRequest"> | string | null
+    requesterId?: UuidNullableWithAggregatesFilter<"ChangeRequest"> | string | null
     requesterName?: StringNullableWithAggregatesFilter<"ChangeRequest"> | string | null
     requesterPhone?: StringNullableWithAggregatesFilter<"ChangeRequest"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ChangeRequest"> | Date | string
@@ -7845,9 +7753,9 @@ export namespace Prisma {
     AND?: FamilyWhereInput | FamilyWhereInput[]
     OR?: FamilyWhereInput[]
     NOT?: FamilyWhereInput | FamilyWhereInput[]
-    id?: IntFilter<"Family"> | number
+    id?: UuidFilter<"Family"> | string
     name?: StringFilter<"Family"> | string
-    rootPersonId?: IntNullableFilter<"Family"> | number | null
+    rootPersonId?: UuidNullableFilter<"Family"> | string | null
     rootPerson?: XOR<PersonNullableScalarRelationFilter, PersonWhereInput> | null
     members?: PersonListRelationFilter
   }
@@ -7861,8 +7769,8 @@ export namespace Prisma {
   }
 
   export type FamilyWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
-    rootPersonId?: number
+    id?: string
+    rootPersonId?: string
     AND?: FamilyWhereInput | FamilyWhereInput[]
     OR?: FamilyWhereInput[]
     NOT?: FamilyWhereInput | FamilyWhereInput[]
@@ -7876,19 +7784,17 @@ export namespace Prisma {
     name?: SortOrder
     rootPersonId?: SortOrderInput | SortOrder
     _count?: FamilyCountOrderByAggregateInput
-    _avg?: FamilyAvgOrderByAggregateInput
     _max?: FamilyMaxOrderByAggregateInput
     _min?: FamilyMinOrderByAggregateInput
-    _sum?: FamilySumOrderByAggregateInput
   }
 
   export type FamilyScalarWhereWithAggregatesInput = {
     AND?: FamilyScalarWhereWithAggregatesInput | FamilyScalarWhereWithAggregatesInput[]
     OR?: FamilyScalarWhereWithAggregatesInput[]
     NOT?: FamilyScalarWhereWithAggregatesInput | FamilyScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"Family"> | number
+    id?: UuidWithAggregatesFilter<"Family"> | string
     name?: StringWithAggregatesFilter<"Family"> | string
-    rootPersonId?: IntNullableWithAggregatesFilter<"Family"> | number | null
+    rootPersonId?: UuidNullableWithAggregatesFilter<"Family"> | string | null
   }
 
   export type UserCreateInput = {
@@ -7959,7 +7865,9 @@ export namespace Prisma {
   }
 
   export type PersonCreateInput = {
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
@@ -7969,30 +7877,33 @@ export namespace Prisma {
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateInput = {
-    id?: number
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    familyId: number
-    fatherId?: number | null
-    motherId?: number | null
+    familyId: string
+    fatherId?: string | null
+    motherId?: string | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8002,42 +7913,46 @@ export namespace Prisma {
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    familyId?: IntFieldUpdateOperationsInput | number
-    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
-    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    familyId?: StringFieldUpdateOperationsInput | string
+    fatherId?: NullableStringFieldUpdateOperationsInput | string | null
+    motherId?: NullableStringFieldUpdateOperationsInput | string | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonCreateManyInput = {
-    id?: number
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    familyId: number
-    fatherId?: number | null
-    motherId?: number | null
+    familyId: string
+    fatherId?: string | null
+    motherId?: string | null
   }
 
   export type PersonUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8045,76 +7960,82 @@ export namespace Prisma {
   }
 
   export type PersonUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    familyId?: IntFieldUpdateOperationsInput | number
-    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
-    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    familyId?: StringFieldUpdateOperationsInput | string
+    fatherId?: NullableStringFieldUpdateOperationsInput | string | null
+    motherId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SpouseRelationshipCreateInput = {
+    id?: string
     startDate?: Date | string | null
     endDate?: Date | string | null
     isActive?: boolean
-    person: PersonCreateNestedOneWithoutSpouseConnectionsInput
-    spouse: PersonCreateNestedOneWithoutSpousedByConnectionsInput
+    male: PersonCreateNestedOneWithoutMaleSpousesInput
+    female: PersonCreateNestedOneWithoutFemaleSpousesInput
   }
 
   export type SpouseRelationshipUncheckedCreateInput = {
-    id?: number
-    personId: number
-    spouseId: number
+    id?: string
+    maleId: string
+    femaleId: string
     startDate?: Date | string | null
     endDate?: Date | string | null
     isActive?: boolean
   }
 
   export type SpouseRelationshipUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    person?: PersonUpdateOneRequiredWithoutSpouseConnectionsNestedInput
-    spouse?: PersonUpdateOneRequiredWithoutSpousedByConnectionsNestedInput
+    male?: PersonUpdateOneRequiredWithoutMaleSpousesNestedInput
+    female?: PersonUpdateOneRequiredWithoutFemaleSpousesNestedInput
   }
 
   export type SpouseRelationshipUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    personId?: IntFieldUpdateOperationsInput | number
-    spouseId?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    maleId?: StringFieldUpdateOperationsInput | string
+    femaleId?: StringFieldUpdateOperationsInput | string
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SpouseRelationshipCreateManyInput = {
-    id?: number
-    personId: number
-    spouseId: number
+    id?: string
+    maleId: string
+    femaleId: string
     startDate?: Date | string | null
     endDate?: Date | string | null
     isActive?: boolean
   }
 
   export type SpouseRelationshipUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SpouseRelationshipUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    personId?: IntFieldUpdateOperationsInput | number
-    spouseId?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    maleId?: StringFieldUpdateOperationsInput | string
+    femaleId?: StringFieldUpdateOperationsInput | string
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ChangeRequestCreateInput = {
+    id?: string
+    displayId?: number
     action: $Enums.ChangeRequestAction
     status?: $Enums.ChangeRequestStatus
     targetModel: $Enums.ChangeRequestTargetModel
@@ -8127,7 +8048,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestUncheckedCreateInput = {
-    id?: number
+    id?: string
+    displayId?: number
     action: $Enums.ChangeRequestAction
     status?: $Enums.ChangeRequestStatus
     targetModel: $Enums.ChangeRequestTargetModel
@@ -8140,6 +8062,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayId?: IntFieldUpdateOperationsInput | number
     action?: EnumChangeRequestActionFieldUpdateOperationsInput | $Enums.ChangeRequestAction
     status?: EnumChangeRequestStatusFieldUpdateOperationsInput | $Enums.ChangeRequestStatus
     targetModel?: EnumChangeRequestTargetModelFieldUpdateOperationsInput | $Enums.ChangeRequestTargetModel
@@ -8152,7 +8076,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    displayId?: IntFieldUpdateOperationsInput | number
     action?: EnumChangeRequestActionFieldUpdateOperationsInput | $Enums.ChangeRequestAction
     status?: EnumChangeRequestStatusFieldUpdateOperationsInput | $Enums.ChangeRequestStatus
     targetModel?: EnumChangeRequestTargetModelFieldUpdateOperationsInput | $Enums.ChangeRequestTargetModel
@@ -8165,7 +8090,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestCreateManyInput = {
-    id?: number
+    id?: string
+    displayId?: number
     action: $Enums.ChangeRequestAction
     status?: $Enums.ChangeRequestStatus
     targetModel: $Enums.ChangeRequestTargetModel
@@ -8178,6 +8104,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayId?: IntFieldUpdateOperationsInput | number
     action?: EnumChangeRequestActionFieldUpdateOperationsInput | $Enums.ChangeRequestAction
     status?: EnumChangeRequestStatusFieldUpdateOperationsInput | $Enums.ChangeRequestStatus
     targetModel?: EnumChangeRequestTargetModelFieldUpdateOperationsInput | $Enums.ChangeRequestTargetModel
@@ -8189,7 +8117,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    displayId?: IntFieldUpdateOperationsInput | number
     action?: EnumChangeRequestActionFieldUpdateOperationsInput | $Enums.ChangeRequestAction
     status?: EnumChangeRequestStatusFieldUpdateOperationsInput | $Enums.ChangeRequestStatus
     targetModel?: EnumChangeRequestTargetModelFieldUpdateOperationsInput | $Enums.ChangeRequestTargetModel
@@ -8202,48 +8131,51 @@ export namespace Prisma {
   }
 
   export type FamilyCreateInput = {
+    id?: string
     name: string
     rootPerson?: PersonCreateNestedOneWithoutRootOfFamilyInput
     members?: PersonCreateNestedManyWithoutFamilyInput
   }
 
   export type FamilyUncheckedCreateInput = {
-    id?: number
+    id?: string
     name: string
-    rootPersonId?: number | null
+    rootPersonId?: string | null
     members?: PersonUncheckedCreateNestedManyWithoutFamilyInput
   }
 
   export type FamilyUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     rootPerson?: PersonUpdateOneWithoutRootOfFamilyNestedInput
     members?: PersonUpdateManyWithoutFamilyNestedInput
   }
 
   export type FamilyUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    rootPersonId?: NullableIntFieldUpdateOperationsInput | number | null
+    rootPersonId?: NullableStringFieldUpdateOperationsInput | string | null
     members?: PersonUncheckedUpdateManyWithoutFamilyNestedInput
   }
 
   export type FamilyCreateManyInput = {
-    id?: number
+    id?: string
     name: string
-    rootPersonId?: number | null
+    rootPersonId?: string | null
   }
 
   export type FamilyUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
   }
 
   export type FamilyUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    rootPersonId?: NullableIntFieldUpdateOperationsInput | number | null
+    rootPersonId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type StringFilter<$PrismaModel = never> = {
+  export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
     notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -8251,11 +8183,8 @@ export namespace Prisma {
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
     gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
-    not?: NestedStringFilter<$PrismaModel> | string
+    not?: NestedUuidFilter<$PrismaModel> | string
   }
 
   export type StringNullableFilter<$PrismaModel = never> = {
@@ -8271,6 +8200,21 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type StringFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringFilter<$PrismaModel> | string
   }
 
   export type EnumRoleFilter<$PrismaModel = never> = {
@@ -8322,7 +8266,7 @@ export namespace Prisma {
     name?: SortOrder
   }
 
-  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+  export type UuidWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
     notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -8330,11 +8274,8 @@ export namespace Prisma {
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
     gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
@@ -8358,6 +8299,24 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
   export type EnumRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
     in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
@@ -8366,17 +8325,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumRoleFilter<$PrismaModel>
     _max?: NestedEnumRoleFilter<$PrismaModel>
-  }
-
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type EnumGenderFilter<$PrismaModel = never> = {
@@ -8397,15 +8345,16 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  export type UuidNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
   }
 
   export type FamilyScalarRelationFilter = {
@@ -8446,6 +8395,7 @@ export namespace Prisma {
   export type PersonCountOrderByAggregateInput = {
     id?: SortOrder
     firstName?: SortOrder
+    fullName?: SortOrder
     gender?: SortOrder
     birthDate?: SortOrder
     deathDate?: SortOrder
@@ -8455,16 +8405,10 @@ export namespace Prisma {
     motherId?: SortOrder
   }
 
-  export type PersonAvgOrderByAggregateInput = {
-    id?: SortOrder
-    familyId?: SortOrder
-    fatherId?: SortOrder
-    motherId?: SortOrder
-  }
-
   export type PersonMaxOrderByAggregateInput = {
     id?: SortOrder
     firstName?: SortOrder
+    fullName?: SortOrder
     gender?: SortOrder
     birthDate?: SortOrder
     deathDate?: SortOrder
@@ -8477,6 +8421,7 @@ export namespace Prisma {
   export type PersonMinOrderByAggregateInput = {
     id?: SortOrder
     firstName?: SortOrder
+    fullName?: SortOrder
     gender?: SortOrder
     birthDate?: SortOrder
     deathDate?: SortOrder
@@ -8484,29 +8429,6 @@ export namespace Prisma {
     familyId?: SortOrder
     fatherId?: SortOrder
     motherId?: SortOrder
-  }
-
-  export type PersonSumOrderByAggregateInput = {
-    id?: SortOrder
-    familyId?: SortOrder
-    fatherId?: SortOrder
-    motherId?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type EnumGenderWithAggregatesFilter<$PrismaModel = never> = {
@@ -8533,20 +8455,19 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+  export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -8559,30 +8480,24 @@ export namespace Prisma {
     isNot?: PersonWhereInput
   }
 
-  export type SpouseRelationshipPersonIdSpouseIdCompoundUniqueInput = {
-    personId: number
-    spouseId: number
+  export type SpouseRelationshipMaleIdFemaleIdCompoundUniqueInput = {
+    maleId: string
+    femaleId: string
   }
 
   export type SpouseRelationshipCountOrderByAggregateInput = {
     id?: SortOrder
-    personId?: SortOrder
-    spouseId?: SortOrder
+    maleId?: SortOrder
+    femaleId?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
     isActive?: SortOrder
   }
 
-  export type SpouseRelationshipAvgOrderByAggregateInput = {
-    id?: SortOrder
-    personId?: SortOrder
-    spouseId?: SortOrder
-  }
-
   export type SpouseRelationshipMaxOrderByAggregateInput = {
     id?: SortOrder
-    personId?: SortOrder
-    spouseId?: SortOrder
+    maleId?: SortOrder
+    femaleId?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
     isActive?: SortOrder
@@ -8590,17 +8505,11 @@ export namespace Prisma {
 
   export type SpouseRelationshipMinOrderByAggregateInput = {
     id?: SortOrder
-    personId?: SortOrder
-    spouseId?: SortOrder
+    maleId?: SortOrder
+    femaleId?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
     isActive?: SortOrder
-  }
-
-  export type SpouseRelationshipSumOrderByAggregateInput = {
-    id?: SortOrder
-    personId?: SortOrder
-    spouseId?: SortOrder
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -8609,6 +8518,17 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type EnumChangeRequestActionFilter<$PrismaModel = never> = {
@@ -8673,6 +8593,7 @@ export namespace Prisma {
 
   export type ChangeRequestCountOrderByAggregateInput = {
     id?: SortOrder
+    displayId?: SortOrder
     action?: SortOrder
     status?: SortOrder
     targetModel?: SortOrder
@@ -8685,11 +8606,12 @@ export namespace Prisma {
   }
 
   export type ChangeRequestAvgOrderByAggregateInput = {
-    id?: SortOrder
+    displayId?: SortOrder
   }
 
   export type ChangeRequestMaxOrderByAggregateInput = {
     id?: SortOrder
+    displayId?: SortOrder
     action?: SortOrder
     status?: SortOrder
     targetModel?: SortOrder
@@ -8702,6 +8624,7 @@ export namespace Prisma {
 
   export type ChangeRequestMinOrderByAggregateInput = {
     id?: SortOrder
+    displayId?: SortOrder
     action?: SortOrder
     status?: SortOrder
     targetModel?: SortOrder
@@ -8713,7 +8636,23 @@ export namespace Prisma {
   }
 
   export type ChangeRequestSumOrderByAggregateInput = {
-    id?: SortOrder
+    displayId?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type EnumChangeRequestActionWithAggregatesFilter<$PrismaModel = never> = {
@@ -8792,11 +8731,6 @@ export namespace Prisma {
     rootPersonId?: SortOrder
   }
 
-  export type FamilyAvgOrderByAggregateInput = {
-    id?: SortOrder
-    rootPersonId?: SortOrder
-  }
-
   export type FamilyMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -8806,11 +8740,6 @@ export namespace Prisma {
   export type FamilyMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    rootPersonId?: SortOrder
-  }
-
-  export type FamilySumOrderByAggregateInput = {
-    id?: SortOrder
     rootPersonId?: SortOrder
   }
 
@@ -8900,17 +8829,17 @@ export namespace Prisma {
     connect?: PersonWhereUniqueInput | PersonWhereUniqueInput[]
   }
 
-  export type SpouseRelationshipCreateNestedManyWithoutPersonInput = {
-    create?: XOR<SpouseRelationshipCreateWithoutPersonInput, SpouseRelationshipUncheckedCreateWithoutPersonInput> | SpouseRelationshipCreateWithoutPersonInput[] | SpouseRelationshipUncheckedCreateWithoutPersonInput[]
-    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutPersonInput | SpouseRelationshipCreateOrConnectWithoutPersonInput[]
-    createMany?: SpouseRelationshipCreateManyPersonInputEnvelope
+  export type SpouseRelationshipCreateNestedManyWithoutMaleInput = {
+    create?: XOR<SpouseRelationshipCreateWithoutMaleInput, SpouseRelationshipUncheckedCreateWithoutMaleInput> | SpouseRelationshipCreateWithoutMaleInput[] | SpouseRelationshipUncheckedCreateWithoutMaleInput[]
+    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutMaleInput | SpouseRelationshipCreateOrConnectWithoutMaleInput[]
+    createMany?: SpouseRelationshipCreateManyMaleInputEnvelope
     connect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
   }
 
-  export type SpouseRelationshipCreateNestedManyWithoutSpouseInput = {
-    create?: XOR<SpouseRelationshipCreateWithoutSpouseInput, SpouseRelationshipUncheckedCreateWithoutSpouseInput> | SpouseRelationshipCreateWithoutSpouseInput[] | SpouseRelationshipUncheckedCreateWithoutSpouseInput[]
-    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutSpouseInput | SpouseRelationshipCreateOrConnectWithoutSpouseInput[]
-    createMany?: SpouseRelationshipCreateManySpouseInputEnvelope
+  export type SpouseRelationshipCreateNestedManyWithoutFemaleInput = {
+    create?: XOR<SpouseRelationshipCreateWithoutFemaleInput, SpouseRelationshipUncheckedCreateWithoutFemaleInput> | SpouseRelationshipCreateWithoutFemaleInput[] | SpouseRelationshipUncheckedCreateWithoutFemaleInput[]
+    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutFemaleInput | SpouseRelationshipCreateOrConnectWithoutFemaleInput[]
+    createMany?: SpouseRelationshipCreateManyFemaleInputEnvelope
     connect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
   }
 
@@ -8934,17 +8863,17 @@ export namespace Prisma {
     connect?: PersonWhereUniqueInput | PersonWhereUniqueInput[]
   }
 
-  export type SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput = {
-    create?: XOR<SpouseRelationshipCreateWithoutPersonInput, SpouseRelationshipUncheckedCreateWithoutPersonInput> | SpouseRelationshipCreateWithoutPersonInput[] | SpouseRelationshipUncheckedCreateWithoutPersonInput[]
-    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutPersonInput | SpouseRelationshipCreateOrConnectWithoutPersonInput[]
-    createMany?: SpouseRelationshipCreateManyPersonInputEnvelope
+  export type SpouseRelationshipUncheckedCreateNestedManyWithoutMaleInput = {
+    create?: XOR<SpouseRelationshipCreateWithoutMaleInput, SpouseRelationshipUncheckedCreateWithoutMaleInput> | SpouseRelationshipCreateWithoutMaleInput[] | SpouseRelationshipUncheckedCreateWithoutMaleInput[]
+    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutMaleInput | SpouseRelationshipCreateOrConnectWithoutMaleInput[]
+    createMany?: SpouseRelationshipCreateManyMaleInputEnvelope
     connect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
   }
 
-  export type SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput = {
-    create?: XOR<SpouseRelationshipCreateWithoutSpouseInput, SpouseRelationshipUncheckedCreateWithoutSpouseInput> | SpouseRelationshipCreateWithoutSpouseInput[] | SpouseRelationshipUncheckedCreateWithoutSpouseInput[]
-    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutSpouseInput | SpouseRelationshipCreateOrConnectWithoutSpouseInput[]
-    createMany?: SpouseRelationshipCreateManySpouseInputEnvelope
+  export type SpouseRelationshipUncheckedCreateNestedManyWithoutFemaleInput = {
+    create?: XOR<SpouseRelationshipCreateWithoutFemaleInput, SpouseRelationshipUncheckedCreateWithoutFemaleInput> | SpouseRelationshipCreateWithoutFemaleInput[] | SpouseRelationshipUncheckedCreateWithoutFemaleInput[]
+    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutFemaleInput | SpouseRelationshipCreateOrConnectWithoutFemaleInput[]
+    createMany?: SpouseRelationshipCreateManyFemaleInputEnvelope
     connect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
   }
 
@@ -9018,31 +8947,31 @@ export namespace Prisma {
     deleteMany?: PersonScalarWhereInput | PersonScalarWhereInput[]
   }
 
-  export type SpouseRelationshipUpdateManyWithoutPersonNestedInput = {
-    create?: XOR<SpouseRelationshipCreateWithoutPersonInput, SpouseRelationshipUncheckedCreateWithoutPersonInput> | SpouseRelationshipCreateWithoutPersonInput[] | SpouseRelationshipUncheckedCreateWithoutPersonInput[]
-    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutPersonInput | SpouseRelationshipCreateOrConnectWithoutPersonInput[]
-    upsert?: SpouseRelationshipUpsertWithWhereUniqueWithoutPersonInput | SpouseRelationshipUpsertWithWhereUniqueWithoutPersonInput[]
-    createMany?: SpouseRelationshipCreateManyPersonInputEnvelope
+  export type SpouseRelationshipUpdateManyWithoutMaleNestedInput = {
+    create?: XOR<SpouseRelationshipCreateWithoutMaleInput, SpouseRelationshipUncheckedCreateWithoutMaleInput> | SpouseRelationshipCreateWithoutMaleInput[] | SpouseRelationshipUncheckedCreateWithoutMaleInput[]
+    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutMaleInput | SpouseRelationshipCreateOrConnectWithoutMaleInput[]
+    upsert?: SpouseRelationshipUpsertWithWhereUniqueWithoutMaleInput | SpouseRelationshipUpsertWithWhereUniqueWithoutMaleInput[]
+    createMany?: SpouseRelationshipCreateManyMaleInputEnvelope
     set?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     disconnect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     delete?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     connect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
-    update?: SpouseRelationshipUpdateWithWhereUniqueWithoutPersonInput | SpouseRelationshipUpdateWithWhereUniqueWithoutPersonInput[]
-    updateMany?: SpouseRelationshipUpdateManyWithWhereWithoutPersonInput | SpouseRelationshipUpdateManyWithWhereWithoutPersonInput[]
+    update?: SpouseRelationshipUpdateWithWhereUniqueWithoutMaleInput | SpouseRelationshipUpdateWithWhereUniqueWithoutMaleInput[]
+    updateMany?: SpouseRelationshipUpdateManyWithWhereWithoutMaleInput | SpouseRelationshipUpdateManyWithWhereWithoutMaleInput[]
     deleteMany?: SpouseRelationshipScalarWhereInput | SpouseRelationshipScalarWhereInput[]
   }
 
-  export type SpouseRelationshipUpdateManyWithoutSpouseNestedInput = {
-    create?: XOR<SpouseRelationshipCreateWithoutSpouseInput, SpouseRelationshipUncheckedCreateWithoutSpouseInput> | SpouseRelationshipCreateWithoutSpouseInput[] | SpouseRelationshipUncheckedCreateWithoutSpouseInput[]
-    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutSpouseInput | SpouseRelationshipCreateOrConnectWithoutSpouseInput[]
-    upsert?: SpouseRelationshipUpsertWithWhereUniqueWithoutSpouseInput | SpouseRelationshipUpsertWithWhereUniqueWithoutSpouseInput[]
-    createMany?: SpouseRelationshipCreateManySpouseInputEnvelope
+  export type SpouseRelationshipUpdateManyWithoutFemaleNestedInput = {
+    create?: XOR<SpouseRelationshipCreateWithoutFemaleInput, SpouseRelationshipUncheckedCreateWithoutFemaleInput> | SpouseRelationshipCreateWithoutFemaleInput[] | SpouseRelationshipUncheckedCreateWithoutFemaleInput[]
+    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutFemaleInput | SpouseRelationshipCreateOrConnectWithoutFemaleInput[]
+    upsert?: SpouseRelationshipUpsertWithWhereUniqueWithoutFemaleInput | SpouseRelationshipUpsertWithWhereUniqueWithoutFemaleInput[]
+    createMany?: SpouseRelationshipCreateManyFemaleInputEnvelope
     set?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     disconnect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     delete?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     connect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
-    update?: SpouseRelationshipUpdateWithWhereUniqueWithoutSpouseInput | SpouseRelationshipUpdateWithWhereUniqueWithoutSpouseInput[]
-    updateMany?: SpouseRelationshipUpdateManyWithWhereWithoutSpouseInput | SpouseRelationshipUpdateManyWithWhereWithoutSpouseInput[]
+    update?: SpouseRelationshipUpdateWithWhereUniqueWithoutFemaleInput | SpouseRelationshipUpdateWithWhereUniqueWithoutFemaleInput[]
+    updateMany?: SpouseRelationshipUpdateManyWithWhereWithoutFemaleInput | SpouseRelationshipUpdateManyWithWhereWithoutFemaleInput[]
     deleteMany?: SpouseRelationshipScalarWhereInput | SpouseRelationshipScalarWhereInput[]
   }
 
@@ -9054,22 +8983,6 @@ export namespace Prisma {
     delete?: FamilyWhereInput | boolean
     connect?: FamilyWhereUniqueInput
     update?: XOR<XOR<FamilyUpdateToOneWithWhereWithoutRootPersonInput, FamilyUpdateWithoutRootPersonInput>, FamilyUncheckedUpdateWithoutRootPersonInput>
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type PersonUncheckedUpdateManyWithoutFatherNestedInput = {
@@ -9100,31 +9013,31 @@ export namespace Prisma {
     deleteMany?: PersonScalarWhereInput | PersonScalarWhereInput[]
   }
 
-  export type SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput = {
-    create?: XOR<SpouseRelationshipCreateWithoutPersonInput, SpouseRelationshipUncheckedCreateWithoutPersonInput> | SpouseRelationshipCreateWithoutPersonInput[] | SpouseRelationshipUncheckedCreateWithoutPersonInput[]
-    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutPersonInput | SpouseRelationshipCreateOrConnectWithoutPersonInput[]
-    upsert?: SpouseRelationshipUpsertWithWhereUniqueWithoutPersonInput | SpouseRelationshipUpsertWithWhereUniqueWithoutPersonInput[]
-    createMany?: SpouseRelationshipCreateManyPersonInputEnvelope
+  export type SpouseRelationshipUncheckedUpdateManyWithoutMaleNestedInput = {
+    create?: XOR<SpouseRelationshipCreateWithoutMaleInput, SpouseRelationshipUncheckedCreateWithoutMaleInput> | SpouseRelationshipCreateWithoutMaleInput[] | SpouseRelationshipUncheckedCreateWithoutMaleInput[]
+    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutMaleInput | SpouseRelationshipCreateOrConnectWithoutMaleInput[]
+    upsert?: SpouseRelationshipUpsertWithWhereUniqueWithoutMaleInput | SpouseRelationshipUpsertWithWhereUniqueWithoutMaleInput[]
+    createMany?: SpouseRelationshipCreateManyMaleInputEnvelope
     set?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     disconnect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     delete?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     connect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
-    update?: SpouseRelationshipUpdateWithWhereUniqueWithoutPersonInput | SpouseRelationshipUpdateWithWhereUniqueWithoutPersonInput[]
-    updateMany?: SpouseRelationshipUpdateManyWithWhereWithoutPersonInput | SpouseRelationshipUpdateManyWithWhereWithoutPersonInput[]
+    update?: SpouseRelationshipUpdateWithWhereUniqueWithoutMaleInput | SpouseRelationshipUpdateWithWhereUniqueWithoutMaleInput[]
+    updateMany?: SpouseRelationshipUpdateManyWithWhereWithoutMaleInput | SpouseRelationshipUpdateManyWithWhereWithoutMaleInput[]
     deleteMany?: SpouseRelationshipScalarWhereInput | SpouseRelationshipScalarWhereInput[]
   }
 
-  export type SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput = {
-    create?: XOR<SpouseRelationshipCreateWithoutSpouseInput, SpouseRelationshipUncheckedCreateWithoutSpouseInput> | SpouseRelationshipCreateWithoutSpouseInput[] | SpouseRelationshipUncheckedCreateWithoutSpouseInput[]
-    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutSpouseInput | SpouseRelationshipCreateOrConnectWithoutSpouseInput[]
-    upsert?: SpouseRelationshipUpsertWithWhereUniqueWithoutSpouseInput | SpouseRelationshipUpsertWithWhereUniqueWithoutSpouseInput[]
-    createMany?: SpouseRelationshipCreateManySpouseInputEnvelope
+  export type SpouseRelationshipUncheckedUpdateManyWithoutFemaleNestedInput = {
+    create?: XOR<SpouseRelationshipCreateWithoutFemaleInput, SpouseRelationshipUncheckedCreateWithoutFemaleInput> | SpouseRelationshipCreateWithoutFemaleInput[] | SpouseRelationshipUncheckedCreateWithoutFemaleInput[]
+    connectOrCreate?: SpouseRelationshipCreateOrConnectWithoutFemaleInput | SpouseRelationshipCreateOrConnectWithoutFemaleInput[]
+    upsert?: SpouseRelationshipUpsertWithWhereUniqueWithoutFemaleInput | SpouseRelationshipUpsertWithWhereUniqueWithoutFemaleInput[]
+    createMany?: SpouseRelationshipCreateManyFemaleInputEnvelope
     set?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     disconnect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     delete?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
     connect?: SpouseRelationshipWhereUniqueInput | SpouseRelationshipWhereUniqueInput[]
-    update?: SpouseRelationshipUpdateWithWhereUniqueWithoutSpouseInput | SpouseRelationshipUpdateWithWhereUniqueWithoutSpouseInput[]
-    updateMany?: SpouseRelationshipUpdateManyWithWhereWithoutSpouseInput | SpouseRelationshipUpdateManyWithWhereWithoutSpouseInput[]
+    update?: SpouseRelationshipUpdateWithWhereUniqueWithoutFemaleInput | SpouseRelationshipUpdateWithWhereUniqueWithoutFemaleInput[]
+    updateMany?: SpouseRelationshipUpdateManyWithWhereWithoutFemaleInput | SpouseRelationshipUpdateManyWithWhereWithoutFemaleInput[]
     deleteMany?: SpouseRelationshipScalarWhereInput | SpouseRelationshipScalarWhereInput[]
   }
 
@@ -9138,15 +9051,15 @@ export namespace Prisma {
     update?: XOR<XOR<FamilyUpdateToOneWithWhereWithoutRootPersonInput, FamilyUpdateWithoutRootPersonInput>, FamilyUncheckedUpdateWithoutRootPersonInput>
   }
 
-  export type PersonCreateNestedOneWithoutSpouseConnectionsInput = {
-    create?: XOR<PersonCreateWithoutSpouseConnectionsInput, PersonUncheckedCreateWithoutSpouseConnectionsInput>
-    connectOrCreate?: PersonCreateOrConnectWithoutSpouseConnectionsInput
+  export type PersonCreateNestedOneWithoutMaleSpousesInput = {
+    create?: XOR<PersonCreateWithoutMaleSpousesInput, PersonUncheckedCreateWithoutMaleSpousesInput>
+    connectOrCreate?: PersonCreateOrConnectWithoutMaleSpousesInput
     connect?: PersonWhereUniqueInput
   }
 
-  export type PersonCreateNestedOneWithoutSpousedByConnectionsInput = {
-    create?: XOR<PersonCreateWithoutSpousedByConnectionsInput, PersonUncheckedCreateWithoutSpousedByConnectionsInput>
-    connectOrCreate?: PersonCreateOrConnectWithoutSpousedByConnectionsInput
+  export type PersonCreateNestedOneWithoutFemaleSpousesInput = {
+    create?: XOR<PersonCreateWithoutFemaleSpousesInput, PersonUncheckedCreateWithoutFemaleSpousesInput>
+    connectOrCreate?: PersonCreateOrConnectWithoutFemaleSpousesInput
     connect?: PersonWhereUniqueInput
   }
 
@@ -9154,26 +9067,34 @@ export namespace Prisma {
     set?: boolean
   }
 
-  export type PersonUpdateOneRequiredWithoutSpouseConnectionsNestedInput = {
-    create?: XOR<PersonCreateWithoutSpouseConnectionsInput, PersonUncheckedCreateWithoutSpouseConnectionsInput>
-    connectOrCreate?: PersonCreateOrConnectWithoutSpouseConnectionsInput
-    upsert?: PersonUpsertWithoutSpouseConnectionsInput
+  export type PersonUpdateOneRequiredWithoutMaleSpousesNestedInput = {
+    create?: XOR<PersonCreateWithoutMaleSpousesInput, PersonUncheckedCreateWithoutMaleSpousesInput>
+    connectOrCreate?: PersonCreateOrConnectWithoutMaleSpousesInput
+    upsert?: PersonUpsertWithoutMaleSpousesInput
     connect?: PersonWhereUniqueInput
-    update?: XOR<XOR<PersonUpdateToOneWithWhereWithoutSpouseConnectionsInput, PersonUpdateWithoutSpouseConnectionsInput>, PersonUncheckedUpdateWithoutSpouseConnectionsInput>
+    update?: XOR<XOR<PersonUpdateToOneWithWhereWithoutMaleSpousesInput, PersonUpdateWithoutMaleSpousesInput>, PersonUncheckedUpdateWithoutMaleSpousesInput>
   }
 
-  export type PersonUpdateOneRequiredWithoutSpousedByConnectionsNestedInput = {
-    create?: XOR<PersonCreateWithoutSpousedByConnectionsInput, PersonUncheckedCreateWithoutSpousedByConnectionsInput>
-    connectOrCreate?: PersonCreateOrConnectWithoutSpousedByConnectionsInput
-    upsert?: PersonUpsertWithoutSpousedByConnectionsInput
+  export type PersonUpdateOneRequiredWithoutFemaleSpousesNestedInput = {
+    create?: XOR<PersonCreateWithoutFemaleSpousesInput, PersonUncheckedCreateWithoutFemaleSpousesInput>
+    connectOrCreate?: PersonCreateOrConnectWithoutFemaleSpousesInput
+    upsert?: PersonUpsertWithoutFemaleSpousesInput
     connect?: PersonWhereUniqueInput
-    update?: XOR<XOR<PersonUpdateToOneWithWhereWithoutSpousedByConnectionsInput, PersonUpdateWithoutSpousedByConnectionsInput>, PersonUncheckedUpdateWithoutSpousedByConnectionsInput>
+    update?: XOR<XOR<PersonUpdateToOneWithWhereWithoutFemaleSpousesInput, PersonUpdateWithoutFemaleSpousesInput>, PersonUncheckedUpdateWithoutFemaleSpousesInput>
   }
 
   export type UserCreateNestedOneWithoutChangeRequestsInput = {
     create?: XOR<UserCreateWithoutChangeRequestsInput, UserUncheckedCreateWithoutChangeRequestsInput>
     connectOrCreate?: UserCreateOrConnectWithoutChangeRequestsInput
     connect?: UserWhereUniqueInput
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type EnumChangeRequestActionFieldUpdateOperationsInput = {
@@ -9260,7 +9181,7 @@ export namespace Prisma {
     deleteMany?: PersonScalarWhereInput | PersonScalarWhereInput[]
   }
 
-  export type NestedStringFilter<$PrismaModel = never> = {
+  export type NestedUuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
     notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -9268,10 +9189,7 @@ export namespace Prisma {
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
     gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringFilter<$PrismaModel> | string
+    not?: NestedUuidFilter<$PrismaModel> | string
   }
 
   export type NestedStringNullableFilter<$PrismaModel = never> = {
@@ -9288,14 +9206,7 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type NestedEnumRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
-  }
-
-  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
+  export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
     notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -9306,7 +9217,25 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    not?: NestedStringFilter<$PrismaModel> | string
+  }
+
+  export type NestedEnumRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
+  }
+
+  export type NestedUuidWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
@@ -9351,6 +9280,23 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
   export type NestedEnumRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
     in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
@@ -9379,31 +9325,15 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
+  export type NestedUuidNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedEnumGenderWithAggregatesFilter<$PrismaModel = never> = {
@@ -9430,31 +9360,18 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+  export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -9500,6 +9417,33 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedEnumChangeRequestActionWithAggregatesFilter<$PrismaModel = never> = {
@@ -9570,6 +9514,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestCreateWithoutRequesterInput = {
+    id?: string
+    displayId?: number
     action: $Enums.ChangeRequestAction
     status?: $Enums.ChangeRequestStatus
     targetModel: $Enums.ChangeRequestTargetModel
@@ -9581,7 +9527,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestUncheckedCreateWithoutRequesterInput = {
-    id?: number
+    id?: string
+    displayId?: number
     action: $Enums.ChangeRequestAction
     status?: $Enums.ChangeRequestStatus
     targetModel: $Enums.ChangeRequestTargetModel
@@ -9622,27 +9569,29 @@ export namespace Prisma {
     AND?: ChangeRequestScalarWhereInput | ChangeRequestScalarWhereInput[]
     OR?: ChangeRequestScalarWhereInput[]
     NOT?: ChangeRequestScalarWhereInput | ChangeRequestScalarWhereInput[]
-    id?: IntFilter<"ChangeRequest"> | number
+    id?: UuidFilter<"ChangeRequest"> | string
+    displayId?: IntFilter<"ChangeRequest"> | number
     action?: EnumChangeRequestActionFilter<"ChangeRequest"> | $Enums.ChangeRequestAction
     status?: EnumChangeRequestStatusFilter<"ChangeRequest"> | $Enums.ChangeRequestStatus
     targetModel?: EnumChangeRequestTargetModelFilter<"ChangeRequest"> | $Enums.ChangeRequestTargetModel
-    targetId?: StringNullableFilter<"ChangeRequest"> | string | null
+    targetId?: UuidNullableFilter<"ChangeRequest"> | string | null
     data?: JsonNullableFilter<"ChangeRequest">
-    requesterId?: StringNullableFilter<"ChangeRequest"> | string | null
+    requesterId?: UuidNullableFilter<"ChangeRequest"> | string | null
     requesterName?: StringNullableFilter<"ChangeRequest"> | string | null
     requesterPhone?: StringNullableFilter<"ChangeRequest"> | string | null
     createdAt?: DateTimeFilter<"ChangeRequest"> | Date | string
   }
 
   export type FamilyCreateWithoutMembersInput = {
+    id?: string
     name: string
     rootPerson?: PersonCreateNestedOneWithoutRootOfFamilyInput
   }
 
   export type FamilyUncheckedCreateWithoutMembersInput = {
-    id?: number
+    id?: string
     name: string
-    rootPersonId?: number | null
+    rootPersonId?: string | null
   }
 
   export type FamilyCreateOrConnectWithoutMembersInput = {
@@ -9651,7 +9600,9 @@ export namespace Prisma {
   }
 
   export type PersonCreateWithoutFatherChildrenInput = {
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
@@ -9660,24 +9611,25 @@ export namespace Prisma {
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateWithoutFatherChildrenInput = {
-    id?: number
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    familyId: number
-    fatherId?: number | null
-    motherId?: number | null
+    familyId: string
+    fatherId?: string | null
+    motherId?: string | null
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
@@ -9687,7 +9639,9 @@ export namespace Prisma {
   }
 
   export type PersonCreateWithoutMotherChildrenInput = {
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
@@ -9696,24 +9650,25 @@ export namespace Prisma {
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
-    spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateWithoutMotherChildrenInput = {
-    id?: number
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    familyId: number
-    fatherId?: number | null
-    motherId?: number | null
+    familyId: string
+    fatherId?: string | null
+    motherId?: string | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
-    spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
@@ -9723,7 +9678,9 @@ export namespace Prisma {
   }
 
   export type PersonCreateWithoutFatherInput = {
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
@@ -9732,24 +9689,25 @@ export namespace Prisma {
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateWithoutFatherInput = {
-    id?: number
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    familyId: number
-    motherId?: number | null
+    familyId: string
+    motherId?: string | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
@@ -9764,7 +9722,9 @@ export namespace Prisma {
   }
 
   export type PersonCreateWithoutMotherInput = {
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
@@ -9773,24 +9733,25 @@ export namespace Prisma {
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateWithoutMotherInput = {
-    id?: number
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    familyId: number
-    fatherId?: number | null
+    familyId: string
+    fatherId?: string | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
@@ -9804,63 +9765,66 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type SpouseRelationshipCreateWithoutPersonInput = {
+  export type SpouseRelationshipCreateWithoutMaleInput = {
+    id?: string
     startDate?: Date | string | null
     endDate?: Date | string | null
     isActive?: boolean
-    spouse: PersonCreateNestedOneWithoutSpousedByConnectionsInput
+    female: PersonCreateNestedOneWithoutFemaleSpousesInput
   }
 
-  export type SpouseRelationshipUncheckedCreateWithoutPersonInput = {
-    id?: number
-    spouseId: number
+  export type SpouseRelationshipUncheckedCreateWithoutMaleInput = {
+    id?: string
+    femaleId: string
     startDate?: Date | string | null
     endDate?: Date | string | null
     isActive?: boolean
   }
 
-  export type SpouseRelationshipCreateOrConnectWithoutPersonInput = {
+  export type SpouseRelationshipCreateOrConnectWithoutMaleInput = {
     where: SpouseRelationshipWhereUniqueInput
-    create: XOR<SpouseRelationshipCreateWithoutPersonInput, SpouseRelationshipUncheckedCreateWithoutPersonInput>
+    create: XOR<SpouseRelationshipCreateWithoutMaleInput, SpouseRelationshipUncheckedCreateWithoutMaleInput>
   }
 
-  export type SpouseRelationshipCreateManyPersonInputEnvelope = {
-    data: SpouseRelationshipCreateManyPersonInput | SpouseRelationshipCreateManyPersonInput[]
+  export type SpouseRelationshipCreateManyMaleInputEnvelope = {
+    data: SpouseRelationshipCreateManyMaleInput | SpouseRelationshipCreateManyMaleInput[]
     skipDuplicates?: boolean
   }
 
-  export type SpouseRelationshipCreateWithoutSpouseInput = {
+  export type SpouseRelationshipCreateWithoutFemaleInput = {
+    id?: string
     startDate?: Date | string | null
     endDate?: Date | string | null
     isActive?: boolean
-    person: PersonCreateNestedOneWithoutSpouseConnectionsInput
+    male: PersonCreateNestedOneWithoutMaleSpousesInput
   }
 
-  export type SpouseRelationshipUncheckedCreateWithoutSpouseInput = {
-    id?: number
-    personId: number
+  export type SpouseRelationshipUncheckedCreateWithoutFemaleInput = {
+    id?: string
+    maleId: string
     startDate?: Date | string | null
     endDate?: Date | string | null
     isActive?: boolean
   }
 
-  export type SpouseRelationshipCreateOrConnectWithoutSpouseInput = {
+  export type SpouseRelationshipCreateOrConnectWithoutFemaleInput = {
     where: SpouseRelationshipWhereUniqueInput
-    create: XOR<SpouseRelationshipCreateWithoutSpouseInput, SpouseRelationshipUncheckedCreateWithoutSpouseInput>
+    create: XOR<SpouseRelationshipCreateWithoutFemaleInput, SpouseRelationshipUncheckedCreateWithoutFemaleInput>
   }
 
-  export type SpouseRelationshipCreateManySpouseInputEnvelope = {
-    data: SpouseRelationshipCreateManySpouseInput | SpouseRelationshipCreateManySpouseInput[]
+  export type SpouseRelationshipCreateManyFemaleInputEnvelope = {
+    data: SpouseRelationshipCreateManyFemaleInput | SpouseRelationshipCreateManyFemaleInput[]
     skipDuplicates?: boolean
   }
 
   export type FamilyCreateWithoutRootPersonInput = {
+    id?: string
     name: string
     members?: PersonCreateNestedManyWithoutFamilyInput
   }
 
   export type FamilyUncheckedCreateWithoutRootPersonInput = {
-    id?: number
+    id?: string
     name: string
     members?: PersonUncheckedCreateNestedManyWithoutFamilyInput
   }
@@ -9882,14 +9846,15 @@ export namespace Prisma {
   }
 
   export type FamilyUpdateWithoutMembersInput = {
+    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     rootPerson?: PersonUpdateOneWithoutRootOfFamilyNestedInput
   }
 
   export type FamilyUncheckedUpdateWithoutMembersInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    rootPersonId?: NullableIntFieldUpdateOperationsInput | number | null
+    rootPersonId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PersonUpsertWithoutFatherChildrenInput = {
@@ -9904,7 +9869,9 @@ export namespace Prisma {
   }
 
   export type PersonUpdateWithoutFatherChildrenInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -9913,24 +9880,25 @@ export namespace Prisma {
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutFatherChildrenInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    familyId?: IntFieldUpdateOperationsInput | number
-    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
-    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    familyId?: StringFieldUpdateOperationsInput | string
+    fatherId?: NullableStringFieldUpdateOperationsInput | string | null
+    motherId?: NullableStringFieldUpdateOperationsInput | string | null
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
@@ -9946,7 +9914,9 @@ export namespace Prisma {
   }
 
   export type PersonUpdateWithoutMotherChildrenInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -9955,24 +9925,25 @@ export namespace Prisma {
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
-    spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutMotherChildrenInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    familyId?: IntFieldUpdateOperationsInput | number
-    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
-    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    familyId?: StringFieldUpdateOperationsInput | string
+    fatherId?: NullableStringFieldUpdateOperationsInput | string | null
+    motherId?: NullableStringFieldUpdateOperationsInput | string | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
-    spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
@@ -9996,15 +9967,16 @@ export namespace Prisma {
     AND?: PersonScalarWhereInput | PersonScalarWhereInput[]
     OR?: PersonScalarWhereInput[]
     NOT?: PersonScalarWhereInput | PersonScalarWhereInput[]
-    id?: IntFilter<"Person"> | number
+    id?: UuidFilter<"Person"> | string
     firstName?: StringFilter<"Person"> | string
+    fullName?: StringFilter<"Person"> | string
     gender?: EnumGenderFilter<"Person"> | $Enums.Gender
     birthDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     deathDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     phone?: StringNullableFilter<"Person"> | string | null
-    familyId?: IntFilter<"Person"> | number
-    fatherId?: IntNullableFilter<"Person"> | number | null
-    motherId?: IntNullableFilter<"Person"> | number | null
+    familyId?: UuidFilter<"Person"> | string
+    fatherId?: UuidNullableFilter<"Person"> | string | null
+    motherId?: UuidNullableFilter<"Person"> | string | null
   }
 
   export type PersonUpsertWithWhereUniqueWithoutMotherInput = {
@@ -10023,48 +9995,48 @@ export namespace Prisma {
     data: XOR<PersonUpdateManyMutationInput, PersonUncheckedUpdateManyWithoutMotherInput>
   }
 
-  export type SpouseRelationshipUpsertWithWhereUniqueWithoutPersonInput = {
+  export type SpouseRelationshipUpsertWithWhereUniqueWithoutMaleInput = {
     where: SpouseRelationshipWhereUniqueInput
-    update: XOR<SpouseRelationshipUpdateWithoutPersonInput, SpouseRelationshipUncheckedUpdateWithoutPersonInput>
-    create: XOR<SpouseRelationshipCreateWithoutPersonInput, SpouseRelationshipUncheckedCreateWithoutPersonInput>
+    update: XOR<SpouseRelationshipUpdateWithoutMaleInput, SpouseRelationshipUncheckedUpdateWithoutMaleInput>
+    create: XOR<SpouseRelationshipCreateWithoutMaleInput, SpouseRelationshipUncheckedCreateWithoutMaleInput>
   }
 
-  export type SpouseRelationshipUpdateWithWhereUniqueWithoutPersonInput = {
+  export type SpouseRelationshipUpdateWithWhereUniqueWithoutMaleInput = {
     where: SpouseRelationshipWhereUniqueInput
-    data: XOR<SpouseRelationshipUpdateWithoutPersonInput, SpouseRelationshipUncheckedUpdateWithoutPersonInput>
+    data: XOR<SpouseRelationshipUpdateWithoutMaleInput, SpouseRelationshipUncheckedUpdateWithoutMaleInput>
   }
 
-  export type SpouseRelationshipUpdateManyWithWhereWithoutPersonInput = {
+  export type SpouseRelationshipUpdateManyWithWhereWithoutMaleInput = {
     where: SpouseRelationshipScalarWhereInput
-    data: XOR<SpouseRelationshipUpdateManyMutationInput, SpouseRelationshipUncheckedUpdateManyWithoutPersonInput>
+    data: XOR<SpouseRelationshipUpdateManyMutationInput, SpouseRelationshipUncheckedUpdateManyWithoutMaleInput>
   }
 
   export type SpouseRelationshipScalarWhereInput = {
     AND?: SpouseRelationshipScalarWhereInput | SpouseRelationshipScalarWhereInput[]
     OR?: SpouseRelationshipScalarWhereInput[]
     NOT?: SpouseRelationshipScalarWhereInput | SpouseRelationshipScalarWhereInput[]
-    id?: IntFilter<"SpouseRelationship"> | number
-    personId?: IntFilter<"SpouseRelationship"> | number
-    spouseId?: IntFilter<"SpouseRelationship"> | number
+    id?: UuidFilter<"SpouseRelationship"> | string
+    maleId?: UuidFilter<"SpouseRelationship"> | string
+    femaleId?: UuidFilter<"SpouseRelationship"> | string
     startDate?: DateTimeNullableFilter<"SpouseRelationship"> | Date | string | null
     endDate?: DateTimeNullableFilter<"SpouseRelationship"> | Date | string | null
     isActive?: BoolFilter<"SpouseRelationship"> | boolean
   }
 
-  export type SpouseRelationshipUpsertWithWhereUniqueWithoutSpouseInput = {
+  export type SpouseRelationshipUpsertWithWhereUniqueWithoutFemaleInput = {
     where: SpouseRelationshipWhereUniqueInput
-    update: XOR<SpouseRelationshipUpdateWithoutSpouseInput, SpouseRelationshipUncheckedUpdateWithoutSpouseInput>
-    create: XOR<SpouseRelationshipCreateWithoutSpouseInput, SpouseRelationshipUncheckedCreateWithoutSpouseInput>
+    update: XOR<SpouseRelationshipUpdateWithoutFemaleInput, SpouseRelationshipUncheckedUpdateWithoutFemaleInput>
+    create: XOR<SpouseRelationshipCreateWithoutFemaleInput, SpouseRelationshipUncheckedCreateWithoutFemaleInput>
   }
 
-  export type SpouseRelationshipUpdateWithWhereUniqueWithoutSpouseInput = {
+  export type SpouseRelationshipUpdateWithWhereUniqueWithoutFemaleInput = {
     where: SpouseRelationshipWhereUniqueInput
-    data: XOR<SpouseRelationshipUpdateWithoutSpouseInput, SpouseRelationshipUncheckedUpdateWithoutSpouseInput>
+    data: XOR<SpouseRelationshipUpdateWithoutFemaleInput, SpouseRelationshipUncheckedUpdateWithoutFemaleInput>
   }
 
-  export type SpouseRelationshipUpdateManyWithWhereWithoutSpouseInput = {
+  export type SpouseRelationshipUpdateManyWithWhereWithoutFemaleInput = {
     where: SpouseRelationshipScalarWhereInput
-    data: XOR<SpouseRelationshipUpdateManyMutationInput, SpouseRelationshipUncheckedUpdateManyWithoutSpouseInput>
+    data: XOR<SpouseRelationshipUpdateManyMutationInput, SpouseRelationshipUncheckedUpdateManyWithoutFemaleInput>
   }
 
   export type FamilyUpsertWithoutRootPersonInput = {
@@ -10079,18 +10051,21 @@ export namespace Prisma {
   }
 
   export type FamilyUpdateWithoutRootPersonInput = {
+    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     members?: PersonUpdateManyWithoutFamilyNestedInput
   }
 
   export type FamilyUncheckedUpdateWithoutRootPersonInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     members?: PersonUncheckedUpdateManyWithoutFamilyNestedInput
   }
 
-  export type PersonCreateWithoutSpouseConnectionsInput = {
+  export type PersonCreateWithoutMaleSpousesInput = {
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
@@ -10100,33 +10075,36 @@ export namespace Prisma {
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
-    spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    femaleSpouses?: SpouseRelationshipCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
-  export type PersonUncheckedCreateWithoutSpouseConnectionsInput = {
-    id?: number
+  export type PersonUncheckedCreateWithoutMaleSpousesInput = {
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    familyId: number
-    fatherId?: number | null
-    motherId?: number | null
+    familyId: string
+    fatherId?: string | null
+    motherId?: string | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
-    spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    femaleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
-  export type PersonCreateOrConnectWithoutSpouseConnectionsInput = {
+  export type PersonCreateOrConnectWithoutMaleSpousesInput = {
     where: PersonWhereUniqueInput
-    create: XOR<PersonCreateWithoutSpouseConnectionsInput, PersonUncheckedCreateWithoutSpouseConnectionsInput>
+    create: XOR<PersonCreateWithoutMaleSpousesInput, PersonUncheckedCreateWithoutMaleSpousesInput>
   }
 
-  export type PersonCreateWithoutSpousedByConnectionsInput = {
+  export type PersonCreateWithoutFemaleSpousesInput = {
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
@@ -10136,44 +10114,47 @@ export namespace Prisma {
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
+    maleSpouses?: SpouseRelationshipCreateNestedManyWithoutMaleInput
     rootOfFamily?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
-  export type PersonUncheckedCreateWithoutSpousedByConnectionsInput = {
-    id?: number
+  export type PersonUncheckedCreateWithoutFemaleSpousesInput = {
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    familyId: number
-    fatherId?: number | null
-    motherId?: number | null
+    familyId: string
+    fatherId?: string | null
+    motherId?: string | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
+    maleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutMaleInput
     rootOfFamily?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
-  export type PersonCreateOrConnectWithoutSpousedByConnectionsInput = {
+  export type PersonCreateOrConnectWithoutFemaleSpousesInput = {
     where: PersonWhereUniqueInput
-    create: XOR<PersonCreateWithoutSpousedByConnectionsInput, PersonUncheckedCreateWithoutSpousedByConnectionsInput>
+    create: XOR<PersonCreateWithoutFemaleSpousesInput, PersonUncheckedCreateWithoutFemaleSpousesInput>
   }
 
-  export type PersonUpsertWithoutSpouseConnectionsInput = {
-    update: XOR<PersonUpdateWithoutSpouseConnectionsInput, PersonUncheckedUpdateWithoutSpouseConnectionsInput>
-    create: XOR<PersonCreateWithoutSpouseConnectionsInput, PersonUncheckedCreateWithoutSpouseConnectionsInput>
+  export type PersonUpsertWithoutMaleSpousesInput = {
+    update: XOR<PersonUpdateWithoutMaleSpousesInput, PersonUncheckedUpdateWithoutMaleSpousesInput>
+    create: XOR<PersonCreateWithoutMaleSpousesInput, PersonUncheckedCreateWithoutMaleSpousesInput>
     where?: PersonWhereInput
   }
 
-  export type PersonUpdateToOneWithWhereWithoutSpouseConnectionsInput = {
+  export type PersonUpdateToOneWithWhereWithoutMaleSpousesInput = {
     where?: PersonWhereInput
-    data: XOR<PersonUpdateWithoutSpouseConnectionsInput, PersonUncheckedUpdateWithoutSpouseConnectionsInput>
+    data: XOR<PersonUpdateWithoutMaleSpousesInput, PersonUncheckedUpdateWithoutMaleSpousesInput>
   }
 
-  export type PersonUpdateWithoutSpouseConnectionsInput = {
+  export type PersonUpdateWithoutMaleSpousesInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10183,39 +10164,42 @@ export namespace Prisma {
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
-    spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    femaleSpouses?: SpouseRelationshipUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
-  export type PersonUncheckedUpdateWithoutSpouseConnectionsInput = {
-    id?: IntFieldUpdateOperationsInput | number
+  export type PersonUncheckedUpdateWithoutMaleSpousesInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    familyId?: IntFieldUpdateOperationsInput | number
-    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
-    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    familyId?: StringFieldUpdateOperationsInput | string
+    fatherId?: NullableStringFieldUpdateOperationsInput | string | null
+    motherId?: NullableStringFieldUpdateOperationsInput | string | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
-    spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    femaleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
-  export type PersonUpsertWithoutSpousedByConnectionsInput = {
-    update: XOR<PersonUpdateWithoutSpousedByConnectionsInput, PersonUncheckedUpdateWithoutSpousedByConnectionsInput>
-    create: XOR<PersonCreateWithoutSpousedByConnectionsInput, PersonUncheckedCreateWithoutSpousedByConnectionsInput>
+  export type PersonUpsertWithoutFemaleSpousesInput = {
+    update: XOR<PersonUpdateWithoutFemaleSpousesInput, PersonUncheckedUpdateWithoutFemaleSpousesInput>
+    create: XOR<PersonCreateWithoutFemaleSpousesInput, PersonUncheckedCreateWithoutFemaleSpousesInput>
     where?: PersonWhereInput
   }
 
-  export type PersonUpdateToOneWithWhereWithoutSpousedByConnectionsInput = {
+  export type PersonUpdateToOneWithWhereWithoutFemaleSpousesInput = {
     where?: PersonWhereInput
-    data: XOR<PersonUpdateWithoutSpousedByConnectionsInput, PersonUncheckedUpdateWithoutSpousedByConnectionsInput>
+    data: XOR<PersonUpdateWithoutFemaleSpousesInput, PersonUncheckedUpdateWithoutFemaleSpousesInput>
   }
 
-  export type PersonUpdateWithoutSpousedByConnectionsInput = {
+  export type PersonUpdateWithoutFemaleSpousesInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10225,23 +10209,24 @@ export namespace Prisma {
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
+    maleSpouses?: SpouseRelationshipUpdateManyWithoutMaleNestedInput
     rootOfFamily?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
-  export type PersonUncheckedUpdateWithoutSpousedByConnectionsInput = {
-    id?: IntFieldUpdateOperationsInput | number
+  export type PersonUncheckedUpdateWithoutFemaleSpousesInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    familyId?: IntFieldUpdateOperationsInput | number
-    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
-    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    familyId?: StringFieldUpdateOperationsInput | string
+    fatherId?: NullableStringFieldUpdateOperationsInput | string | null
+    motherId?: NullableStringFieldUpdateOperationsInput | string | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
+    maleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutMaleNestedInput
     rootOfFamily?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
@@ -10298,7 +10283,9 @@ export namespace Prisma {
   }
 
   export type PersonCreateWithoutRootOfFamilyInput = {
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
@@ -10308,24 +10295,25 @@ export namespace Prisma {
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipCreateNestedManyWithoutFemaleInput
   }
 
   export type PersonUncheckedCreateWithoutRootOfFamilyInput = {
-    id?: number
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    familyId: number
-    fatherId?: number | null
-    motherId?: number | null
+    familyId: string
+    fatherId?: string | null
+    motherId?: string | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutFemaleInput
   }
 
   export type PersonCreateOrConnectWithoutRootOfFamilyInput = {
@@ -10334,7 +10322,9 @@ export namespace Prisma {
   }
 
   export type PersonCreateWithoutFamilyInput = {
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
@@ -10343,24 +10333,25 @@ export namespace Prisma {
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
     motherChildren?: PersonCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyCreateNestedOneWithoutRootPersonInput
   }
 
   export type PersonUncheckedCreateWithoutFamilyInput = {
-    id?: number
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    fatherId?: number | null
-    motherId?: number | null
+    fatherId?: string | null
+    motherId?: string | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
     motherChildren?: PersonUncheckedCreateNestedManyWithoutMotherInput
-    spouseConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutPersonInput
-    spousedByConnections?: SpouseRelationshipUncheckedCreateNestedManyWithoutSpouseInput
+    maleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutMaleInput
+    femaleSpouses?: SpouseRelationshipUncheckedCreateNestedManyWithoutFemaleInput
     rootOfFamily?: FamilyUncheckedCreateNestedOneWithoutRootPersonInput
   }
 
@@ -10386,7 +10377,9 @@ export namespace Prisma {
   }
 
   export type PersonUpdateWithoutRootOfFamilyInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10396,24 +10389,25 @@ export namespace Prisma {
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUpdateManyWithoutFemaleNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutRootOfFamilyInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    familyId?: IntFieldUpdateOperationsInput | number
-    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
-    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    familyId?: StringFieldUpdateOperationsInput | string
+    fatherId?: NullableStringFieldUpdateOperationsInput | string | null
+    motherId?: NullableStringFieldUpdateOperationsInput | string | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutFemaleNestedInput
   }
 
   export type PersonUpsertWithWhereUniqueWithoutFamilyInput = {
@@ -10433,7 +10427,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestCreateManyRequesterInput = {
-    id?: number
+    id?: string
+    displayId?: number
     action: $Enums.ChangeRequestAction
     status?: $Enums.ChangeRequestStatus
     targetModel: $Enums.ChangeRequestTargetModel
@@ -10445,6 +10440,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestUpdateWithoutRequesterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayId?: IntFieldUpdateOperationsInput | number
     action?: EnumChangeRequestActionFieldUpdateOperationsInput | $Enums.ChangeRequestAction
     status?: EnumChangeRequestStatusFieldUpdateOperationsInput | $Enums.ChangeRequestStatus
     targetModel?: EnumChangeRequestTargetModelFieldUpdateOperationsInput | $Enums.ChangeRequestTargetModel
@@ -10456,7 +10453,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestUncheckedUpdateWithoutRequesterInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    displayId?: IntFieldUpdateOperationsInput | number
     action?: EnumChangeRequestActionFieldUpdateOperationsInput | $Enums.ChangeRequestAction
     status?: EnumChangeRequestStatusFieldUpdateOperationsInput | $Enums.ChangeRequestStatus
     targetModel?: EnumChangeRequestTargetModelFieldUpdateOperationsInput | $Enums.ChangeRequestTargetModel
@@ -10468,7 +10466,8 @@ export namespace Prisma {
   }
 
   export type ChangeRequestUncheckedUpdateManyWithoutRequesterInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    displayId?: IntFieldUpdateOperationsInput | number
     action?: EnumChangeRequestActionFieldUpdateOperationsInput | $Enums.ChangeRequestAction
     status?: EnumChangeRequestStatusFieldUpdateOperationsInput | $Enums.ChangeRequestStatus
     targetModel?: EnumChangeRequestTargetModelFieldUpdateOperationsInput | $Enums.ChangeRequestTargetModel
@@ -10480,45 +10479,49 @@ export namespace Prisma {
   }
 
   export type PersonCreateManyFatherInput = {
-    id?: number
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    familyId: number
-    motherId?: number | null
+    familyId: string
+    motherId?: string | null
   }
 
   export type PersonCreateManyMotherInput = {
-    id?: number
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    familyId: number
-    fatherId?: number | null
+    familyId: string
+    fatherId?: string | null
   }
 
-  export type SpouseRelationshipCreateManyPersonInput = {
-    id?: number
-    spouseId: number
+  export type SpouseRelationshipCreateManyMaleInput = {
+    id?: string
+    femaleId: string
     startDate?: Date | string | null
     endDate?: Date | string | null
     isActive?: boolean
   }
 
-  export type SpouseRelationshipCreateManySpouseInput = {
-    id?: number
-    personId: number
+  export type SpouseRelationshipCreateManyFemaleInput = {
+    id?: string
+    maleId: string
     startDate?: Date | string | null
     endDate?: Date | string | null
     isActive?: boolean
   }
 
   export type PersonUpdateWithoutFatherInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10527,40 +10530,44 @@ export namespace Prisma {
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutFatherInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    familyId?: IntFieldUpdateOperationsInput | number
-    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    familyId?: StringFieldUpdateOperationsInput | string
+    motherId?: NullableStringFieldUpdateOperationsInput | string | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateManyWithoutFatherInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    familyId?: IntFieldUpdateOperationsInput | number
-    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    familyId?: StringFieldUpdateOperationsInput | string
+    motherId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PersonUpdateWithoutMotherInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10569,97 +10576,104 @@ export namespace Prisma {
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutMotherInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    familyId?: IntFieldUpdateOperationsInput | number
-    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
+    familyId?: StringFieldUpdateOperationsInput | string
+    fatherId?: NullableStringFieldUpdateOperationsInput | string | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateManyWithoutMotherInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    familyId?: IntFieldUpdateOperationsInput | number
-    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
+    familyId?: StringFieldUpdateOperationsInput | string
+    fatherId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type SpouseRelationshipUpdateWithoutPersonInput = {
+  export type SpouseRelationshipUpdateWithoutMaleInput = {
+    id?: StringFieldUpdateOperationsInput | string
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    spouse?: PersonUpdateOneRequiredWithoutSpousedByConnectionsNestedInput
+    female?: PersonUpdateOneRequiredWithoutFemaleSpousesNestedInput
   }
 
-  export type SpouseRelationshipUncheckedUpdateWithoutPersonInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    spouseId?: IntFieldUpdateOperationsInput | number
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-  }
-
-  export type SpouseRelationshipUncheckedUpdateManyWithoutPersonInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    spouseId?: IntFieldUpdateOperationsInput | number
+  export type SpouseRelationshipUncheckedUpdateWithoutMaleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    femaleId?: StringFieldUpdateOperationsInput | string
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
-  export type SpouseRelationshipUpdateWithoutSpouseInput = {
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    person?: PersonUpdateOneRequiredWithoutSpouseConnectionsNestedInput
-  }
-
-  export type SpouseRelationshipUncheckedUpdateWithoutSpouseInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    personId?: IntFieldUpdateOperationsInput | number
+  export type SpouseRelationshipUncheckedUpdateManyWithoutMaleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    femaleId?: StringFieldUpdateOperationsInput | string
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
-  export type SpouseRelationshipUncheckedUpdateManyWithoutSpouseInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    personId?: IntFieldUpdateOperationsInput | number
+  export type SpouseRelationshipUpdateWithoutFemaleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    male?: PersonUpdateOneRequiredWithoutMaleSpousesNestedInput
+  }
+
+  export type SpouseRelationshipUncheckedUpdateWithoutFemaleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    maleId?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type SpouseRelationshipUncheckedUpdateManyWithoutFemaleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    maleId?: StringFieldUpdateOperationsInput | string
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PersonCreateManyFamilyInput = {
-    id?: number
+    id?: string
     firstName: string
+    fullName: string
     gender: $Enums.Gender
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
-    fatherId?: number | null
-    motherId?: number | null
+    fatherId?: string | null
+    motherId?: string | null
   }
 
   export type PersonUpdateWithoutFamilyInput = {
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10668,36 +10682,38 @@ export namespace Prisma {
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateWithoutFamilyInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
-    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    fatherId?: NullableStringFieldUpdateOperationsInput | string | null
+    motherId?: NullableStringFieldUpdateOperationsInput | string | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
     motherChildren?: PersonUncheckedUpdateManyWithoutMotherNestedInput
-    spouseConnections?: SpouseRelationshipUncheckedUpdateManyWithoutPersonNestedInput
-    spousedByConnections?: SpouseRelationshipUncheckedUpdateManyWithoutSpouseNestedInput
+    maleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutMaleNestedInput
+    femaleSpouses?: SpouseRelationshipUncheckedUpdateManyWithoutFemaleNestedInput
     rootOfFamily?: FamilyUncheckedUpdateOneWithoutRootPersonNestedInput
   }
 
   export type PersonUncheckedUpdateManyWithoutFamilyInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
     firstName?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
-    fatherId?: NullableIntFieldUpdateOperationsInput | number | null
-    motherId?: NullableIntFieldUpdateOperationsInput | number | null
+    fatherId?: NullableStringFieldUpdateOperationsInput | string | null
+    motherId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 

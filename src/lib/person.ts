@@ -1,34 +1,36 @@
-import { FamilyTreeData } from '@/types/family';
+import { PersonWithRelations } from '@/types/family';
 import { prisma } from './prisma';
 import isValidDateString from './date';
 
 export const createPerson = async (data: {
   firstName: string;
+  fullName: string;
   familyId: string;
   gender: 'MALE' | 'FEMALE';
   phone?: string;
   birthDate?: Date;
   deathDate?: Date;
-  fatherId?: number | string;
-  motherId?: number | string;
+  fatherId?: string;
+  motherId?: string;
 }) => {
-  const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
+  const { firstName, fullName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
 
   return prisma.person.create({
     data: {
       firstName: firstName,
-      family: { connect: { id: +familyId } },
+      fullName,
+      family: { connect: { id: familyId } },
       gender: gender,
       phone: phone,
       birthDate: birthDate,
       deathDate: deathDate,
-      father: fatherId ? { connect: { id: +fatherId } } : undefined,
-      mother: motherId ? { connect: { id: +motherId } } : undefined,
+      father: fatherId ? { connect: { id: fatherId } } : undefined,
+      mother: motherId ? { connect: { id: motherId } } : undefined,
     },
   });
 };
 
-export const getPersonById = async (id: number) => {
+export const getPersonById = async (id: string) => {
   return prisma.person.findUnique({
     where: { id },
     include: {
@@ -36,7 +38,8 @@ export const getPersonById = async (id: number) => {
       mother: true,
       fatherChildren: true,
       motherChildren: true,
-      spouseConnections: true,
+      maleSpouses: true,
+      femaleSpouses: true,
       family: true,
     },
   });
@@ -45,21 +48,36 @@ export const getPersonById = async (id: number) => {
 export const getAllPersons = async () => {
   return prisma.person.findMany({
     include: {
-      father: true,
-      mother: true,
-      fatherChildren: true,
-      motherChildren: true,
-      spouseConnections: true,
-      family: true,
-    }
+           father: true,
+           mother: true,
+           fatherChildren: true,
+           motherChildren: true,
+           maleSpouses: {
+            include: {
+              male: true,
+              female: true,
+            }
+           },
+           femaleSpouses: {
+            include: {
+              male: true,
+              female: true,
+            }
+           },
+           family: {
+            include: {
+              rootPerson: true,
+            }
+           },
+         },
   });
 };
 
-export const getAncestors = (
-  data: FamilyTreeData,
+export const getFullName = (
+  members: PersonWithRelations[],
   personId: string
 ): string | null => {
-  let person = personId ? data.people[personId] : null;
+  let person = personId ? members.find((m) => m.id === personId) : null;
   if (!person) return null;
   const familyName = person.family.name;
   let theChildOf = person.gender === "MALE" ? " بن " : " بنت ";
@@ -67,14 +85,14 @@ export const getAncestors = (
 
   let counter = 0;
 
-  while (person.fatherId && counter < 5) {
-    person = data.people[person.fatherId];
-    if (!person) break;
+  while (person.father && counter < 5) {
+    let father = person.father;
+    if (!father) break;
 
-    if (!person.fatherId) break;
+    if (!father.fatherId) break;
 
-    fullName += theChildOf + person.name;
-    theChildOf = person.gender === "MALE" ? " بن " : " بنت ";
+    fullName += theChildOf + person.firstName;
+    theChildOf = " بن "
     counter++;
   }
 
@@ -99,17 +117,24 @@ export const getAllFemales = async () => {
   });
 };
 
-export const getAllSpouses = async (personId: number) => {
+export const getAllSpouses = async (personId: string) => {
   const person = await prisma.person.findUnique({
     where: { 
       id: personId 
     },
     include: {
-      spouseConnections: {
+      maleSpouses: {
         include: {
-          spouse: true 
+          male: true,
+          female: true,
         }
-      }
+      },
+      femaleSpouses: {
+        include: {
+          male: true,
+          female: true,
+        }
+      },
     }
   });
 
@@ -117,18 +142,22 @@ export const getAllSpouses = async (personId: number) => {
     return null;
   }
 
-  const spouses = person.spouseConnections.map(connection => connection.spouse);
+  let spouses;
+  if (person.gender === "MALE")
+    spouses = person.maleSpouses.map(s => s.female);
+  if (person.gender === "FEMALE")
+    spouses = person.femaleSpouses.map(s => s.male);
   
   return spouses;
 };
 
-export const updatePerson = async (id: number, data: {
+export const updatePerson = async (id: string, data: {
   firstName?: string;
-  familyId?: number;
+  familyId?: string;
   gender?: 'MALE' | 'FEMALE';
   phone?: string;
-  fatherId?: number;
-  motherId?: number;
+  fatherId?: string;
+  motherId?: string;
   birthDate?: string;
   deathDate?: string;
 }) => {
@@ -148,7 +177,7 @@ export const updatePerson = async (id: number, data: {
   });
 };
 
-export const deletePerson = async (id: number) => {
+export const deletePerson = async (id: string) => {
   return prisma.person.delete({
     where: { id },
   });

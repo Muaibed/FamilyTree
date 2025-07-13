@@ -35,18 +35,19 @@ enum Gender {
 }
 
 model Person {
-  id         Int       @id @default(autoincrement())
+  id         String          @id @default(uuid()) @db.Uuid
   firstName  String
+  fullName   String
   gender     Gender
   birthDate  DateTime?
   deathDate  DateTime?
   phone      String?
   
   family     Family    @relation("FamilyMembers", fields: [familyId], references: [id])
-  familyId   Int
+  familyId   String @db.Uuid
 
-  fatherId Int?
-  motherId Int?
+  fatherId String? @db.Uuid
+  motherId String? @db.Uuid
 
   father Person? @relation("FatherRelation", fields: [fatherId], references: [id])
   mother Person? @relation("MotherRelation", fields: [motherId], references: [id])
@@ -54,25 +55,24 @@ model Person {
   fatherChildren Person[] @relation("FatherRelation")
   motherChildren Person[] @relation("MotherRelation")
 
-  spouseConnections    SpouseRelationship[] @relation("PersonToSpouse")
-  spousedByConnections SpouseRelationship[] @relation("SpouseToPersons")
+  maleSpouses    SpouseRelationship[] @relation("Males")
+  femaleSpouses      SpouseRelationship[] @relation("Females")
 
   rootOfFamily Family? @relation("RootPersonRelation")
 }
 
 model SpouseRelationship {
-  id Int @id @default(autoincrement())
-
-  person   Person @relation("PersonToSpouse", fields: [personId], references: [id])
-  personId Int
-  spouse   Person @relation("SpouseToPersons", fields: [spouseId], references: [id])
-  spouseId Int
+  id       String @id @default(uuid()) @db.Uuid
+  male    Person @relation("Males", fields: [maleId], references: [id])
+  maleId String @db.Uuid
+  female   Person @relation("Females", fields: [femaleId], references: [id])
+  femaleId String @db.Uuid
 
   startDate DateTime?
   endDate   DateTime?
   isActive  Boolean   @default(true)
 
-  @@unique([personId, spouseId])
+  @@unique([maleId, femaleId])
 }
 
 enum ChangeRequestAction {
@@ -93,23 +93,24 @@ enum ChangeRequestTargetModel {
 }
 
 model ChangeRequest {
-  id             Int                 @id @default(autoincrement())
+  id             String              @id @default(uuid()) @db.Uuid
+  displayId      Int                 @default(autoincrement())
   action         ChangeRequestAction
   status         ChangeRequestStatus @default(PENDING)
   targetModel    ChangeRequestTargetModel
-  targetId       String?
+  targetId       String? @db.Uuid
   data           Json?
   requester      User?               @relation("ChangeRequester", fields: [requesterId], references: [id])
-  requesterId    String?
+  requesterId    String? @db.Uuid
   requesterName  String?
   requesterPhone String?
   createdAt      DateTime            @default(now())
 }
 
 model Family {
-  id           Int    @id @default(autoincrement())
+  id           String     @id @default(uuid()) @db.Uuid
   name         String
-  rootPerson   Person? @relation("RootPersonRelation", fields: [rootPersonId], references: [id])
-  rootPersonId Int?    @unique
+  rootPerson   Person?    @relation("RootPersonRelation", fields: [rootPersonId], references: [id])
+  rootPersonId String?    @db.Uuid       @unique
   members      Person[]   @relation("FamilyMembers")
 }

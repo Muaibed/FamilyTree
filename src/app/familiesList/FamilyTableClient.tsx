@@ -4,20 +4,20 @@ import { useState } from "react";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { Modal } from "../../components/client/Modal";
-import { Family } from "../../types/family";
 import EditFamilyForm from "@/components/forms/EditFamilyForm";
+import { FamilyWithRootPerson } from "@/types/family";
 
-export function FamilyTableClient({ data, onChange }: { data: Family, onChange: any }) {
-  const [selectedFamily, setSelectedFamily] = useState<Family | null>(null);
+export function FamilyTableClient({ data, onChange }: { data: FamilyWithRootPerson[], onChange: any }) {
+  const [selectedFamily, setSelectedFamily] = useState<FamilyWithRootPerson | undefined>(undefined);
   const tableColumns = columns({
-    onEdit: (person: Family) => setSelectedFamily(person),
+    onEdit: (family: FamilyWithRootPerson) => setSelectedFamily(family),
   });
 
   return (
     <>
       <DataTable columns={tableColumns} data={Object.values(data)} />
       {selectedFamily && (
-        <Modal isOpen={true} onClose={() => setSelectedFamily(null)}>
+        <Modal isOpen={true} onClose={() => setSelectedFamily(undefined)}>
           <EditFamilyForm family={selectedFamily} onEdit={onChange} />
         </Modal>
       )}

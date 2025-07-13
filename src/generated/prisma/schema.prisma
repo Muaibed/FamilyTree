@@ -14,24 +14,103 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id             String          @id @default(uuid()) @db.Uuid
+  email          String?         @unique
+  phone          String?         @unique
+  password       String
+  role           Role            @default(USER)
+  name           String?
+  changeRequests ChangeRequest[] @relation("ChangeRequester")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
 enum Gender {
   MALE
   FEMALE
 }
 
 model Person {
-  id         Int       @id @default(autoincrement())
-  firstName  String
-  familyName String
-  gender     Gender
-  birthDate  DateTime?
+  id        String    @id @default(uuid()) @db.Uuid
+  firstName String
+  fullName  String
+  gender    Gender
+  birthDate DateTime?
+  deathDate DateTime?
+  phone     String?
 
-  fatherId Int?
-  motherId Int?
+  family   Family @relation("FamilyMembers", fields: [familyId], references: [id])
+  familyId String @db.Uuid
+
+  fatherId String? @db.Uuid
+  motherId String? @db.Uuid
 
   father Person? @relation("FatherRelation", fields: [fatherId], references: [id])
   mother Person? @relation("MotherRelation", fields: [motherId], references: [id])
 
   fatherChildren Person[] @relation("FatherRelation")
   motherChildren Person[] @relation("MotherRelation")
+
+  spouseConnections    SpouseRelationship[] @relation("PersonToSpouse")
+  spousedByConnections SpouseRelationship[] @relation("SpouseToPersons")
+
+  rootOfFamily Family? @relation("RootPersonRelation")
+}
+
+model SpouseRelationship {
+  id       String @id @default(uuid()) @db.Uuid
+  person   Person @relation("PersonToSpouse", fields: [personId], references: [id])
+  personId String @db.Uuid
+  spouse   Person @relation("SpouseToPersons", fields: [spouseId], references: [id])
+  spouseId String @db.Uuid
+
+  startDate DateTime?
+  endDate   DateTime?
+  isActive  Boolean   @default(true)
+
+  @@unique([personId, spouseId])
+}
+
+enum ChangeRequestAction {
+  ADD
+  DELETE
+  UPDATE
+}
+
+enum ChangeRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ChangeRequestTargetModel {
+  PERSON
+  SPOUSERELATIONSHIP
+}
+
+model ChangeRequest {
+  id             String                   @id @default(uuid()) @db.Uuid
+  displayId      Int
+  action         ChangeRequestAction
+  status         ChangeRequestStatus      @default(PENDING)
+  targetModel    ChangeRequestTargetModel
+  targetId       String?                  @db.Uuid
+  data           Json?
+  requester      User?                    @relation("ChangeRequester", fields: [requesterId], references: [id])
+  requesterId    String?                  @db.Uuid
+  requesterName  String?
+  requesterPhone String?
+  createdAt      DateTime                 @default(now())
+}
+
+model Family {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  rootPerson   Person?  @relation("RootPersonRelation", fields: [rootPersonId], references: [id])
+  rootPersonId String?  @unique @db.Uuid
+  members      Person[] @relation("FamilyMembers")
 }

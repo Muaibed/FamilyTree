@@ -11,7 +11,7 @@ export async function GET(req:NextRequest) {
         return new Response("Family ID is required", { status: 400 });
     }
 
-    const family = await getFamilyById(+id);
+    const family = await getFamilyById(id);
 
     return NextResponse.json(family);
   } catch (error: unknown) {
@@ -30,8 +30,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     
-     const id = params.id;
-
     const { name, rootPersonId } = await req.json();
 
     const data = {
@@ -39,11 +37,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       rootPersonId
     }
 
-    if (!id) {
+    if (!params.id) {
       return new Response("Family ID is required", { status: 400});
     }
 
-    await updateFamily(+id, data);
+    await updateFamily(params.id, data);
 
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
@@ -60,14 +58,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       if (!isPermitted) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
-
-      const id = Number(params.id);
       
-      if (!id) {
+      if (!params.id) {
         return new Response("Family ID is required", { status: 400 });
       }
   
-      await deleteFamily(+id);
+      await deleteFamily(params.id);
   
       return new Response("Family deleted successfully", { status: 200 });
     } catch (error) {

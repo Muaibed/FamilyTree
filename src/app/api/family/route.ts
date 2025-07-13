@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
     const newFamily = await createFamily({
       name,
-      rootPersonId: +rootPersonId,
+      rootPersonId,
     });
 
     return NextResponse.json(newFamily, { status: 201 });

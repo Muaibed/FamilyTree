@@ -2,7 +2,6 @@ import { ChangeRequest } from "@/generated/prisma"
 import { Button } from "../ui/button"
 import JSONtoHTML from "./JSONtoHTML";
 import { toast } from "sonner";
-import { updateChangeRequest } from "@/lib/changeRequest";
 
 const AddChangeRequest = ({request, onChange}: {request: ChangeRequest, onChange: any}) => {
     const handleApprove = async (e: React.FormEvent) => {

@@ -1,25 +1,31 @@
 "use client";
 
-import { Family } from "@/types/family";
+import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Option } from "@/types/ui";
 import { useMembersContext } from "../client/MembersContextProvider";
 import { Modal } from "../client/Modal";
 import DeleteFamily from "../client/DeleteFamily";
+import SearchSelect from "../client/SearchSelect";
+import { Person } from "@/generated/prisma";
+import ErrorAlert from "../alerts/ErrorAlert";
+import { Loader2 } from "lucide-react";
 
 const EditFamilyForm = ({
   family,
   onEdit,
 }: {
-  family: Family;
+  family: FamilyWithRootPerson;
   onEdit?: any;
 }) => {
   const [name, setName] = useState(family.name);
-  const [rootPersonId, setRootPersonId] = useState<string | undefined>(
-    family.rootPersonId?.toString()
+  const [rootPerson, setRootPerson] = useState<Person | undefined>(
+    family.rootPerson ? family.rootPerson : undefined
   );
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [rootPersonOptions, setRootPersonOptions] = useState<Option[]>();
 
   const { members, isLoading, error, mutate } = useMembersContext();
 
@@ -34,7 +40,7 @@ const EditFamilyForm = ({
         },
         body: JSON.stringify({
           name,
-          rootPersonId,
+          rootPersonId: rootPerson?.id,
         }),
       });
 
@@ -50,6 +56,18 @@ const EditFamilyForm = ({
     }
   };
 
+   useEffect(() => {
+      const rootPersonOptions = Object.entries(members)
+        .map(([_, member]) => ({
+          id: member.id,
+          value: member.fullName,
+        }));
+      setRootPersonOptions(rootPersonOptions);
+   }, [members])
+
+  if (!family || error) return <ErrorAlert title="Something went wrong!" />
+  if (isLoading) return <Loader2 />
+  
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
@@ -64,24 +82,31 @@ const EditFamilyForm = ({
           required
           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <select
-          value={rootPersonId ?? ""}
-          onChange={(e) => setRootPersonId(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Select Root Person</option>
-          {Object.entries(members.people).map(([key, person]) => {
-            return (
-              <option value={person.id} key={person.id}>
-                {person.name} {person.family.name} {person.id}
-              </option>
-            );
-          })}
-        </select>
+         {
+          <SearchSelect
+            options={rootPersonOptions ?? []}
+            selected={
+              rootPerson
+                ? {
+                    id: rootPerson.id,
+                    value: rootPerson.fullName,
+                  }
+                : null
+            }
+            onSelect={(option) => {
+              const rootPerson = members.find((m) => m.id === option.id)
+              if (rootPerson) {
+                setRootPerson(rootPerson);
+              }
+            }}
+            placeholder="Select a root"
+          />
+        }
 
         <button
           type="submit"
           className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-semibold rounded-md transition"
+          onSubmit={() => onEdit()}
         >
           Submit
         </button>

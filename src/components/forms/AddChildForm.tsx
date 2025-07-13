@@ -1,31 +1,32 @@
 "use client";
 
-import { Family, FamilyTreeData, Person } from "@/types/family";
+import { PersonWithRelations } from "@/types/family";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import SearchSelect from "../client/SearchSelect";
 import { Option } from "@/types/ui";
 import useSWR from "swr";
+import { Family } from "@/generated/prisma";
 
 const AddChildForm = ({
   parent,
   members,
   onAdd,
 }: {
-  parent: Person;
-  members: FamilyTreeData;
+  parent: PersonWithRelations;
+  members: PersonWithRelations[];
   onAdd: any;
 }) => {
   const [firstName, setFirstName] = useState("");
-  const [familyId, setFamilyId] = useState("");
+  const [family, setFamily] = useState<Family | undefined>();
   const [gender, setGender] = useState<"MALE" | "FEMALE">("MALE");
-  const [fatherId, setFatherId] = useState<string | undefined>();
-  const [motherId, setMotherId] = useState<string | undefined>();
-  const [birthDate, setBirthDate] = useState<string | undefined>();
-  const [deathDate, setDeathDate] = useState<string | undefined>();
+  const [father, setFather] = useState<PersonWithRelations | undefined>();
+  const [mother, setMother] = useState<PersonWithRelations | undefined>();
+  const [birthDate, setBirthDate] = useState<Date | undefined>();
+  const [deathDate, setDeathDate] = useState<Date | undefined>();
   const [familyOptions, setFamilyOptions] = useState<Option[]>();
   const [spouseOptions, setSpouseOptions] = useState<Option[]>();
-  const [selectedSpouse, setSelectedSpouse] = useState<Person | undefined>();
+  const [selectedSpouse, setSelectedSpouse] = useState<PersonWithRelations | undefined>();
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const {
@@ -37,26 +38,32 @@ const AddChildForm = ({
 
   useEffect(() => {
     if (parent.gender === "MALE") {
-      setFatherId(parent.id);
-      setFamilyId(parent.family.id.toString());
+      setFather(parent);
+      setFamily(parent.family);
+      const options = parent.femaleSpouses.map((s) => {
+      return {
+        id: s.femaleId,
+        value: s.female.fullName,
+      };
+    });
+    setSpouseOptions(options);
     } else if (parent.gender === "FEMALE") {
-      setMotherId(parent.id);
-      if (fatherId) setFamilyId(members.people[fatherId].family.id.toString());
+      setMother(parent);
+      if (father) setFamily(parent.family);
+      const options = parent.maleSpouses.map((s) => {
+      return {
+        id: s.maleId,
+        value: s.male.fullName
+      };
+    });
+    setSpouseOptions(options);
     }
     const familyOptions = families.map((family: Family) => ({
       id: family.id,
       value: family.name,
     }));
     setFamilyOptions(familyOptions);
-    const options = members.people[parent.id].spouses.map(([spouseId]) => {
-      const spouse = members.people[spouseId];
-      return {
-        id: spouseId,
-        value: spouse.name + " " + spouse.family.name,
-      };
-    });
-    setSpouseOptions(options);
-  }, [fatherId]);
+  }, [father]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,12 +75,13 @@ const AddChildForm = ({
       },
       body: JSON.stringify({
         firstName,
-        familyId,
+        fullName: firstName + " " + family?.name,
+        familyId: family?.id,
         gender,
         birthDate,
         deathDate,
-        fatherId,
-        motherId,
+        fatherId: father?.id,
+        motherId: mother?.id,
       }),
     });
 
@@ -83,7 +91,8 @@ const AddChildForm = ({
       setGender("MALE");
       onAdd();
     } else {
-      const errorData = await response.json();
+      const error = await response.json()
+      console.log(error)
       toast(`Adding ${firstName} Failed.`);
     }
   };
@@ -106,18 +115,18 @@ const AddChildForm = ({
           <SearchSelect
             options={familyOptions ?? []}
             selected={
-              families.find((f: Family) => f.id === Number(familyId)) &&
-              familyId
+              families.find((f: Family) => f.id === family?.id) &&
+              family?.id
                 ? {
-                    id: familyId.toString(),
+                    id: family.id,
                     value: families.find(
-                      (f: Family) => f.id === Number(familyId)
-                    )!.name,
+                      (f: Family) => f.id === family.id
+                    ).name,
                   }
                 : null
             }
             onSelect={(option) => {
-              setFamilyId(option.id);
+              setFamily(families.find((f:Family) => f.id = option.id));
             }}
             placeholder="Select Family"
           />
@@ -139,20 +148,21 @@ const AddChildForm = ({
             selected={
               selectedSpouse
                 ? {
-                    id: selectedSpouse.id.toString(),
-                    value: selectedSpouse.name,
+                    id: selectedSpouse.id,
+                    value: selectedSpouse.fullName,
                   }
                 : null
             }
             onSelect={(option) => {
-              const spouse = spouseOptions?.find(
+              const spouseOption = spouseOptions?.find(
                 (f) => f.id.toString() === option.id
               );
+              const spouse = members.find((m:PersonWithRelations) => m.id === option.id)
               if (spouse) {
-                setSelectedSpouse(members.people[spouse.id]);
+                setSelectedSpouse(spouse);
                 parent.gender == "MALE"
-                  ? setMotherId(spouse.id)
-                  : setFatherId(spouse.id);
+                  ? setMother(spouse)
+                  : setFather(spouse);
               }
             }}
             placeholder={
@@ -163,15 +173,15 @@ const AddChildForm = ({
 
         <input
           type="date"
-          value={birthDate}
-          onChange={(e) => setBirthDate(e.target.value)}
+          value={birthDate?.toISOString()}
+          onChange={(e) => setBirthDate(new Date(e.target.value))}
           placeholder="Birth Date"
           className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
         />
         <input
           type="date"
-          value={deathDate}
-          onChange={(e) => setDeathDate(e.target.value)}
+          value={deathDate?.toISOString()}
+          onChange={(e) => setDeathDate(new Date(e.target.value))}
           placeholder="Death Date"
           className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
         />
