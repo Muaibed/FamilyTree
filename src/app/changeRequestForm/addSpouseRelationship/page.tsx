@@ -66,8 +66,8 @@ const AddSpouseRelationship = () => {
         action: "ADD",
         targetModel: "SPOUSERELATIONSHIP",
         dataJSON: {
-          person1Id: personId,
-          person2Id: selectedSpouse?.id,
+          maleId: person?.gender === "MALE" ? personId : selectedSpouse?.id,
+          femaleId: person?.gender === "FEMALE" ? personId : selectedSpouse?.id,
           isActive,
         },
         requesterId,

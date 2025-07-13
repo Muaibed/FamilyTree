@@ -12,6 +12,7 @@ import { useMembersContext } from "@/components/client/MembersContextProvider";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "@/components/alerts/ErrorAlert";
 import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
+import { Person } from "@/generated/prisma";
 
 const AddChild = () => {
   const session = useSession()
@@ -20,13 +21,14 @@ const AddChild = () => {
 
   const searchParams = useSearchParams();
   const parentId = searchParams.get("parentId");
-  const parent = parentId ? members.find((m) => m.id === parentId) : undefined;
-    
+  const parent = parentId ? members.find((m: PersonWithRelations) => m.id === parentId) : undefined;
+
+  
   const [requesterId, setRequesterId] = useState<string | undefined>(session.data?.user.id);
   const [requesterName, setRequesterName] = useState(session.data?.user.name);
   const [requesterPhone, setRequesterPhone] = useState(session.data?.user.phone);
   const [firstName, setFirstName] = useState("");
-  const [family, setFamily] = useState<FamilyWithRootPerson | undefined>()
+  const [family, setFamily] = useState<FamilyWithRootPerson | undefined>(parent?.family)
   const [gender, setGender] = useState<"MALE" | "FEMALE">("MALE");
   const [father, setFather] = useState<PersonWithRelations | undefined>();
   const [mother, setMother] = useState<PersonWithRelations | undefined>();
@@ -35,7 +37,7 @@ const AddChild = () => {
   const [familyOptions, setFamilyOptions] = useState<Option[]>();
   const [spouseOptions, setSpouseOptions] = useState<Option[]>();
   const [selectedSpouse, setSelectedSpouse] = useState<PersonWithRelations | undefined>();
-
+  
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const {
     data: families,
@@ -49,7 +51,7 @@ const AddChild = () => {
         if (parent.gender === "MALE") {
           setFather(parent);
           setFamily(parent.family);
-          const options = parent.femaleSpouses.map((s) => {
+          const options = parent.maleSpouses.map((s) => {
             return {
               id: s.femaleId,
               value: s.female.fullName,
@@ -59,7 +61,7 @@ const AddChild = () => {
         } else if (parent.gender === "FEMALE") {
           setMother(parent);
           if (father) setFamily(parent.family);
-            const options = parent.maleSpouses.map((s) => {
+            const options = parent.femaleSpouses.map((s) => {
             return {
               id: s.maleId,
               value: s.male.fullName
@@ -90,6 +92,7 @@ const AddChild = () => {
         targetModel: "PERSON",
         dataJSON: {
           firstName,
+          fullName: firstName + " " + family?.name,
           familyId: family?.id,
           gender,
           birthDate,
