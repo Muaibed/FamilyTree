@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { Family } from "@/types/family";
 import { ChangeRequest } from "@/generated/prisma";
 
 // This type is used to define the shape of our data.

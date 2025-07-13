@@ -2,7 +2,7 @@ import { prisma } from './prisma';
 
 export const createFamily = async (data: {
   name: string,
-  rootPersonId?: number | string
+  rootPersonId?: string
 }) => {
   
   const { name, rootPersonId } = data;
@@ -11,31 +11,41 @@ export const createFamily = async (data: {
     data: {
       name,
       ...(rootPersonId && {
-        rootPerson: { connect: { id: +rootPersonId } }
+        rootPerson: { connect: { id: rootPersonId } }
       })
     }
   });
 };
 
-export const getFamilyById = async (id: number) => {
+export const getFamilyById = async (id: string) => {
   return prisma.family.findUnique({
     where: { id },
+    include: {
+      rootPerson: true,
+    }
   });
 };
 
 export const getFamilyByName = async (name: string) => {
   return prisma.family.findFirst({
     where: { name },
+    include: {
+      rootPerson: true,
+    }
   });
 };
 
 export const getAllFamilies = async () => {
-  return prisma.family.findMany();
+  return prisma.family.findMany({
+    include: {
+      rootPerson: true,
+    }
+  });
 };
 
-export const updateFamily = async (id: number, data: {
+export const updateFamily = async (id: string, data: {
   name?: string,
-  rootPersonId?: number | string
+  rootPersonId?: string
 }) => {
   
   const { name, rootPersonId } = data;
@@ -45,13 +55,13 @@ export const updateFamily = async (id: number, data: {
     data: {
       name,
       ...(rootPersonId
-      ? { rootPerson: { connect: { id: +rootPersonId } } }
+      ? { rootPerson: { connect: { id: rootPersonId } } }
       : { rootPerson: { disconnect: true } }),
     },
   });
 };
 
-export const deleteFamily = async (id: number) => {
+export const deleteFamily = async (id: string) => {
   return prisma.family.delete({
     where: { id },
   });

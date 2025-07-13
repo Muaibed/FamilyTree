@@ -10,11 +10,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const { personId, spouseId, startDate, endDate, isActive } = await req.json();
+    const { maleId, femaleId, startDate, endDate, isActive } = await req.json();
 
     const newRelation = await createSpouseRelationship({
-      person1Id:Number(personId),
-      person2Id:Number(spouseId),
+      maleId,
+      femaleId,
       isActive: Boolean(isActive),
       ...(startDate ? { startDate: new Date(startDate) } : {}),
       ...(endDate ? { endDate: new Date(endDate) } : {}),
@@ -31,15 +31,8 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const personId = searchParams.get("personId");
-
-    if (personId) {
-      const relations = await getAllRelationsForPerson(+personId)
-      return NextResponse.json(relations)
-    }
-
     const relations = await getAllRelations();
+    
     return NextResponse.json(relations);
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -57,11 +50,11 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const { personId, spouseId, isActive, startDate, endDate } = await req.json();
+    const { maleId, femaleId, isActive, startDate, endDate } = await req.json();
 
     const data = {
-      personId,
-      spouseId,
+      maleId,
+      femaleId,
       isActive,
       startDate,
       endDate
@@ -84,13 +77,13 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
 
-      const { person1Id, person2Id } = await req.json();
+      const { maleId, femaleId } = await req.json();
   
-      if (!person1Id || !person2Id) {
+      if (!maleId || !femaleId) {
         return new Response("IDs are required", { status: 400 });
       }
 
-      await deleteRelation(+person1Id, +person2Id);
+      await deleteRelation(maleId, femaleId);
   
       return new Response("Relation deleted successfully", { status: 200 });
     } catch (error) {

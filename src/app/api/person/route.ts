@@ -10,15 +10,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const { firstName, familyId, gender, birthDate, fatherId, motherId } = await req.json();
+    const { firstName, fullName, familyId, gender, birthDate, deathDate, fatherId, motherId } = await req.json();
 
     const newPerson = await createPerson({
       firstName,
+      fullName,
       familyId,
       gender,
       ...(birthDate ? { birthDate: new Date(birthDate) } : {}),
-      ...(fatherId ? { fatherId: Number(fatherId) } : {}),
-      ...(motherId ? { motherId: Number(motherId) } : {})
+      ...(deathDate ? { deathDate: new Date(deathDate) } : {}),
+      ...(fatherId ? { fatherId: fatherId } : {}),
+      ...(motherId ? { motherId: motherId } : {})
     });
 
     return NextResponse.json(newPerson, { status: 201 });

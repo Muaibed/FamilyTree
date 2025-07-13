@@ -38,7 +38,7 @@ export const createUpdateRequest = async (data: {
         data: dataJSON,
         requesterName,
         requesterPhone,
-        requesterId,
+        requester: requesterId ? { connect: { id: requesterId } } : undefined,
     }
   });
 };
@@ -58,13 +58,13 @@ export const createDeleteRequest = async (data: {
         targetId,
         requesterName,
         requesterPhone,
-        requesterId,
+        requester: requesterId ? { connect: { id: requesterId } } : undefined,
     }
   });
 };
 
 
-export const getChangeRequestById = async (id: number) => {
+export const getChangeRequestById = async (id: string) => {
   return prisma.changeRequest.findUnique({
     where: { id },
   });
@@ -74,16 +74,16 @@ export const getAllChangeRequests = async () => {
   return prisma.changeRequest.findMany();
 };
 
-export const updateChangeRequest = async (id: number | string, status: ChangeRequestStatus) => {
+export const updateChangeRequest = async (id: string, status: ChangeRequestStatus) => {
   return prisma.changeRequest.update({
-    where: { id: +id },
+    where: { id: id },
     data: {
       status
     },
   });
 };
 
-export const deleteChangeRequest = async (id: number) => {
+export const deleteChangeRequest = async (id: string) => {
   return prisma.changeRequest.delete({
     where: { id },
   });

@@ -15,7 +15,7 @@ CREATE TYPE "ChangeRequestTargetModel" AS ENUM ('PERSON', 'SPOUSERELATIONSHIP');
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "email" TEXT,
     "phone" TEXT,
     "password" TEXT NOT NULL,
@@ -27,24 +27,25 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Person" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL,
     "firstName" TEXT NOT NULL,
+    "fullName" TEXT NOT NULL,
     "gender" "Gender" NOT NULL,
     "birthDate" TIMESTAMP(3),
     "deathDate" TIMESTAMP(3),
     "phone" TEXT,
-    "familyId" INTEGER NOT NULL,
-    "fatherId" INTEGER,
-    "motherId" INTEGER,
+    "familyId" UUID NOT NULL,
+    "fatherId" UUID,
+    "motherId" UUID,
 
     CONSTRAINT "Person_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "SpouseRelationship" (
-    "id" SERIAL NOT NULL,
-    "personId" INTEGER NOT NULL,
-    "spouseId" INTEGER NOT NULL,
+    "id" UUID NOT NULL,
+    "maleId" UUID NOT NULL,
+    "femaleId" UUID NOT NULL,
     "startDate" TIMESTAMP(3),
     "endDate" TIMESTAMP(3),
     "isActive" BOOLEAN NOT NULL DEFAULT true,
@@ -54,13 +55,14 @@ CREATE TABLE "SpouseRelationship" (
 
 -- CreateTable
 CREATE TABLE "ChangeRequest" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL,
+    "displayId" SERIAL NOT NULL,
     "action" "ChangeRequestAction" NOT NULL,
     "status" "ChangeRequestStatus" NOT NULL DEFAULT 'PENDING',
     "targetModel" "ChangeRequestTargetModel" NOT NULL,
-    "targetId" TEXT,
+    "targetId" UUID,
     "data" JSONB,
-    "requesterId" TEXT,
+    "requesterId" UUID,
     "requesterName" TEXT,
     "requesterPhone" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -70,9 +72,9 @@ CREATE TABLE "ChangeRequest" (
 
 -- CreateTable
 CREATE TABLE "Family" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
-    "rootPersonId" INTEGER,
+    "rootPersonId" UUID,
 
     CONSTRAINT "Family_pkey" PRIMARY KEY ("id")
 );
@@ -84,7 +86,7 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "User_phone_key" ON "User"("phone");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "SpouseRelationship_personId_spouseId_key" ON "SpouseRelationship"("personId", "spouseId");
+CREATE UNIQUE INDEX "SpouseRelationship_maleId_femaleId_key" ON "SpouseRelationship"("maleId", "femaleId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Family_rootPersonId_key" ON "Family"("rootPersonId");
@@ -99,10 +101,10 @@ ALTER TABLE "Person" ADD CONSTRAINT "Person_fatherId_fkey" FOREIGN KEY ("fatherI
 ALTER TABLE "Person" ADD CONSTRAINT "Person_motherId_fkey" FOREIGN KEY ("motherId") REFERENCES "Person"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SpouseRelationship" ADD CONSTRAINT "SpouseRelationship_personId_fkey" FOREIGN KEY ("personId") REFERENCES "Person"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SpouseRelationship" ADD CONSTRAINT "SpouseRelationship_maleId_fkey" FOREIGN KEY ("maleId") REFERENCES "Person"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SpouseRelationship" ADD CONSTRAINT "SpouseRelationship_spouseId_fkey" FOREIGN KEY ("spouseId") REFERENCES "Person"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SpouseRelationship" ADD CONSTRAINT "SpouseRelationship_femaleId_fkey" FOREIGN KEY ("femaleId") REFERENCES "Person"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ChangeRequest" ADD CONSTRAINT "ChangeRequest_requesterId_fkey" FOREIGN KEY ("requesterId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

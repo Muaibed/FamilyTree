@@ -10,8 +10,9 @@ import NoDataAlert from "@/components/alerts/NoDataAlert";
 import { Button } from "@/components/ui/button";
 import { Family } from "@/generated/prisma";
 import { signOut, useSession } from "next-auth/react";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import useSWR from "swr";
+import { FamilyWithRootPerson } from "@/types/family";
 
 export default function Home({
   children,
@@ -37,12 +38,12 @@ export default function Home({
     isLoading: familiesLoading,
     error: familiesError,
     mutate: mutateFamily,
-  } = useSWR<Family>(
+  } = useSWR<FamilyWithRootPerson>(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/family?${params.toString()}`,
     fetcher
   );
 
-  const { data: families } = useSWR<Family[]>(
+  const { data: families } = useSWR<FamilyWithRootPerson[]>(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
     fetcher
   );
@@ -68,8 +69,10 @@ export default function Home({
     </>
   );
 
-  if (familiesLoading) return <div>Loading...</div>;
-  if (familiesError)
+  if (error || !members) return <ErrorAlert title="Something went wrong!"/>
+
+  if (familiesLoading || isLoading) return <div>Loading...</div>;
+  if (familiesError || error)
     return (
       <ErrorAlert
         title="Something went wrong!"
@@ -127,7 +130,7 @@ export default function Home({
       )}
       <Suspense>
         <FamilyTreeView
-          data={members}
+          members={members}
           families={families}
           family={defaulfFamily}
           onChange={mutateMembers}

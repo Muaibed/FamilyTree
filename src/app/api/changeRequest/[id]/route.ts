@@ -17,7 +17,7 @@ export async function GET(req:NextRequest) {
         return new Response("Change Request ID is required", { status: 400 });
     }
 
-    const changeRequest = await getChangeRequestById(+id);
+    const changeRequest = await getChangeRequestById(id);
 
     return NextResponse.json(changeRequest);
   } catch (error: unknown) {
@@ -36,15 +36,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const id = Number(params.id);
-
     const { status } = await req.json();
 
-    if (!id) {
+    if (!params.id) {
       return new Response("Change Request ID is required", { status: 400});
     }
 
-    await updateChangeRequest(+id, status);
+    await updateChangeRequest(params.id, status);
 
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
@@ -61,13 +59,11 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
     
-      const id = Number(params.id);
-
-      if (!id) {
+      if (!params.id) {
         return new Response("Change Request ID is required", { status: 400 });
       }
   
-      await deleteChangeRequest(+id);
+      await deleteChangeRequest(params.id);
   
       return new Response("Chagne Request deleted successfully", { status: 200 });
     } catch (error) {

@@ -2,8 +2,8 @@
 
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
-import { SpouseRelationship } from "../../types/family";
+import { SpouseRelationshipWithPartners } from "@/types/family";
 
-export function FamilyTableClient({ data }: { data: SpouseRelationship[] }) {
+export function FamilyTableClient({ data }: { data: SpouseRelationshipWithPartners[] }) {
   return <DataTable columns={columns()} data={Object.values(data)} />;
 }

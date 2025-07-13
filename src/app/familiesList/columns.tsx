@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { FamilyWithRootPerson } from "@/types/family";
 import { ColumnDef } from "@tanstack/react-table";
-import { Family } from "@/types/family";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -10,15 +10,15 @@ import { Family } from "@/types/family";
 export function columns({
   onEdit,
 }: {
-  onEdit: (family: Family) => void;
-}): ColumnDef<Family>[] {
+  onEdit: (family: FamilyWithRootPerson) => void;
+}): ColumnDef<FamilyWithRootPerson>[] {
   return [
     {
       accessorKey: "name",
       header: "Name",
     },
     {
-      accessorKey: "rootPersonId",
+      accessorKey: "rootPerson.fullName",
       header: "Root",
     },
     {

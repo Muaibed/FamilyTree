@@ -11,7 +11,7 @@ export async function GET(req:NextRequest) {
         return new Response("Person ID is required", { status: 400 });
     }
 
-    const person = await getPersonById(+id);
+    const person = await getPersonById(id);
 
     return NextResponse.json(person);
   } catch (error: unknown) {
@@ -30,8 +30,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     
-    const id = Number(params.id);
-
     const { firstName, familyName, gender, fatherId, motherId, birthDate, deathDate } = await req.json();
 
     const data = {
@@ -40,15 +38,15 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       gender,
       birthDate,
       deathDate,
-      ...(fatherId ? { fatherId: Number(fatherId) } : {}),
-      ...(motherId ? { motherId: Number(motherId) } : {}),
+      ...(fatherId ? { fatherId: fatherId } : {}),
+      ...(motherId ? { motherId: motherId } : {}),
     }
 
-    if (!id) {
+    if (!params.id) {
       return new Response("Person ID is required", { status: 400});
     }
 
-    await updatePerson(+id, data);
+    await updatePerson(params.id, data);
 
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
@@ -65,13 +63,11 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
     
-      const id = Number(params.id);
-
-      if (!id) {
+      if (!params.id) {
         return new Response("Person ID is required", { status: 400 });
       }
   
-      await deletePerson(+id);
+      await deletePerson(params.id);
   
       return new Response("Person deleted successfully", { status: 200 });
     } catch (error) {

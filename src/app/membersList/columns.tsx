@@ -1,10 +1,8 @@
 "use client";
 
-import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { Person } from "../../types/family";
-import { PersonModal } from "../../components/client/Modal";
+import { PersonWithRelations } from "@/types/family";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -12,15 +10,15 @@ import { PersonModal } from "../../components/client/Modal";
 export function columns({
   onEdit,
 }: {
-  onEdit: (person: Person) => void;
-}): ColumnDef<Person>[] {
+  onEdit: (person: PersonWithRelations) => void;
+}): ColumnDef<PersonWithRelations>[] {
   return [
     {
-      accessorKey: "name",
+      accessorKey: "firstName",
       header: "First Name",
     },
     {
-      accessorKey: "familyName",
+      accessorKey: "family.name",
       header: "Family Name",
     },
     {

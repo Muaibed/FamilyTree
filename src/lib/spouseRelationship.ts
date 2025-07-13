@@ -1,43 +1,42 @@
-import { SpouseRelationship } from '@/types/family';
 import { prisma } from './prisma';
 
 export const getAllRelations = async () => {
-  const relations = await prisma.spouseRelationship.findMany();
-  let formattedRelations: SpouseRelationship[] = [];
-
-  relations.forEach((r) => formattedRelations.push({id: `${r.id}`, person:`${r.personId}`, spouse:`${r.spouseId}`, isActive:r.isActive}))
-
-  return formattedRelations;
+  return await prisma.spouseRelationship.findMany({
+    include: {
+      male: true,
+      female: true,
+    }
+  });
 };
 
-export const getRelationById = async (id: number) => {
+export const getRelationById = async (id: string) => {
   return prisma.spouseRelationship.findUnique({
     where: { id },
   })
 }
 
-export const getAllRelationsForPerson = async (personId: number | string) => {
+export const getAllRelationsForPerson = async (personId: string) => {
   return prisma.spouseRelationship.findMany({
     where: {
       OR: [
-        { personId: +personId },
-        { spouseId: +personId },
+        { maleId: personId },
+        { femaleId: personId },
       ]
     },
   })
 }
 
 export const createSpouseRelationship = async (data: {
-  person1Id: number | string; 
-  person2Id: number | string;
+  maleId: string; 
+  femaleId: string;
   isActive: boolean;
   startDate?: Date;
   endDate?: Date;
 }) => {
   return prisma.spouseRelationship.create({
     data: {
-      personId: +data.person1Id,
-      spouseId: +data.person2Id,
+      maleId: data.maleId,
+      femaleId: data.femaleId,
       isActive: data.isActive,
       startDate: data.startDate,
       endDate: data.endDate,
@@ -47,19 +46,19 @@ export const createSpouseRelationship = async (data: {
 
 
 export const updateRelationStatus = async (data: {
-  personId: number;
-  spouseId: number;
+  maleId: string;
+  femaleId: string;
   isActive: boolean;
   startDate?: Date;
   endDate?: Date;
 }) => {
-    const { personId, spouseId, isActive, startDate, endDate } = data;
+    const { maleId, femaleId, isActive, startDate, endDate } = data;
 
     await prisma.spouseRelationship.update({
       where: {
-        personId_spouseId: {
-          personId: personId,
-          spouseId: spouseId,
+        maleId_femaleId: {
+          maleId: maleId,
+          femaleId: femaleId,
         },
       },
       data: {
@@ -71,7 +70,7 @@ export const updateRelationStatus = async (data: {
 
 }
 
-export const updateRelationStatusById = async (id:number, data: {
+export const updateRelationStatusById = async (id:string, data: {
   isActive: boolean;
   startDate?: Date;
   endDate?: Date;
@@ -89,18 +88,17 @@ export const updateRelationStatusById = async (id:number, data: {
 
 }
 
-export const deleteRelationById = async (id: number) => {
+export const deleteRelationById = async (id: string) => {
   return prisma.spouseRelationship.delete({
     where: { id },
   });
 }; 
 
-export const deleteRelation = async (person1Id: number, person2Id: number) => {
+export const deleteRelation = async (maleId: string, femaleId: string) => {
   return prisma.spouseRelationship.deleteMany({
     where: {
       OR: [
-        { personId: person1Id, spouseId: person2Id},
-        { personId: person2Id, spouseId: person1Id},
+        { maleId, femaleId },
       ]
     },
   });

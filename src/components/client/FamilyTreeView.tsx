@@ -5,21 +5,20 @@ import Tree, {
   CustomNodeElementProps,
   RenderCustomNodeElementFn,
 } from "react-d3-tree";
-import { Family, FamilyTreeData, Person } from "@/types/family";
+import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
 import { Modal, PersonModal } from "@/components/client/Modal";
 import AddChildForm from "@/components/forms/AddChildForm";
 import AddSpouseForm from "../forms/AddSpouseForm";
-import { getAncestors } from "@/lib/person";
 import { TreeNode } from "@/types/tree";
 import { prepareTreeData } from "@/lib/tree";
 import DeletePerson from "./DeletePerson";
-import isValidDateString from "@/lib/date";
 import SearchSelect from "./SearchSelect";
 import { Option } from "@/types/ui";
 import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
 import NoDataAlert from "../alerts/NoDataAlert";
 import EditFamilyForm from "../forms/EditFamilyForm";
+import { Family } from "@/generated/prisma";
 
 const renderCustomNode: RenderCustomNodeElementFn = (
   rd3tNodeProps: CustomNodeElementProps
@@ -63,25 +62,25 @@ const renderCustomNode: RenderCustomNodeElementFn = (
 };
 
 export default function FamilyTreeView({
-  data,
+  members,
   families,
   family,
   onChange,
 }: {
-  data: FamilyTreeData;
-  families: Family[] | undefined;
-  family: Family;
+  members: PersonWithRelations[];
+  families: FamilyWithRootPerson[] | undefined;
+  family: FamilyWithRootPerson;
   onChange: any;
 }) {
-  const [treeData, setTreeData] = useState<TreeNode | null>(null);
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [treeData, setTreeData] = useState<TreeNode | undefined>(undefined);
+  const [selectedPerson, setSelectedPerson] = useState<PersonWithRelations | undefined>(undefined);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isEditingFamily, setIsEditingFamily] = useState(false);
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedFamily, setSelectedFamily] = useState<Family | undefined>(
+  const [selectedFamily, setSelectedFamily] = useState<FamilyWithRootPerson | undefined>(
     family
   );
   const [familyOptions, setFamilyOptions] = useState<Option[]>();
@@ -99,31 +98,56 @@ export default function FamilyTreeView({
       setFamilyOptions(options);
     }
 
-    if (data && selectedFamily && selectedFamily.rootPersonId) {
+    if (members && selectedFamily && selectedFamily.rootPersonId) {
       const formattedData = prepareTreeData(
-        data,
+        members,
         selectedFamily.rootPersonId.toString()
       );
       setTreeData(formattedData);
     }
-  }, [data, family, families, selectedFamily]);
+
+    if (members && selectedFamily && !selectedFamily.rootPersonId) {
+      setTreeData(undefined)
+    }
+
+  }, [members, family, families, selectedFamily]);
 
   if (!treeData) {
     return (
       <div className="flex flex-col items-center align-middle">
+        <div>
+          <SearchSelect
+            options={familyOptions ?? []}
+            selected={
+              selectedFamily
+                ? {
+                    id: selectedFamily.id.toString(),
+                    value: selectedFamily.name,
+                  }
+                : null
+            }
+            onSelect={(option) => {
+              const family = families?.find(
+                (f) => f.id.toString() === option.id
+              );
+              setSelectedFamily(family || undefined);
+            }}
+            placeholder="Select family..."
+          />
+        </div>
         <NoDataAlert
-          title={`${family.name}`}
+          title={`${selectedFamily?.name}`}
           message={"No Data\nAdd a Root To Visualize The Tree."}
         ></NoDataAlert>
         <Button onClick={() => setIsEditingFamily(!isEditingFamily)}>
           Edit Family
         </Button>
-        {isEditingFamily && (
+        {isEditingFamily && selectedFamily && (
           <Modal
             isOpen={isEditingFamily}
             onClose={() => setIsEditingFamily(false)}
           >
-            <EditFamilyForm family={family} onEdit={() => {}}></EditFamilyForm>
+            <EditFamilyForm family={selectedFamily} onEdit={() => {}}></EditFamilyForm>
           </Modal>
         )}
       </div>
@@ -132,7 +156,6 @@ export default function FamilyTreeView({
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
-      <div className="flex gap-4"></div>
       <div className="flex flex-row">
         <div>
           <SearchSelect
@@ -174,7 +197,7 @@ export default function FamilyTreeView({
 
             if (personId && personId !== true) {
               // exclude (true) if assigned to personId
-              setSelectedPerson(data.people[personId]);
+              setSelectedPerson(members.find(p => p.id === personId));
             }
             setDetailModalOpen(true);
           }}
@@ -184,7 +207,7 @@ export default function FamilyTreeView({
       <PersonModal
         isOpen={!!selectedPerson}
         onClose={() => {
-          setSelectedPerson(null);
+          setSelectedPerson(undefined);
           setDetailModalOpen(false);
           setIsAddingChild(false);
           setIsAddingSpouse(false);
@@ -194,28 +217,23 @@ export default function FamilyTreeView({
         {selectedPerson && (
           <div className="text-center">
             <div>
-              <h2 className="text-xl font-bold">{selectedPerson.name}</h2>
+              <h2 className="text-xl font-bold">{selectedPerson.firstName}</h2>
               <p className="text-sm opacity-50">
-                {getAncestors(data, selectedPerson.id)}
+                {selectedPerson.fullName}
               </p>
             </div>
             <p>id: {selectedPerson.id}</p>
             <p>Gender: {selectedPerson.gender}</p>
-            {selectedPerson.birthDate &&
-              isValidDateString(selectedPerson.birthDate) && (
-                <p>Birth Date: {selectedPerson.birthDate}</p>
+            {selectedPerson.birthDate && (
+                <p>Birth Date: {selectedPerson.birthDate.toISOString()}</p>
               )}
             <p>
-              Spouses:{" "}
-              {data.people[selectedPerson.id].spouses.map((s) =>
-                s[1]
-                  ? data.people[s[0]].name + " " + data.people[s[0]].family.name
-                  : ""
-              )}
+              Spouses: {" "}
+              {selectedPerson.gender === "FEMALE" ? selectedPerson.femaleSpouses.map((s) =>
+                s.male.fullName) : selectedPerson.maleSpouses.map((s) => s.female.fullName)}
             </p>
-            {selectedPerson.deathDate &&
-              isValidDateString(selectedPerson.deathDate) && (
-                <p>Death Date: {selectedPerson.deathDate}</p>
+            {selectedPerson.deathDate && (
+                <p>Death Date: {selectedPerson.deathDate.toISOString()}</p>
               )}
 
             {isAdmin && (
@@ -250,12 +268,12 @@ export default function FamilyTreeView({
                   <div>
                     <AddChildForm
                       parent={selectedPerson}
-                      members={data}
+                      members={members}
                       onAdd={() => {
                         onChange();
                         setDetailModalOpen(false);
                         setIsAddingChild(false);
-                        setSelectedPerson(null);
+                        setSelectedPerson(undefined);
                       }}
                     />
                   </div>
@@ -263,13 +281,13 @@ export default function FamilyTreeView({
                 {isAddingSpouse && (
                   <div>
                     <AddSpouseForm
-                      personId={selectedPerson.id}
-                      members={data}
+                      person={selectedPerson}
+                      members={members}
                       onAdd={() => {
                         onChange();
                         setDetailModalOpen(false);
                         setIsAddingSpouse(false);
-                        setSelectedPerson(null);
+                        setSelectedPerson(undefined);
                       }}
                     />
                   </div>
@@ -296,7 +314,7 @@ export default function FamilyTreeView({
           setIsDeleting(false);
           setDetailModalOpen(false);
           setDeleteModalOpen(false);
-          setSelectedPerson(null);
+          setSelectedPerson(undefined);
         }}
       >
         {selectedPerson && isDeleting && (
@@ -306,7 +324,7 @@ export default function FamilyTreeView({
               onChange();
               setDetailModalOpen(false);
               setIsDeleting(false);
-              setSelectedPerson(null);
+              setSelectedPerson(undefined);
               setDeleteModalOpen(false);
             }}
           />

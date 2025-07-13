@@ -1,6 +1,5 @@
 "use client";
 
-import { Family, FamilyTreeData, Person } from "@/types/family";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { Option } from "@/types/ui";
@@ -12,6 +11,7 @@ import { useSearchParams } from "next/navigation";
 import { useMembersContext } from "@/components/client/MembersContextProvider";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "@/components/alerts/ErrorAlert";
+import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
 
 const AddChild = () => {
   const session = useSession()
@@ -20,21 +20,21 @@ const AddChild = () => {
 
   const searchParams = useSearchParams();
   const parentId = searchParams.get("parentId");
-  const parent = parentId ? members?.people[parentId] : undefined;
+  const parent = parentId ? members.find((m) => m.id === parentId) : undefined;
     
   const [requesterId, setRequesterId] = useState<string | undefined>(session.data?.user.id);
   const [requesterName, setRequesterName] = useState(session.data?.user.name);
   const [requesterPhone, setRequesterPhone] = useState(session.data?.user.phone);
   const [firstName, setFirstName] = useState("");
-  const [familyId, setFamilyId] = useState("");
+  const [family, setFamily] = useState<FamilyWithRootPerson | undefined>()
   const [gender, setGender] = useState<"MALE" | "FEMALE">("MALE");
-  const [fatherId, setFatherId] = useState<string | undefined>();
-  const [motherId, setMotherId] = useState<string | undefined>();
+  const [father, setFather] = useState<PersonWithRelations | undefined>();
+  const [mother, setMother] = useState<PersonWithRelations | undefined>();
   const [birthDate, setBirthDate] = useState<string | undefined>();
   const [deathDate, setDeathDate] = useState<string | undefined>();
   const [familyOptions, setFamilyOptions] = useState<Option[]>();
   const [spouseOptions, setSpouseOptions] = useState<Option[]>();
-  const [selectedSpouse, setSelectedSpouse] = useState<Person | undefined>();
+  const [selectedSpouse, setSelectedSpouse] = useState<PersonWithRelations | undefined>();
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const {
@@ -47,31 +47,35 @@ const AddChild = () => {
   useEffect(() => {
     if (parent && members) {
         if (parent.gender === "MALE") {
-          setFatherId(parent.id);
-          setFamilyId(parent.family.id.toString());
-        } else if (parent.gender === "FEMALE") {
-          setMotherId(parent.id);
-
-        if (fatherId) setFamilyId(members.people[fatherId].family.id.toString());
-
-          const options = members.people[parent.id].spouses.map(([spouseId]) => {
-            const spouse = members.people[spouseId];
+          setFather(parent);
+          setFamily(parent.family);
+          const options = parent.femaleSpouses.map((s) => {
             return {
-              id: spouseId,
-              value: spouse.name + " " + spouse.family.name,
+              id: s.femaleId,
+              value: s.female.fullName,
             };
           });
           setSpouseOptions(options);
-      }
+        } else if (parent.gender === "FEMALE") {
+          setMother(parent);
+          if (father) setFamily(parent.family);
+            const options = parent.maleSpouses.map((s) => {
+            return {
+              id: s.maleId,
+              value: s.male.fullName
+            };
+          });
+          setSpouseOptions(options);
         }
+    }
         if (families) {
-            const familyOptions = families.map((family: Family) => ({
+            const familyOptions = families.map((family: FamilyWithRootPerson) => ({
               id: family.id,
               value: family.name,
             }));
             setFamilyOptions(familyOptions);
         }
-  }, [fatherId, parent]);
+  }, [members, father, parent]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,12 +90,12 @@ const AddChild = () => {
         targetModel: "PERSON",
         dataJSON: {
           firstName,
-          familyId,
+          familyId: family?.id,
           gender,
           birthDate,
           deathDate,
-          fatherId,
-          motherId,
+          fatherId: father?.id,
+          motherId: mother?.id,
         },
         requesterId,
         requesterName,
@@ -138,7 +142,7 @@ const AddChild = () => {
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
-        Add Child to {parent.name}
+        Add Child to {parent.firstName}
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
@@ -153,20 +157,20 @@ const AddChild = () => {
           <SearchSelect
             options={familyOptions ?? []}
             selected={
-              families.find((f: Family) => f.id === Number(familyId)) &&
-              familyId
+              families.find((f: FamilyWithRootPerson) => f.id === family?.id) &&
+              family?.id
                 ? {
-                    id: familyId.toString(),
-                    value: families.find(
-                      (f: Family) => f.id === Number(familyId)
-                    )!.name,
+                    id: family.id,
+                    value: family.name
                   }
                 : null
             }
             onSelect={(option) => {
-              setFamilyId(option.id);
-            }}
-            placeholder="Select Family"
+            const family = families.find((f: FamilyWithRootPerson) => f.id === option.id)
+                  if (family)
+                    setFamily(family);
+                }}
+                placeholder="Select Family"
           />
         }
         <select
@@ -187,19 +191,20 @@ const AddChild = () => {
               selectedSpouse
                 ? {
                     id: selectedSpouse.id.toString(),
-                    value: selectedSpouse.name,
+                    value: selectedSpouse.fullName,
                   }
                 : null
             }
             onSelect={(option) => {
-              const spouse = spouseOptions?.find(
+              const spouseOption = spouseOptions?.find(
                 (f) => f.id.toString() === option.id
               );
+              const spouse = members.find((m:PersonWithRelations) => m.id === option.id)
               if (spouse) {
-                setSelectedSpouse(members.people[spouse.id]);
-                parent?.gender == "MALE"
-                  ? setMotherId(spouse.id)
-                  : setFatherId(spouse.id);
+                setSelectedSpouse(spouse);
+                parent.gender == "MALE"
+                  ? setMother(spouse)
+                  : setFather(spouse);
               }
             }}
             placeholder={

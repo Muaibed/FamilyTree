@@ -1,6 +1,6 @@
 "use client";
 
-import { Family } from "@/types/family";
+import { Family } from "@/generated/prisma";
 import { toast } from "sonner";
 
 const DeleteFamily = ({

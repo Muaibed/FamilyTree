@@ -1,15 +1,16 @@
-import { FamilyTreeData } from "@/types/family";
+import { PersonWithRelations } from "@/types/family";
 import { TreeNode } from "@/types/tree";
 
 export const prepareTreeData = (
-  data: FamilyTreeData,
+  members: PersonWithRelations[],
   startId: string
-): TreeNode | null => {
-  const person = data.people[startId];
-  if (!person) return null;
+): TreeNode | undefined => {
+  const person = members.find(p => p.id === startId);
+;
+  if (!person) return undefined;
 
   const node: TreeNode = {
-    name: person.name,
+    name: person.firstName,
     attributes: {
       id: person.id,
       gender: person.gender,
@@ -17,9 +18,9 @@ export const prepareTreeData = (
     children: [],
   };
 
-  if (person.childrenIds.length > 0) {
-    person.childrenIds.forEach((childId) => {
-      const childNode = prepareTreeData(data, childId);
+  if (person.fatherChildren.length > 0) {
+    person.fatherChildren.forEach((childId) => {
+      const childNode = prepareTreeData(members, childId.id);
       if (childNode) {
         node.children.push(childNode);
       }
