@@ -5,7 +5,7 @@ import { columns } from "./columns";
 import { ChangeRequest } from "@/generated/prisma";
 import { useState } from "react";
 import { Modal } from "@/components/client/Modal";
-import AddChangeRequest from "@/components/client/ChangeRequestApproval";
+import ChangeRequestApproval from "@/components/client/ChangeRequestApproval";
 
 export function FamilyTableClient({
   data,
@@ -22,8 +22,8 @@ export function FamilyTableClient({
     <>
       <DataTable columns={tableColumns} data={Object.values(data)} />
       {selectedRequest && (
-        <Modal isOpen={true} onClose={() => setSelectedRequest(null)}>
-          <AddChangeRequest request={selectedRequest} onChange={onChange} />
+        <Modal isOpen={!!selectedRequest} onClose={() => setSelectedRequest(null)}>
+          <ChangeRequestApproval request={selectedRequest} onChange={onChange} />
         </Modal>
       )}
     </>

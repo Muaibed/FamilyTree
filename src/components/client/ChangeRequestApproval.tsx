@@ -3,7 +3,7 @@ import { Button } from "../ui/button"
 import JSONtoHTML from "./JSONtoHTML";
 import { toast } from "sonner";
 
-const AddChangeRequest = ({request, onChange}: {request: ChangeRequest, onChange: any}) => {
+const ChangeRequestApproval = ({request, onChange}: {request: ChangeRequest, onChange: any}) => {
     const handleApprove = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -24,8 +24,11 @@ const AddChangeRequest = ({request, onChange}: {request: ChangeRequest, onChange
 
         if (response.ok) {
             toast(`Request ${request.id} has beed approved successfully.`) 
+            onChange()
         } else {
+            const error = await response.json();
             toast(`Approving request ${request.id} falied!`)
+            console.log(error)
         }
     }
 
@@ -43,9 +46,13 @@ const AddChangeRequest = ({request, onChange}: {request: ChangeRequest, onChange
             })
         })
 
-        if (response.ok)
+        if (response.ok) {
             toast(`Request ${request.id} status changed to REJECTED`)
-        else toast(`Request ${request.id} status did not change`)
+            onChange()
+        }
+        else {
+            toast(`Request ${request.id} status did not change`)
+        }
         
     }
 
@@ -74,7 +81,6 @@ const AddChangeRequest = ({request, onChange}: {request: ChangeRequest, onChange
                 <Button 
                     className="bg-green-600 hover:bg-green-500 hover:cursor-pointer" 
                     onClick={(e) => {
-                        onChange()
                         handleApprove(e)
                     }}
                 >
@@ -83,7 +89,6 @@ const AddChangeRequest = ({request, onChange}: {request: ChangeRequest, onChange
                 <Button 
                     className="bg-red-500 hover:bg-red-400 hover:cursor-pointer"
                     onClick={(e) => {
-                        onChange()
                         handleReject(e)
                     }}
                 >
@@ -94,4 +99,4 @@ const AddChangeRequest = ({request, onChange}: {request: ChangeRequest, onChange
     )
 }
 
-export default AddChangeRequest;
+export default ChangeRequestApproval;
