@@ -23,7 +23,6 @@ const EditFamilyForm = ({
   const [rootPerson, setRootPerson] = useState<Person | undefined>(
     family.rootPerson ? family.rootPerson : undefined
   );
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [rootPersonOptions, setRootPersonOptions] = useState<Option[]>();
 
@@ -126,7 +125,6 @@ const EditFamilyForm = ({
         isOpen={!!isDeleting}
         onClose={() => {
           setIsDeleting(false);
-          setDeleteModalOpen(false);
         }}
       >
         {isDeleting && (
@@ -135,7 +133,6 @@ const EditFamilyForm = ({
             onSubmit={() => {
               onEdit();
               setIsDeleting(false);
-              setDeleteModalOpen(false);
             }}
           />
         )}

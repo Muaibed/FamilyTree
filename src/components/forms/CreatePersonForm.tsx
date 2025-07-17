@@ -9,6 +9,9 @@ import useSWR from "swr";
 import { Family, Person } from "@/generated/prisma";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "../alerts/ErrorAlert";
+import DatePicker from "../ui/datePicker";
+import * as React from "react"
+import { Button } from "../ui/button";
 
 const CreatePersonForm = ({
   FID,
@@ -30,8 +33,8 @@ const CreatePersonForm = ({
   const [selectedMother, setSelectedMother] = useState<PersonWithRelations | undefined>(
     MID ? members.find((m) => m.id === MID) : undefined
   );
-  const [birthDate, setBirthDate] = useState<Date | undefined>();
-  const [deathDate, setDeathDate] = useState<Date | undefined>();
+  const [birthDate, setBirthDate] = React.useState<Date>()
+  const [deathDate, setDeathDate] = React.useState<Date>()
   const [familyOptions, setFamilyOptions] = useState<Option[]>();
   const [fatherOptions, setFatherOptions] = useState<Option[]>();
   const [motherOptions, setMotherOptions] = useState<Option[]>();
@@ -108,8 +111,8 @@ const CreatePersonForm = ({
   if (error) return <ErrorAlert title="Something went wrong!" message="Cannot get the members."/>
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
+    <div className="max-w-md mx-auto mt-8 p-6">
+      <h2 className="text-2xl font-semibold mb-4">
         Create Person
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -119,32 +122,13 @@ const CreatePersonForm = ({
           onChange={(e) => setFirstName(e.target.value)}
           placeholder="First Name"
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
         />
-        {
-          <SearchSelect
-            options={familyOptions ?? []}
-            selected={
-              family?.id
-                ? {
-                    id: family.id,
-                    value: family.name,
-                  }
-                : null
-            }
-            onSelect={(option) => {
-              const family = families.find((f: FamilyWithRootPerson) => f.id === option.id)
-              if (family)
-                setFamily(family);
-            }}
-            placeholder="Select Family"
-          />
-        }
         <select
           value={gender}
           onChange={(e) => setGender(e.target.value as "MALE" | "FEMALE")}
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`w-full justify-between px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center`}
         >
           <option value="MALE">Male</option>
           <option value="FEMALE">Female</option>
@@ -189,27 +173,34 @@ const CreatePersonForm = ({
             placeholder="Select a Mother"
           />
         }
-        <input
-          type="date"
-          value={birthDate?.toDateString()}
-          onChange={(e) => setBirthDate(new Date(e.target.value))}
-          placeholder="Birth Date"
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="date"
-          value={deathDate?.toISOString()}
-          onChange={(e) => setDeathDate(new Date(e.target.value))}
-          placeholder="Death Date"
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        {
+          <SearchSelect
+            options={familyOptions ?? []}
+            selected={
+              family?.id
+                ? {
+                    id: family.id,
+                    value: family.name,
+                  }
+                : null
+            }
+            onSelect={(option) => {
+              const family = families.find((f: FamilyWithRootPerson) => f.id === option.id)
+              if (family)
+                setFamily(family);
+            }}
+            placeholder="Select Family"
+          />
+        }
+        <DatePicker placeholder="Birth Date" selectedDate={birthDate} onSubmit={(date) => setBirthDate(date)}/>
+        <DatePicker placeholder="Death Date" selectedDate={deathDate} onSubmit={(date) => setDeathDate(date)}/>
 
-        <button
+        <Button
           type="submit"
-          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-semibold rounded-md transition"
+          className="w-full py-2 px-4"
         >
           Submit
-        </button>
+        </Button>
       </form>
     </div>
   );

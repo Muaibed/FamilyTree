@@ -12,6 +12,7 @@ import SearchSelect from "../client/SearchSelect";
 import { Option } from "@/types/ui";
 import { PersonWithRelations } from "@/types/family";
 import { Person } from "@/generated/prisma";
+import DatePicker from "../ui/datePicker";
 
 const EditPersonForm = ({
   person,
@@ -31,7 +32,6 @@ const EditPersonForm = ({
     person.deathDate ? person.deathDate : undefined
   );
   const [spouses, setSpouses] = useState<Person[]>([]);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -90,7 +90,6 @@ const EditPersonForm = ({
         toast(`${firstName} has been updated successfully.`);
         onEdit();
       } else {
-        const errorData = await response.json();
         toast(`Updating ${firstName} Failed.`);
       }
     } catch (error) {
@@ -175,7 +174,7 @@ const EditPersonForm = ({
           selected={
             selectedMother
               ? {
-                  id: selectedMother.id.toString(),
+                  id: selectedMother.id,
                   value: selectedMother.fullName,
                 }
               : null
@@ -188,20 +187,8 @@ const EditPersonForm = ({
           }}
           placeholder="Select a Mother"
         />
-        <input
-          type="date"
-          value={birthDate?.toDateString()}
-          onChange={(e) => setBirthDate(new Date(e.target.value))}
-          placeholder="Birth Date"
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="date"
-          value={deathDate?.toISOString()}
-          onChange={(e) => setDeathDate(new Date(e.target.value))}
-          placeholder="Death Date"
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <DatePicker placeholder="Birth Date" selectedDate={birthDate} onSubmit={(date) => setBirthDate(date)}/>
+        <DatePicker placeholder="Death Date" selectedDate={deathDate} onSubmit={(date) => setDeathDate(date)}/>
         <div className="text-white">
           {spouses?.map((s) => {
             return (
@@ -292,7 +279,6 @@ const EditPersonForm = ({
         isOpen={!!isDeleting}
         onClose={() => {
           setIsDeleting(false);
-          setDeleteModalOpen(false);
         }}
       >
         {isDeleting && (
@@ -301,7 +287,6 @@ const EditPersonForm = ({
             onSubmit={() => {
               onEdit();
               setIsDeleting(false);
-              setDeleteModalOpen(false);
             }}
           />
         )}

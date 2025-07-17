@@ -40,7 +40,7 @@ const DeletePerson = ({
 
   return (
     <div className="text-center">
-      <h2 className="text-xl font-bold mb-2">
+      <h2 className="text-xl font-bold mb-4 mt-2">
         Are you sure to delete {person.firstName}?
       </h2>
       <button

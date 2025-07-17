@@ -7,6 +7,10 @@ import SearchSelect from "../client/SearchSelect";
 import { Option } from "@/types/ui";
 import useSWR from "swr";
 import { Family } from "@/generated/prisma";
+import { Loader2 } from "lucide-react";
+import ErrorAlert from "../alerts/ErrorAlert";
+import { Button } from "../ui/button";
+import DatePicker from "../ui/datePicker";
 
 const AddChildForm = ({
   parent,
@@ -97,8 +101,11 @@ const AddChildForm = ({
     }
   };
 
+  if (isLoading) return <Loader2 />
+  if (error || !families) return <ErrorAlert title="Something went wrong!" message="Families are not found." />
+
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="max-w-md mx-auto mt-8 p-6 bg-card rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
         Add Child
       </h2>
@@ -109,7 +116,7 @@ const AddChildForm = ({
           onChange={(e) => setFirstName(e.target.value)}
           placeholder="First Name"
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
         />
         {
           <SearchSelect
@@ -135,7 +142,7 @@ const AddChildForm = ({
           value={gender}
           onChange={(e) => setGender(e.target.value as "MALE" | "FEMALE")}
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`w-full justify-between px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center`}
         >
           <option value="MALE">Male</option>
           <option value="FEMALE">Female</option>
@@ -143,7 +150,6 @@ const AddChildForm = ({
 
         {
           <SearchSelect
-            className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
             options={spouseOptions ?? []}
             selected={
               selectedSpouse
@@ -171,26 +177,15 @@ const AddChildForm = ({
           />
         }
 
-        <input
-          type="date"
-          value={birthDate?.toISOString()}
-          onChange={(e) => setBirthDate(new Date(e.target.value))}
-          placeholder="Birth Date"
-          className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
-        />
-        <input
-          type="date"
-          value={deathDate?.toISOString()}
-          onChange={(e) => setDeathDate(new Date(e.target.value))}
-          placeholder="Death Date"
-          className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
-        />
-        <button
+        <DatePicker placeholder="Birth Date" selectedDate={birthDate} onSubmit={(date) => setBirthDate(date)}/>
+        <DatePicker placeholder="Death Date" selectedDate={deathDate} onSubmit={(date) => setDeathDate(date)}/>
+
+        <Button
           type="submit"
-          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-semibold rounded-md transition"
+          className="w-full py-2 px-4 font-semibold rounded-md transition"
         >
           Submit
-        </button>
+        </Button>
       </form>
     </div>
   );
