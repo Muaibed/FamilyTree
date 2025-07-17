@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { Button } from '../ui/button';
+import Image from 'next/image';
 
 interface ModalProps {
   isOpen: boolean;
@@ -20,16 +22,17 @@ export function PersonModal({ isOpen, onClose, gender, children }: PersonModalPr
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50"
+      className="fixed inset-0 flex items-center justify-center z-50 shadow-md"
     >
-      <div className={`bg-white dark:bg-[#dae0fa] dark:text-[#212226] border-t-5 dark:border-t-5 p-6 rounded-lg max-w-md w-full relative ${gender === "MALE" ? "border-t-[#60B5FF] dark:border-t-[#60B5FF]" : (gender === "FEMALE" ? "border-t-[#EC7FA9] dark:border-t-[#EC7FA9]" : "")} `}>
+      <div className={`bg-card text-card-foreground border-t-5 p-6 rounded-lg max-w-md w-full relative ${gender === "MALE" ? "border-t-male" : (gender === "FEMALE" ? "border-t-female" : "border-t-card")} `}>
         {children}
-        <button
+        <Button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:cursor-pointer hover:text-gray-700"
+          className="absolute top-2 right-2 bg-transparent text-card-foreground hover:bg-secondary rounded-full w-6 h-6 p-0"
         >
-          Close
-        </button>
+          <Image src="/icons/close.png" alt="X" width={512} height={512} className="w-4 block dark:hidden" />
+          <Image src="/icons/white-close.png" alt="X" width={512} height={512} className="w-4 hidden dark:block" />
+        </Button>
       </div>
     </div>
   );
@@ -40,16 +43,17 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50"
+      className="fixed inset-0 flex items-center justify-center z-50 shadow-md"
     >
-      <div className="bg-white dark:bg-[#dae0fa] dark:text-[#212226] border-t-5 dark:border-t-5 p-6 rounded-lg max-w-md w-full relative">
+      <div className="bg-card text-card-foreground p-6 rounded-lg max-w-md w-full relative">
         {children}
-        <button
+        <Button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:cursor-pointer hover:text-gray-700"
+          className="absolute top-2 right-2 bg-transparent text-card-foreground hover:bg-secondary rounded-full w-6 h-6 p-0"
         >
-          Close
-        </button>
+          <Image src="/icons/close.png" alt="X" width={512} height={512} className="w-4 block dark:hidden" />
+          <Image src="/icons/white-close.png" alt="X" width={512} height={512} className="w-4 hidden dark:block" />
+        </Button>
       </div>
     </div>
   );

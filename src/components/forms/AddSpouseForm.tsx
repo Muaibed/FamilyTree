@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Option } from "@/types/ui";
 import SearchSelect from "../client/SearchSelect";
 import { PersonWithRelations } from "@/types/family";
+import { Button } from "../ui/button";
 
 const AddSpouseForm = ({
   person,
@@ -71,14 +72,13 @@ const AddSpouseForm = ({
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
+    <div className="max-w-md mx-auto mt-8 p-6 bg-card rounded-lg shadow-md">
+      <h2 className="text-2xl font-semibold mb-4 text-card-foreground">
         Add Spouse
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         
         <SearchSelect
-          className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
           options={spouseOptions ?? []}
           selected={
             selectedSpouse
@@ -104,7 +104,7 @@ const AddSpouseForm = ({
             e.target.value == "true" ? setIsActive(true) : setIsActive(false)
           }
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`w-full justify-between px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center`}
         >
           <option value="" disabled>
             Current?
@@ -112,12 +112,12 @@ const AddSpouseForm = ({
           <option value={"ture"}>True</option>
           <option value={"false"}>False</option>
         </select>
-        <button
+        <Button
           type="submit"
-          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-semibold rounded-md transition"
+          className="w-full py-2 px-4 font-semibold rounded-md transition"
         >
           Submit
-        </button>
+        </Button>
       </form>
     </div>
   );

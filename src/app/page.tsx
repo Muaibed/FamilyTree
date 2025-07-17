@@ -13,6 +13,7 @@ import { signOut, useSession } from "next-auth/react";
 import { Suspense, useState } from "react";
 import useSWR from "swr";
 import { FamilyWithRootPerson } from "@/types/family";
+import { Loader2 } from "lucide-react";
 
 export default function Home({
   children,
@@ -51,14 +52,13 @@ export default function Home({
   const createMember = (
     <>
       {isAdmin && (
-        <button
-          className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+        <Button
           onClick={() => {
             setIsCreatingPerson(true);
           }}
         >
           Create Person
-        </button>
+        </Button>
       )}
       <Modal
         isOpen={!!isCreatingPerson}
@@ -71,7 +71,7 @@ export default function Home({
 
   if (error || !members) return <ErrorAlert title="Something went wrong!"/>
 
-  if (familiesLoading || isLoading) return <div>Loading...</div>;
+  if (familiesLoading || isLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
   if (familiesError || error)
     return (
       <ErrorAlert
@@ -107,16 +107,22 @@ export default function Home({
   }
 
   return (
-    <div className="relative w-full h-screen bg-gradient-to-tr from-gray-100 to-blue-100 dark:bg-gradient-to-tr dark:from-gray-800 dark:to-[#212226]">
+    <div className="relative w-full h-screen bg-gradient-to-tr from-cyan-50 to-blue-50 dark:bg-gradient-to-tr dark:from-gray-800 dark:to-background">
+      <div className="absolute z-55">
+      <div className="flex flex-row gap-2 pt-4 pl-4">
       {session && (
         <div>
-          <Button onClick={() => signOut()}>Sign out</Button>
+          <Button className="" onClick={() => signOut()}>Sign out</Button>
         </div>
       )}
       {session && isAdmin && (
-        <div>
+        <>
+          <div>
           {createMember}
+          </div>
+          <div>
           <Button onClick={() => setIsAddingFamily(true)}>Add Family</Button>
+          </div>
           <Modal
             isOpen={!!isAddingFamily}
             onClose={() => setIsAddingFamily(false)}
@@ -126,8 +132,10 @@ export default function Home({
               onAdd={() => setIsAddingFamily(false)}
             ></AddFamilyForm>
           </Modal>
-        </div>
+        </>
       )}
+      </div>
+      </div>
       <Suspense>
         <FamilyTreeView
           members={members}

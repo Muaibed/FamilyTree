@@ -3,7 +3,6 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import SessionProviderWrapper from "@/components/client/SessionProviderWrapper";
 import MembersContextProvider from "@/components/client/MembersContextProvider";
-import useSWR from "swr";
 import ThemeToggle from "@/theme/theme-toggle";
 
 export default function RootLayout({
@@ -14,7 +13,7 @@ export default function RootLayout({
   
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-[#212226] dark:bg-[#191919] text-[#37352f] dark:text-[#ffffffcf]">
+      <body>
         <SessionProviderWrapper>
           <ThemeProvider
             attribute="class"
@@ -22,7 +21,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ThemeToggle />
+            <div className="absolute top-4 right-4 z-60">
+              <ThemeToggle />
+            </div>            
             <MembersContextProvider>
               {children}
             </MembersContextProvider>

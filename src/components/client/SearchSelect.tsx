@@ -31,14 +31,14 @@ export default function SearchSelect({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className={`w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center ${className ?? ""}`}
+          className={`w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center justify-between ${className ?? ""}`}
           aria-expanded={open}
         >
           {selected ? selected.value : placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 text-muted-foreground" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[200px] p-0 z-55">
         <Command>
           <CommandInput placeholder={`Search...`} />
           <CommandEmpty>No match found.</CommandEmpty>

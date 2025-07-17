@@ -23,12 +23,10 @@ const ChangeRequestApproval = ({request, onChange}: {request: ChangeRequest, onC
         })
 
         if (response.ok) {
-            toast(`Request ${request.id} has beed approved successfully.`) 
+            toast(`Request has beed approved successfully.`) 
             onChange()
         } else {
-            const error = await response.json();
-            toast(`Approving request ${request.id} falied!`)
-            console.log(error)
+            toast(`Approving request falied!`)
         }
     }
 

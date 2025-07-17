@@ -18,7 +18,8 @@ import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
 import NoDataAlert from "../alerts/NoDataAlert";
 import EditFamilyForm from "../forms/EditFamilyForm";
-import { Family } from "@/generated/prisma";
+import Image from 'next/image';
+
 
 const renderCustomNode: RenderCustomNodeElementFn = (
   rd3tNodeProps: CustomNodeElementProps
@@ -31,9 +32,9 @@ const renderCustomNode: RenderCustomNodeElementFn = (
         width="120"
         height="40"
         x="-60"
-        y="-22"
+        y="-23"
         className={`${
-          gender == "MALE" ? "fill-[#60B5FF]" : "fill-[#EC7FA9]"
+          gender == "MALE" ? "fill-male" : "fill-female"
         } stroke-none`}
         rx="10"
         ry="10"
@@ -43,7 +44,7 @@ const renderCustomNode: RenderCustomNodeElementFn = (
         height="40"
         x="-60"
         y="-20"
-        className="fill-white dark:fill-[#e6eafc] dark:stroke-none stroke-none"
+        className="fill-white dark:fill-seondary dark:stroke-none stroke-none"
         rx="10"
         ry="10"
       />
@@ -75,7 +76,6 @@ export default function FamilyTreeView({
   const [treeData, setTreeData] = useState<TreeNode | undefined>(undefined);
   const [selectedPerson, setSelectedPerson] = useState<PersonWithRelations | undefined>(undefined);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isEditingFamily, setIsEditingFamily] = useState(false);
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
@@ -110,7 +110,7 @@ export default function FamilyTreeView({
       setTreeData(undefined)
     }
 
-  }, [members, family, families, selectedFamily]);
+  }, [members, family, families, selectedFamily, selectedPerson]);
 
   if (!treeData) {
     return (
@@ -156,9 +156,9 @@ export default function FamilyTreeView({
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
-      <div className="flex flex-row">
-        <div>
+      <div className="absolute top-4 left-0 w-full flex items-center justify-center z-50">
           <SearchSelect
+            className="w-32!"
             options={familyOptions ?? []}
             selected={
               selectedFamily
@@ -176,7 +176,6 @@ export default function FamilyTreeView({
             }}
             placeholder="Select family..."
           />
-        </div>
       </div>
       <div
         className={`relative w-full h-screen ${
@@ -217,52 +216,70 @@ export default function FamilyTreeView({
         {selectedPerson && (
           <div className="text-center">
             <div>
-              <h2 className="text-xl font-bold">{selectedPerson.firstName}</h2>
+              <h1 className="text-2xl font-bold">{selectedPerson.firstName}</h1>
               <p className="text-sm opacity-50">
                 {selectedPerson.fullName}
               </p>
             </div>
-            <p>id: {selectedPerson.id}</p>
-            <p>Gender: {selectedPerson.gender}</p>
-            {selectedPerson.birthDate && (
-                <p>Birth Date: {selectedPerson.birthDate.toISOString()}</p>
+            <div className="m-4">
+              <div className="bg-accent dark:bg-secondary rounded m-1">
+                {(selectedPerson.femaleSpouses.length > 0 || selectedPerson.maleSpouses.length > 0) && (
+                  <div className="flex items-center justify-between py-2 relative min-h-[2.5rem]">
+                    <div className="relative left-1/2 transform -translate-x-1/2">
+                      <div className="flex flex-col">
+                      {selectedPerson.gender === "FEMALE" ? selectedPerson.femaleSpouses.filter((s) => s.isActive === true).map((s) =>
+                        <div key={s.id} className="py-1">{s.male.fullName}</div>) : selectedPerson.maleSpouses.filter((s) => s.isActive === true).map((s) => <div key={s.id} className="py-1">{s.female.fullName}</div>)}
+                      </div>
+                    </div>
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                      <Image src="/icons/wedding-rings.png" alt="Star" width={512} height={512} className="w-7 block dark:hidden" />
+                      <Image src="/icons/white-wedding-rings.png" alt="Star" width={512} height={512} className="w-7 hidden dark:block" />
+                    </div>
+                  </div>
+                  )}
+              </div>
+              {selectedPerson.deathDate && (
+              <div className="bg-accent dark:bg-secondary rounded m-1">
+                <div className="relative py-2 min-h-[2.5rem]">
+                  <div className="absolute left-1/2 transform -translate-x-1/2">
+                        <p>{new Date(selectedPerson.deathDate).toISOString().slice(0,10)}</p>
+                  </div>
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                      <Image src="/icons/tombstone.png" alt="Star" width={512} height={512} className="w-6 block dark:hidden" />
+                      <Image src="/icons/white-tombstone.png" alt="Star" width={512} height={512} className="w-6 hidden dark:block" />
+                  </div>
+                </div>
+              </div>
               )}
-            <p>
-              Spouses: {" "}
-              {selectedPerson.gender === "FEMALE" ? selectedPerson.femaleSpouses.map((s) =>
-                s.male.fullName) : selectedPerson.maleSpouses.map((s) => s.female.fullName)}
-            </p>
-            {selectedPerson.deathDate && (
-                <p>Death Date: {selectedPerson.deathDate.toISOString()}</p>
-              )}
+            </div>
 
             {isAdmin && (
               <div>
-                <div>
-                  <button
-                    className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+                <div className="mt-4">
+                  <Button
+                    className="p-1 w-fit pl-2 pr-2 m-2"
                     onClick={() => {
                       setIsAddingChild(!isAddingChild);
                       setIsAddingSpouse(false);
                     }}
                   >
                     ADD Child
-                  </button>
-                  <button
-                    className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+                  </Button>
+                  <Button
+                    className="p-1 w-fit pl-2 pr-2 m-2"
                     onClick={() => {
                       setIsAddingSpouse(!isAddingSpouse);
                       setIsAddingChild(false);
                     }}
                   >
                     ADD Spuose
-                  </button>
-                  <button
-                    className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+                  </Button>
+                  <Button
+                    className="p-1 w-fit pl-2 pr-2 m-2"
                     onClick={() => setIsDeleting(!isDeleting)}
                   >
                     DELETE
-                  </button>
+                  </Button>
                 </div>
                 {isAddingChild && (
                   <div>
@@ -296,12 +313,12 @@ export default function FamilyTreeView({
             )}
             {!isAdmin && (
               <Button
-                className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+                className="w-fit pl-2 pr-2 mt-6"
                 onClick={() =>
                   (window.location.href = `/changeRequestForm?personId=${selectedPerson.id}`)
                 }
               >
-                Request Edit
+                طلب تعديل
               </Button>
             )}
           </div>
@@ -313,8 +330,6 @@ export default function FamilyTreeView({
         onClose={() => {
           setIsDeleting(false);
           setDetailModalOpen(false);
-          setDeleteModalOpen(false);
-          setSelectedPerson(undefined);
         }}
       >
         {selectedPerson && isDeleting && (
@@ -324,8 +339,6 @@ export default function FamilyTreeView({
               onChange();
               setDetailModalOpen(false);
               setIsDeleting(false);
-              setSelectedPerson(undefined);
-              setDeleteModalOpen(false);
             }}
           />
         )}
