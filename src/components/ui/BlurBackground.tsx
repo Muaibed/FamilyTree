@@ -14,14 +14,11 @@ const BlurBackground: React.FC<BlurBackgroundProps> = ({ children, className = '
   return (
     <div className={`relative min-h-screen w-full ${className}`}>
       {/* Background with gradient and blur */}
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-50" />
-        
-        {/* Decorative circles/blobs */}
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-blue-500 opacity-50 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-purple-500 opacity-50 blur-3xl" />
-        <div className="absolute top-1/2 right-1/3 w-48 h-48 rounded-full bg-pink-500 opacity-40 blur-3xl" />
-      </div>
+      <div className="bg-blue-300 w-[1000px] h-[1000px] rounded-full absolute -z-1 top-1/2 left-1/2 -translate-x-1/10 -translate-y-1/4 opacity-5 blur-2xl"></div>
+      <div className="bg-primary w-[1000px] h-[1000px] rounded-full absolute -z-1 top-1/2 left-1/2 -translate-x-5/6 -translate-y-1/4 opacity-5 blur-2xl"></div>
+
+      <div className="bg-blue-300 w-[1000px] h-[1000px] rounded-full absolute -z-1 top-1/2 right-1/2 -translate-x-1/10 -translate-y-2/3 opacity-5 blur-2xl"></div>
+      <div className="bg-primary w-[1000px] h-[1000px] rounded-full absolute -z-1 top-1/2 right-1/2 translate-x-11/12 -translate-y-2/3 opacity-5 blur-2xl"></div>
       
       {/* Content container with glass effect */}
       <div className="relative z-10 w-full">

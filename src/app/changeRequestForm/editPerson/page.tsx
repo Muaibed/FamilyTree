@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
+import DatePicker from "@/components/ui/datePicker";
 
 const PersonChangeRequestForm = () => {
   const session = useSession()
@@ -31,7 +32,7 @@ const PersonChangeRequestForm = () => {
   const [family, setFamily] = useState<FamilyWithRootPerson | undefined>(
     person?.family
   );
-  const [gender, setGender] = useState<"MALE" | "FEMALE">("MALE");
+  const [gender, setGender] = useState<"MALE" | "FEMALE">(person?.gender ?? "MALE");
   const [selectedFather, setSelectedFather] = useState<PersonWithRelations | undefined>(
     person?.fatherId ? members.find((m) => m.id === person.fatherId) : undefined
   );
@@ -150,99 +151,98 @@ const PersonChangeRequestForm = () => {
     );
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="w-md mx-auto mt-8 p-10 bg-card rounded-lg shadow-md">
+      <div className="flex items-center justify-center w-full">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
-        Create Change Request
+        طلب تعديل معلومات {person?.firstName}
       </h2>
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
-          placeholder="First Name"
+          placeholder="الاسم الأول"
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
         />
-        {
-          <SearchSelect
-            options={familyOptions ?? []}
-            selected={
-              families.find((f: FamilyWithRootPerson) => f.id === family?.id) &&
-              family?.id
-                ? {
-                    id: family.id,
-                    value: family.name,
-                  }
-                : null
-            }
-            onSelect={(option) => {
-              const family = families.find((f: FamilyWithRootPerson) => f.id === option.id)
-              if (family)
-                setFamily(family);
-            }}
-            placeholder="Select Family"
-          />
-        }
+        <select
+          value={gender}
+          onChange={(e) => setGender(e.target.value as "MALE" | "FEMALE")}
+          required
+          className={`w-full justify-between px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center`}
+          >
+          <option value="MALE">ذكر</option>
+          <option value="FEMALE">أنثى</option>
+        </select>
         {
           <SearchSelect
             options={fatherOptions ?? []}
             selected={
               selectedFather
                 ? {
-                    id: selectedFather.id.toString(),
+                  id: selectedFather.id.toString(),
                     value: selectedFather.fullName,
                   }
-                : null
-            }
-            onSelect={(option) => {
-              const father = members.find(
-                (f) => f.id.toString() === option.id
+                  : null
+                }
+                onSelect={(option) => {
+                  const father = members.find(
+                    (f) => f.id.toString() === option.id
               );
               if (father) {
                 setSelectedFather(father);
               }
             }}
-            placeholder="Select a Father"
-          />
-        }
+            placeholder="اختر الأب"
+            />
+          }
         {
           <SearchSelect
-            options={motherOptions ?? []}
-            selected={
-              selectedMother
+          options={motherOptions ?? []}
+          selected={
+            selectedMother
                 ? {
-                    id: selectedMother.id.toString(),
-                    value: selectedMother.fullName,
-                  }
+                  id: selectedMother.id.toString(),
+                  value: selectedMother.fullName,
+                }
                 : null
-            }
-            onSelect={(option) => {
-              const mother = members.find(
-                (f) => f.id.toString() === option.id
+              }
+              onSelect={(option) => {
+                const mother = members.find(
+                  (f) => f.id.toString() === option.id
               );
               if (mother) {
                 setSelectedMother(mother);
               }
             }}
-            placeholder="Select a Mother"
-          />
-        }
-        <select
-          value={gender}
-          onChange={(e) => setGender(e.target.value as "MALE" | "FEMALE")}
-          required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="MALE">Male</option>
-          <option value="FEMALE">Female</option>
-        </select>
-        <input
-          type="date"
-          value={deathDate?.toString()}
-          onChange={(e) => setDeathDate(new Date(e.target.value))}
-          placeholder="Death Date"
-          className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
-        />
+            placeholder="اختر الأم"
+            />
+          }
+          {
+            <SearchSelect
+              options={familyOptions ?? []}
+              selected={
+                families.find((f: FamilyWithRootPerson) => f.id === family?.id) &&
+                family?.id
+                  ? {
+                      id: family.id,
+                      value: family.name,
+                    }
+                  : null
+              }
+              onSelect={(option) => {
+                const family = families.find((f: FamilyWithRootPerson) => f.id === option.id)
+                if (family)
+                  setFamily(family);
+              }}
+              placeholder="اختر العائلة"
+            />
+          }
+
+        <DatePicker placeholder="تاريخ الوفاة" selectedDate={deathDate} onSubmit={(date) => setDeathDate(date)}/>
+
         {!session.data && 
           <div className="flex flex-col gap-2">
             <hr className="w-60 h-0.5 mx-auto my-4 bg-gray-200 dark:bg-gray-700" />
@@ -250,25 +250,26 @@ const PersonChangeRequestForm = () => {
               type="text" 
               value={requesterName ?? ""}
               onChange={(e) => setRequesterName(e.target.value)}
-              placeholder="Requester Name (optional)"
-              className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              placeholder="اسم مقدم الطلب"
+              className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
             />
             <input 
               type="text" 
               value={requesterPhone ?? ""}
               onChange={(e) => setRequesterPhone(e.target.value)}
-              placeholder="Requester Phone (optional)"
-              className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              placeholder="رقم مقدم الطلب"
+              className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
             />
           </div>
         }
         <Button
           type="submit"
-          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-semibold rounded-md transition"
+          className="w-full py-2 px-4 font-semibold rounded-md transition"
         >
           Submit
         </Button>
       </form>
+    </div>
     </div>
   );
 };

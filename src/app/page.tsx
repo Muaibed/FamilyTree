@@ -14,6 +14,7 @@ import { Suspense, useState } from "react";
 import useSWR from "swr";
 import { FamilyWithRootPerson } from "@/types/family";
 import { Loader2 } from "lucide-react";
+import { BlurBackground } from "@/components/ui/BlurBackground";
 
 export default function Home({
   children,
@@ -81,7 +82,7 @@ export default function Home({
     );
   if (!defaulfFamily) {
     if (session && isAdmin) {
-      return (
+      return (<>
         <div className="flex flex-col items-center justify-center">
           {createMember}
           <NoDataAlert
@@ -101,13 +102,14 @@ export default function Home({
             ></AddFamilyForm>
           </Modal>
         </div>
+      </>
       );
     }
     return <NoDataAlert title="No Families Found"></NoDataAlert>;
   }
 
   return (
-    <div className="relative w-full h-screen bg-gradient-to-tr from-cyan-50 to-blue-50 dark:bg-gradient-to-tr dark:from-gray-800 dark:to-background">
+    <div >
       <div className="absolute z-55">
       <div className="flex flex-row gap-2 pt-4 pl-4">
       {session && (

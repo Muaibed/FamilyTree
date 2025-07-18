@@ -223,7 +223,9 @@ export default function FamilyTreeView({
             </div>
             <div className="m-4">
               <div className="bg-accent dark:bg-secondary rounded m-1">
-                {(selectedPerson.femaleSpouses.length > 0 || selectedPerson.maleSpouses.length > 0) && (
+                {(selectedPerson.femaleSpouses.filter((s) => s.isActive === true).length > 0 
+                  || selectedPerson.maleSpouses.filter((s) => s.isActive === true).length > 0) 
+                  && (
                   <div className="flex items-center justify-between py-2 relative min-h-[2.5rem]">
                     <div className="relative left-1/2 transform -translate-x-1/2">
                       <div className="flex flex-col">

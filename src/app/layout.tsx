@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner"
 import SessionProviderWrapper from "@/components/client/SessionProviderWrapper";
 import MembersContextProvider from "@/components/client/MembersContextProvider";
 import ThemeToggle from "@/theme/theme-toggle";
+import { BlurBackground } from "@/components/ui/BlurBackground";
 
 export default function RootLayout({
   children,
@@ -25,7 +26,9 @@ export default function RootLayout({
               <ThemeToggle />
             </div>            
             <MembersContextProvider>
-              {children}
+              <BlurBackground className="">
+                {children}
+              </BlurBackground>
             </MembersContextProvider>
             <Toaster />
           </ThemeProvider>
