@@ -44,7 +44,7 @@ const AddChildForm = ({
     if (parent.gender === "MALE") {
       setFather(parent);
       setFamily(parent.family);
-      const options = parent.femaleSpouses.map((s) => {
+      const options = parent.maleSpouses.map((s) => {
       return {
         id: s.femaleId,
         value: s.female.fullName,
@@ -54,7 +54,7 @@ const AddChildForm = ({
     } else if (parent.gender === "FEMALE") {
       setMother(parent);
       if (father) setFamily(parent.family);
-      const options = parent.maleSpouses.map((s) => {
+      const options = parent.femaleSpouses.map((s) => {
       return {
         id: s.maleId,
         value: s.male.fullName
@@ -62,12 +62,15 @@ const AddChildForm = ({
     });
     setSpouseOptions(options);
     }
-    const familyOptions = families.map((family: Family) => ({
-      id: family.id,
-      value: family.name,
-    }));
-    setFamilyOptions(familyOptions);
-  }, [father]);
+    if (families) {
+      const familyOptions = families.map((family: Family) => ({
+        id: family.id,
+        value: family.name,
+      }));
+      setFamilyOptions(familyOptions);
+    }
+
+  }, [father, families]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,7 +104,7 @@ const AddChildForm = ({
     }
   };
 
-  if (isLoading) return <Loader2 />
+  if (isLoading) return <Loader2 className="flex items-center justify-center w-full" />
   if (error || !families) return <ErrorAlert title="Something went wrong!" message="Families are not found." />
 
   return (

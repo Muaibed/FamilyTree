@@ -14,16 +14,8 @@ export function columns({
 }): ColumnDef<ChangeRequest>[] {
   return [
     {
-      accessorKey: "id",
-      header: "ID",
-    },
-    {
       accessorKey: "targetModel",
       header: "Target Model",
-    },
-    {
-      accessorKey: "targetId",
-      header: "Target ID",
     },
     {
       accessorKey: "action",

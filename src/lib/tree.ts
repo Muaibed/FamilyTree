@@ -18,8 +18,17 @@ export const prepareTreeData = (
     children: [],
   };
 
-  if (person.fatherChildren.length > 0) {
+  if (person.gender === "MALE" && person.fatherChildren.length > 0) {
     person.fatherChildren.forEach((childId) => {
+      const childNode = prepareTreeData(members, childId.id);
+      if (childNode) {
+        node.children.push(childNode);
+      }
+    });
+  }
+
+  if (person.gender === "FEMALE" && person.motherChildren.length > 0) {
+    person.motherChildren.forEach((childId) => {
       const childNode = prepareTreeData(members, childId.id);
       if (childNode) {
         node.children.push(childNode);

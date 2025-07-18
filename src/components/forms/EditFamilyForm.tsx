@@ -11,6 +11,7 @@ import SearchSelect from "../client/SearchSelect";
 import { Person } from "@/generated/prisma";
 import ErrorAlert from "../alerts/ErrorAlert";
 import { Loader2 } from "lucide-react";
+import { Button } from "../ui/button";
 
 const EditFamilyForm = ({
   family,
@@ -68,8 +69,8 @@ const EditFamilyForm = ({
   if (isLoading) return <Loader2 />
   
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
+    <div className="max-w-md mx-auto mt-8 p-6 rounded-lg shadow-md">
+      <h2 className="text-2xl font-semibold mb-4">
         Edit Family
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -79,7 +80,7 @@ const EditFamilyForm = ({
           onChange={(e) => setName(e.target.value)}
           placeholder="Name"
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
         />
          {
           <SearchSelect
@@ -101,33 +102,34 @@ const EditFamilyForm = ({
             placeholder="Select a root"
           />
         }
-
-        <button
-          type="submit"
-          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-semibold rounded-md transition"
-          onSubmit={() => onEdit()}
-        >
-          Submit
-        </button>
-      </form>
-      <div>
         <div>
-          <button
-            className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
+          <Button
+            type="button"
+            className="w-full py-2 px-4 font-semibold rounded-md transition bg-secondary"
             onClick={() => setIsDeleting(!isDeleting)}
           >
             DELETE
-          </button>
+          </Button>
         </div>
+
+        <Button
+          type="submit"
+          className="w-full py-2 px-4 font-semibold rounded-md transition"
+          onSubmit={() => {onEdit(); setIsDeleting(false)}}
+        >
+          Submit
+        </Button>
+      </form>
+      <div>
       </div>
 
+      {isDeleting && (
       <Modal
         isOpen={!!isDeleting}
         onClose={() => {
           setIsDeleting(false);
         }}
       >
-        {isDeleting && (
           <DeleteFamily
             family={family}
             onSubmit={() => {
@@ -135,8 +137,8 @@ const EditFamilyForm = ({
               setIsDeleting(false);
             }}
           />
-        )}
       </Modal>
+      )}
     </div>
   );
 };

@@ -8,15 +8,11 @@ import { Button } from "@/components/ui/button";
 // You can use a Zod schema here if you want.
 
 export function columns({
-  remove,
+  onEdit,
 }: {
-  remove: (relation: SpouseRelationship) => void;
+  onEdit: (relation: SpouseRelationship) => void;
 }): ColumnDef<SpouseRelationship>[] {
   return [
-    {
-      accessorKey: 'id',
-      header: 'ID',
-    },
     {
       accessorKey: "male.fullName",
       header: "Male",
@@ -32,14 +28,14 @@ export function columns({
     {
       id: "actions",
       cell: ({ row }) => {
-        const request = row.original;
+        const relation = row.original;
         return (
           <Button
             variant="ghost"
             className="h-8 w-8 p-0 hover:cursor-pointer"
-            onClick={() => remove(request)}
+            onClick={() => onEdit(relation)}
           >
-            Delete
+            Edit
           </Button>
         );
       },

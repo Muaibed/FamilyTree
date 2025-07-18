@@ -18,9 +18,13 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/auth/signin", req.url));
   }
 
+  if (pathname.startsWith("/changeRequestsList") && token?.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/auth/signin", req.url));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/familiesList/:path*", "/membersList/:path*", "/relationsList/:path*"],
+  matcher: ["/familiesList/:path*", "/membersList/:path*", "/relationsList/:path*", "/changeRequestsList/:path*"],
 };

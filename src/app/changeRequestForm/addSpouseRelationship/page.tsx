@@ -100,13 +100,16 @@ const AddSpouseRelationship = () => {
     );
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="w-md mx-auto mt-8 p-10 bg-card rounded-lg shadow-md">
+      <div className="flex items-center justify-center w-full">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
-        Create Change Request
-      </h2>    <form onSubmit={handleSubmit} className="space-y-4">
+        طلب تعديل معلومات {person?.firstName}
+      </h2>
+      </div>  
+      <form onSubmit={handleSubmit} className="space-y-4">
         {
             <SearchSelect
-            className="w-full justify-between px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
             options={spouseOptions ?? []}
             selected={
                 selectedSpouse
@@ -125,7 +128,7 @@ const AddSpouseRelationship = () => {
                   setSelectedSpouse(spouse);
                 }
               }}
-              placeholder="Select a Spouse"
+              placeholder="اختر الزوج"
             />
         }
         {!session.data && (
@@ -135,25 +138,26 @@ const AddSpouseRelationship = () => {
               type="text"
               value={requesterName ?? ""}
               onChange={(e) => setRequesterName(e.target.value)}
-              placeholder="Requester Name (optional)"
-              className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              placeholder="اسم مقدم الطلب"
+              className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
             />
             <input
               type="text"
               value={requesterPhone ?? ""}
               onChange={(e) => setRequesterPhone(e.target.value)}
-              placeholder="Requester Phone (optional)"
-              className={`w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              placeholder="رقم مقدم الطلب"
+              className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
             />
           </div>
         )}
        <Button
           type="submit"
-          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-semibold rounded-md transition"
+          className="w-full py-2 px-4 font-semibold rounded-md transition"
         >
-          Submit
+          تأكيد
         </Button>
       </form>
+    </div>
     </div>
   );
 };

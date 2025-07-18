@@ -8,25 +8,28 @@ const changeRequestForm = () => {
     const personId = searchParams.get("personId");
 
     return (
-        <div className="flex flex-row items-center justify-center gap-4 w-full h-screen">
-            <div className="flex flex-col bg-white p-4 gap-3 rounded-md">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-md mx-auto mt-8 p-10 bg-card rounded-lg shadow-md">
+            <div className="flex items-center justify-center w-full">
+                <h1 className="text-2xl text-card-foreground font-bold pb-8">اختر لطلب التعديل</h1>
+            </div>
                 <Button 
-                    className="hover:cursor-pointer"
+                    className="w-full py-2 px-4 font-semibold rounded-md transition mb-2"
                     onClick={() => window.location.href = `/changeRequestForm/editPerson?personId=${personId}`}
                 >
-                    Edit
+                    تعديل المعلومات الشخصية
                 </Button>
                 <Button 
-                    className="hover:cursor-pointer"
+                    className="w-full py-2 px-4 font-semibold rounded-md transition mb-2 "
                     onClick={() => window.location.href = `/changeRequestForm/addChild?parentId=${personId}`}
                 >
-                    Add Child
+                    إضافة ابن
                 </Button>
                 <Button 
-                    className="hover:cursor-pointer"
+                    className="w-full py-2 px-4 font-semibold rounded-md transition mb-2"
                     onClick={() => window.location.href = `/changeRequestForm/addSpouseRelationship?personId=${personId}`}
                 >
-                    Add Spouse
+                    إضافة زوج
                 </Button>
             </div>
         </div>

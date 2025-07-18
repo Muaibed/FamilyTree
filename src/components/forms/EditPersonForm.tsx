@@ -31,7 +31,7 @@ const EditPersonForm = ({
   const [deathDate, setDeathDate] = useState<Date | undefined>(
     person.deathDate ? person.deathDate : undefined
   );
-  const [spouses, setSpouses] = useState<Person[]>([]);
+  const [spouses, setSpouses] = useState<Person[]>(person.gender === "MALE" ? person.maleSpouses.map((s) => s.female) : person.femaleSpouses.map((s) => s.male));
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -59,10 +59,6 @@ const EditPersonForm = ({
       }));
     setFatherOptions(fatherOptions);
 
-    if (person.gender === "MALE") {
-      const spouses = person.femaleSpouses.map((f) => f.female)
-      setSpouses(spouses)
-    }
   }, [members]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,13 +93,13 @@ const EditPersonForm = ({
     }
   };
 
-  const deleteRelation = async (person1Id: string, person2Id: string) => {
+  const deleteRelation = async (maleId: string, femaleId: string) => {
     try {
       const response = await fetch("api/spouseRelationship", {
         method: "DELETE",
         body: JSON.stringify({
-          person1Id,
-          person2Id,
+          maleId,
+          femaleId,
         }),
       });
 
@@ -120,8 +116,8 @@ const EditPersonForm = ({
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
+    <div className="max-w-md mx-auto mt-8 p-6 rounded-lg shadow-md">
+      <h2 className="text-2xl font-semibold mb-4">
         Edit Person
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -131,7 +127,7 @@ const EditPersonForm = ({
           onChange={(e) => setFirstName(e.target.value)}
           placeholder="First Name"
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
         />
         <input
           type="text"
@@ -139,13 +135,13 @@ const EditPersonForm = ({
           onChange={(e) => setFamilyName(e.target.value)}
           placeholder="Family Name"
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
         />
         <select
           value={gender}
           onChange={(e) => setGender(e.target.value as "MALE" | "FEMALE")}
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`w-full justify-between px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center`}
         >
           <option value="MALE">Male</option>
           <option value="FEMALE">Female</option>
@@ -189,54 +185,60 @@ const EditPersonForm = ({
         />
         <DatePicker placeholder="Birth Date" selectedDate={birthDate} onSubmit={(date) => setBirthDate(date)}/>
         <DatePicker placeholder="Death Date" selectedDate={deathDate} onSubmit={(date) => setDeathDate(date)}/>
-        <div className="text-white">
+        <div>
           {spouses?.map((s) => {
-            return (
-              <div className="flex flex-col-2 justify-between">
-                <p className="alig">{s + ""}</p>
+            return (<div className="mb-1" key={s.id}>
+              <div className="flex flex-col-2 items-center justify-between">
+                <p>{s.fullName + ""}</p>
                 <Button
                   type="button"
                   onClick={() => {
-                    deleteRelation(person.id, s.toString());
+                    person.gender === "MALE" ? deleteRelation(person.id, s.id) : deleteRelation(s.id, person.id)
                     setSpouses(spouses => spouses?.filter(s => person.id !== s.id));
                   }}
+                  className="bg-secondary hover:bg-accent"
                 >
                   Remove
                 </Button>
               </div>
+              <hr className="border-t border-border my-2" />
+            </div>
             );
           })}
         </div>
-
-        <button
-          type="submit"
-          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-semibold rounded-md transition"
-        >
-          Submit
-        </button>
-      </form>
       <div>
-        <div>
-          <button
-            className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-            onClick={() => setIsAddingChild(!isAddingChild)}
+        <div className="flex flex-col gap-2 mt-3">
+          <Button
+            type="button"
+            className="w-full py-2 px-4 font-semibold rounded-md transition bg-secondary"
+            onClick={() => setIsAddingChild(true)}
           >
             ADD Child
-          </button>
-          <button
-            className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-            onClick={() => setIsAddingSpouse(!isAddingSpouse)}
+          </Button>
+          <Button
+            type="button"
+            className="w-full py-2 px-4 font-semibold rounded-md transition bg-secondary"
+            onClick={() => setIsAddingSpouse(true)}
           >
             ADD Spuose
-          </button>
-          <button
-            className="bg-gray-800 hover:bg-gray-900 hover:cursor-pointer text-white p-1 w-fit pl-2 pr-2 rounded m-2"
-            onClick={() => setIsDeleting(!isDeleting)}
+          </Button>
+          <Button
+            type="button"
+            className="w-full py-2 px-4 font-semibold rounded-md transition bg-secondary"
+            onClick={() => setIsDeleting(true)}
           >
             DELETE
-          </button>
+          </Button>
         </div>
       </div>
+
+        <Button
+          type="submit"
+          className="w-full py-2 px-4 font-semibold rounded-md transition"
+        >
+          Submit
+        </Button>
+      </form>
       <Modal
         isOpen={!!isAddingChild}
         onClose={() => {
