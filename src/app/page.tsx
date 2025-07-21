@@ -15,6 +15,7 @@ import useSWR from "swr";
 import { FamilyWithRootPerson } from "@/types/family";
 import { Loader2 } from "lucide-react";
 import { BlurBackground } from "@/components/ui/BlurBackground";
+import SelectFamily from "@/components/preDefinedData/SelectFamily";
 
 export default function Home({
   children,
@@ -34,18 +35,7 @@ export default function Home({
   const { data: session, status } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
 
-  const params = new URLSearchParams({ name: "المعيبد" });
-  const {
-    data: defaulfFamily,
-    isLoading: familiesLoading,
-    error: familiesError,
-    mutate: mutateFamily,
-  } = useSWR<FamilyWithRootPerson>(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family?${params.toString()}`,
-    fetcher
-  );
-
-  const { data: families } = useSWR<FamilyWithRootPerson[]>(
+  const { data: families, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
     fetcher
   );
@@ -58,79 +48,44 @@ export default function Home({
             setIsCreatingPerson(true);
           }}
         >
-          Create Person
+          إضافة فرد
         </Button>
       )}
       <Modal
         isOpen={!!isCreatingPerson}
         onClose={() => setIsCreatingPerson(false)}
       >
-        <CreatePersonForm members={members} onCreate={mutateMembers} />
+        <CreatePersonForm members={members} onCreate={() => {mutateMembers; setIsCreatingPerson(false)}} />
       </Modal>
     </>
   );
 
-  if (error || !members) return <ErrorAlert title="Something went wrong!"/>
+  if (error || familiesError) return <ErrorAlert title="حدث خطأ!"/>
 
   if (familiesLoading || isLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
-  if (familiesError || error)
-    return (
-      <ErrorAlert
-        title="Something went wrong!"
-        message="Try refreshing the page"
-      ></ErrorAlert>
-    );
-  if (!defaulfFamily) {
-    if (session && isAdmin) {
-      return (<>
-        <div className="flex flex-col items-center justify-center">
-          {createMember}
-          <NoDataAlert
-            title="No Families Found!"
-            message="Add some data to get started."
-          ></NoDataAlert>
-          <Button onClick={() => setIsAddingFamily(true)}>Add Family</Button>
-          <Modal
-            isOpen={!!isAddingFamily}
-            onClose={() => setIsAddingFamily(false)}
-          >
-            <AddFamilyForm
-              members={members}
-              onAdd={() => {
-                setIsAddingFamily(false);
-              }}
-            ></AddFamilyForm>
-          </Modal>
-        </div>
-      </>
-      );
-    }
-    return <NoDataAlert title="No Families Found"></NoDataAlert>;
-  }
 
   return (
-    <div >
+    <div className="font-arabic">
       <div className="absolute z-55">
       <div className="flex flex-row gap-2 pt-4 pl-4">
       {session && (
         <div>
-          <Button className="" onClick={() => signOut()}>Sign out</Button>
+          <Button className="" onClick={() => signOut()}>تسجيل خروج</Button>
         </div>
       )}
       {session && isAdmin && (
         <>
           <div>
-          {createMember}
+            {createMember}
           </div>
           <div>
-          <Button onClick={() => setIsAddingFamily(true)}>Add Family</Button>
+          <Button onClick={() => setIsAddingFamily(true)}>إضافة عائلة</Button>
           </div>
           <Modal
             isOpen={!!isAddingFamily}
             onClose={() => setIsAddingFamily(false)}
           >
             <AddFamilyForm
-              members={members}
               onAdd={() => setIsAddingFamily(false)}
             ></AddFamilyForm>
           </Modal>
@@ -142,7 +97,6 @@ export default function Home({
         <FamilyTreeView
           members={members}
           families={families}
-          family={defaulfFamily}
           onChange={mutateMembers}
         />
       </Suspense>

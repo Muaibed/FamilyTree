@@ -12,14 +12,14 @@ import AddSpouseForm from "../forms/AddSpouseForm";
 import { TreeNode } from "@/types/tree";
 import { prepareTreeData } from "@/lib/tree";
 import DeletePerson from "./DeletePerson";
-import SearchSelect from "./SearchSelect";
+import SearchSelect from "../ui/SearchSelect";
 import { Option } from "@/types/ui";
 import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
 import NoDataAlert from "../alerts/NoDataAlert";
 import EditFamilyForm from "../forms/EditFamilyForm";
-import Image from 'next/image';
-
+import Image from "next/image";
+import SelectFamily from "../preDefinedData/SelectFamily";
 
 const renderCustomNode: RenderCustomNodeElementFn = (
   rd3tNodeProps: CustomNodeElementProps
@@ -70,19 +70,21 @@ export default function FamilyTreeView({
 }: {
   members: PersonWithRelations[];
   families: FamilyWithRootPerson[] | undefined;
-  family: FamilyWithRootPerson;
+  family?: FamilyWithRootPerson;
   onChange: any;
 }) {
   const [treeData, setTreeData] = useState<TreeNode | undefined>(undefined);
-  const [selectedPerson, setSelectedPerson] = useState<PersonWithRelations | undefined>(undefined);
+  const [selectedPerson, setSelectedPerson] = useState<
+    PersonWithRelations | undefined
+  >(undefined);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [isEditingFamily, setIsEditingFamily] = useState(false);
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedFamily, setSelectedFamily] = useState<FamilyWithRootPerson | undefined>(
-    family
-  );
+  const [selectedFamily, setSelectedFamily] = useState<
+    FamilyWithRootPerson | undefined
+  >(family);
   const [familyOptions, setFamilyOptions] = useState<Option[]>();
 
   const { data: session, status } = useSession();
@@ -107,75 +109,66 @@ export default function FamilyTreeView({
     }
 
     if (members && selectedFamily && !selectedFamily.rootPersonId) {
-      setTreeData(undefined)
+      setTreeData(undefined);
     }
-
   }, [members, family, families, selectedFamily, selectedPerson]);
 
-  if (!treeData) {
+  if (family && !treeData) {
     return (
       <div className="flex flex-col items-center align-middle">
         <div>
-          <SearchSelect
-            options={familyOptions ?? []}
-            selected={
-              selectedFamily
-                ? {
-                    id: selectedFamily.id.toString(),
-                    value: selectedFamily.name,
-                  }
-                : null
-            }
-            onSelect={(option) => {
-              const family = families?.find(
-                (f) => f.id.toString() === option.id
-              );
-              setSelectedFamily(family || undefined);
-            }}
-            placeholder="Select family..."
-          />
+          <div className="flex items-center justify-center p-4">
+        <SelectFamily selected={undefined} onChange={setSelectedFamily}/>
+       </div> 
         </div>
         <NoDataAlert
           title={`${selectedFamily?.name}`}
           message={"No Data\nAdd a Root To Visualize The Tree."}
         ></NoDataAlert>
         <Button onClick={() => setIsEditingFamily(!isEditingFamily)}>
-          Edit Family
+          تعديل معلومات العائلة
         </Button>
         {isEditingFamily && selectedFamily && (
           <Modal
             isOpen={isEditingFamily}
             onClose={() => setIsEditingFamily(false)}
           >
-            <EditFamilyForm family={selectedFamily} onEdit={() => {}}></EditFamilyForm>
+            <EditFamilyForm
+              family={selectedFamily}
+              onEdit={() => {}}
+            ></EditFamilyForm>
           </Modal>
         )}
       </div>
     );
   }
 
+  if (!treeData) {
+    return <div className="flex items-center justify-center p-4">
+        <SelectFamily selected={undefined} onChange={setSelectedFamily}/>
+       </div> 
+  }
+
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <div className="absolute top-4 left-0 w-full flex items-center justify-center z-50">
-          <SearchSelect
-            className="w-32!"
-            options={familyOptions ?? []}
-            selected={
-              selectedFamily
-                ? {
-                    id: selectedFamily.id.toString(),
-                    value: selectedFamily.name,
-                  }
-                : null
-            }
-            onSelect={(option) => {
-              const family = families?.find(
-                (f) => f.id.toString() === option.id
-              );
-              setSelectedFamily(family || undefined);
-            }}
-            placeholder="Select family..."
-          />
+        <SearchSelect
+          className="w-32!"
+          options={familyOptions ?? []}
+          selected={
+            selectedFamily
+              ? {
+                  id: selectedFamily.id.toString(),
+                  value: selectedFamily.name,
+                }
+              : null
+          }
+          onSelect={(option) => {
+            const family = families?.find((f) => f.id.toString() === option.id);
+            setSelectedFamily(family || undefined);
+          }}
+          placeholder="اختر عائلة"
+        />
       </div>
       <div
         className={`relative w-full h-screen ${
@@ -196,7 +189,7 @@ export default function FamilyTreeView({
 
             if (personId && personId !== true) {
               // exclude (true) if assigned to personId
-              setSelectedPerson(members.find(p => p.id === personId));
+              setSelectedPerson(members.find((p) => p.id === personId));
             }
             setDetailModalOpen(true);
           }}
@@ -217,77 +210,116 @@ export default function FamilyTreeView({
           <div className="text-center">
             <div>
               <h1 className="text-2xl font-bold">{selectedPerson.firstName}</h1>
-              <p className="text-sm opacity-50">
-                {selectedPerson.fullName}
-              </p>
+              <p className="text-sm opacity-50">{selectedPerson.fullName}</p>
             </div>
             <div className="m-4">
               <div className="bg-accent dark:bg-secondary rounded m-1">
-                {(selectedPerson.femaleSpouses.filter((s) => s.isActive === true).length > 0 
-                  || selectedPerson.maleSpouses.filter((s) => s.isActive === true).length > 0) 
-                  && (
+                {(selectedPerson.femaleSpouses.filter(
+                  (s) => s.isActive === true
+                ).length > 0 ||
+                  selectedPerson.maleSpouses.filter((s) => s.isActive === true)
+                    .length > 0) && (
                   <div className="flex items-center justify-between py-2 relative min-h-[2.5rem]">
                     <div className="relative left-1/2 transform -translate-x-1/2">
                       <div className="flex flex-col">
-                      {selectedPerson.gender === "FEMALE" ? selectedPerson.femaleSpouses.filter((s) => s.isActive === true).map((s) =>
-                        <div key={s.id} className="py-1">{s.male.fullName}</div>) : selectedPerson.maleSpouses.filter((s) => s.isActive === true).map((s) => <div key={s.id} className="py-1">{s.female.fullName}</div>)}
+                        {selectedPerson.gender === "FEMALE"
+                          ? selectedPerson.femaleSpouses
+                              .filter((s) => s.isActive === true)
+                              .map((s) => (
+                                <div key={s.id} className="py-1">
+                                  {s.male.fullName}
+                                </div>
+                              ))
+                          : selectedPerson.maleSpouses
+                              .filter((s) => s.isActive === true)
+                              .map((s) => (
+                                <div key={s.id} className="py-1">
+                                  {s.female.fullName}
+                                </div>
+                              ))}
                       </div>
                     </div>
                     <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                      <Image src="/icons/wedding-rings.png" alt="Star" width={512} height={512} className="w-7 block dark:hidden" />
-                      <Image src="/icons/white-wedding-rings.png" alt="Star" width={512} height={512} className="w-7 hidden dark:block" />
+                      <Image
+                        src="/icons/wedding-rings.png"
+                        alt="Star"
+                        width={512}
+                        height={512}
+                        className="w-7 block dark:hidden"
+                      />
+                      <Image
+                        src="/icons/white-wedding-rings.png"
+                        alt="Star"
+                        width={512}
+                        height={512}
+                        className="w-7 hidden dark:block"
+                      />
                     </div>
                   </div>
-                  )}
+                )}
               </div>
               {selectedPerson.deathDate && (
-              <div className="bg-accent dark:bg-secondary rounded m-1">
-                <div className="relative py-2 min-h-[2.5rem]">
-                  <div className="absolute left-1/2 transform -translate-x-1/2">
-                        <p>{new Date(selectedPerson.deathDate).toISOString().slice(0,10)}</p>
-                  </div>
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                      <Image src="/icons/tombstone.png" alt="Star" width={512} height={512} className="w-6 block dark:hidden" />
-                      <Image src="/icons/white-tombstone.png" alt="Star" width={512} height={512} className="w-6 hidden dark:block" />
+                <div className="bg-accent dark:bg-secondary rounded m-1">
+                  <div className="relative py-2 min-h-[2.5rem]">
+                    <div className="absolute left-1/2 transform -translate-x-1/2">
+                      <p>
+                        {new Date(selectedPerson.deathDate)
+                          .toISOString()
+                          .slice(0, 10)}
+                      </p>
+                    </div>
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                      <Image
+                        src="/icons/tombstone.png"
+                        alt="Star"
+                        width={512}
+                        height={512}
+                        className="w-6 block dark:hidden"
+                      />
+                      <Image
+                        src="/icons/white-tombstone.png"
+                        alt="Star"
+                        width={512}
+                        height={512}
+                        className="w-6 hidden dark:block"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
               )}
             </div>
 
             {isAdmin && (
               <div>
-                <div className="mt-4">
+                <div className="flex flex-col gap-2 mt-3 px-4">
                   <Button
-                    className="p-1 w-fit pl-2 pr-2 m-2"
                     onClick={() => {
                       setIsAddingChild(!isAddingChild);
                       setIsAddingSpouse(false);
                     }}
                   >
-                    ADD Child
+                    إضافة ابن
                   </Button>
                   <Button
-                    className="p-1 w-fit pl-2 pr-2 m-2"
                     onClick={() => {
                       setIsAddingSpouse(!isAddingSpouse);
                       setIsAddingChild(false);
                     }}
                   >
-                    ADD Spuose
+                    إضافة زوج
                   </Button>
                   <Button
-                    className="p-1 w-fit pl-2 pr-2 m-2"
+                    variant="destructive"
+                    className="w-full py-2 px-4 font-semibold"
                     onClick={() => setIsDeleting(!isDeleting)}
                   >
-                    DELETE
+                    حذف
                   </Button>
                 </div>
                 {isAddingChild && (
                   <div>
                     <AddChildForm
                       parent={selectedPerson}
-                      members={members}
                       onAdd={() => {
                         onChange();
                         setDetailModalOpen(false);
@@ -301,7 +333,6 @@ export default function FamilyTreeView({
                   <div>
                     <AddSpouseForm
                       person={selectedPerson}
-                      members={members}
                       onAdd={() => {
                         onChange();
                         setDetailModalOpen(false);
@@ -314,14 +345,16 @@ export default function FamilyTreeView({
               </div>
             )}
             {!isAdmin && (
-              <Button
-                className="w-fit pl-2 pr-2 mt-6"
-                onClick={() =>
-                  (window.location.href = `/changeRequestForm?personId=${selectedPerson.id}`)
-                }
-              >
-                طلب تعديل
-              </Button>
+              <div className="flex flex-col gap-2 mt-3 px-4">
+                <Button
+                  className="w-full py-2 px-4 font-semibold"
+                  onClick={() =>
+                    (window.location.href = `/changeRequestForm?personId=${selectedPerson.id}`)
+                  }
+                >
+                  طلب تعديل
+                </Button>
+              </div>
             )}
           </div>
         )}

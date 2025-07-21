@@ -3,16 +3,20 @@
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { useMembersContext } from "../client/MembersContextProvider";
 import AddChildForm from "./AddChildForm";
 import AddSpouseForm from "./AddSpouseForm";
 import { Modal } from "../client/Modal";
 import DeletePerson from "../client/DeletePerson";
-import SearchSelect from "../client/SearchSelect";
-import { Option } from "@/types/ui";
-import { PersonWithRelations } from "@/types/family";
-import { Person } from "@/generated/prisma";
+import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
+import { Family, Person } from "@/generated/prisma";
 import DatePicker from "../ui/datePicker";
+import { Input } from "../ui/input";
+import SelectGender from "../preDefinedData/SelectGender";
+import SearchSelectMember from "../preDefinedData/SearchSelectMember";
+import SelectFamily from "../preDefinedData/SelectFamily";
+import useSWR from "swr";
+import { Loader2 } from "lucide-react";
+import ErrorAlert from "../alerts/ErrorAlert";
 
 const EditPersonForm = ({
   person,
@@ -22,7 +26,7 @@ const EditPersonForm = ({
   onEdit: any;
 }) => {
   const [firstName, setFirstName] = useState(person.firstName);
-  const [familyName, setFamilyName] = useState(person.family.name);
+  const [family, setFamily] = useState<FamilyWithRootPerson | undefined>(person.family);
   const [gender, setGender] = useState<"MALE" | "FEMALE">(person.gender);
   const [phone, setPhone] = useState<string | undefined>(person.phone ?? "");
   const [birthDate, setBirthDate] = useState<Date | undefined>(
@@ -35,31 +39,18 @@ const EditPersonForm = ({
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [fatherOptions, setFatherOptions] = useState<Option[]>();
-  const [motherOptions, setMotherOptions] = useState<Option[]>();
   const [selectedFather, setSelectedFather] = useState<Person | undefined>(person.father ?? undefined);
   const [selectedMother, setSelectedMother] = useState<Person | undefined>(person.mother ?? undefined);
 
-  const { members, isLoading, error, mutate } = useMembersContext();
-
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const { data: families, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
+    fetcher
+  );
+  
   useEffect(() => {
-    const motherOptions = members
-      .filter((member) => member.gender === "FEMALE")
-      .map((member) => ({
-        id: member.id,
-        value: member.fullName,
-      }));
-    setMotherOptions(motherOptions);
-
-    const fatherOptions = members
-      .filter((member) => member.gender === "MALE")
-      .map((member) => ({
-        id: member.id,
-        value: member.fullName,
-      }));
-    setFatherOptions(fatherOptions);
-
-  }, [members]);
+    setFamily(selectedFather?.familyId ? families?.find((f) => f.id === selectedFather.familyId) : undefined);
+  }, [selectedFather]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +63,7 @@ const EditPersonForm = ({
         },
         body: JSON.stringify({
           firstName,
-          familyName,
+          family,
           gender,
           phone,
           fatherId: selectedFather?.id,
@@ -106,7 +97,6 @@ const EditPersonForm = ({
       if (response.ok) {
         toast(`Relataion has been deleted successfully.`);
         onEdit();
-        mutate;
       } else {
         toast(`Deletetion Failed.`);
       }
@@ -115,76 +105,43 @@ const EditPersonForm = ({
     }
   };
 
-  return (
-    <div className="max-w-md mx-auto mt-8 p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-4">
-        Edit Person
-      </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder="First Name"
-          required
-          className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-        />
-        <input
-          type="text"
-          value={familyName}
-          onChange={(e) => setFamilyName(e.target.value)}
-          placeholder="Family Name"
-          required
-          className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-        />
-        <select
-          value={gender}
-          onChange={(e) => setGender(e.target.value as "MALE" | "FEMALE")}
-          required
-          className={`w-full justify-between px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center`}
-        >
-          <option value="MALE">Male</option>
-          <option value="FEMALE">Female</option>
-        </select>
+  if (familiesLoading) return <div className="flex items-center justify-center w-full h-screen">
+    <Loader2 />
+  </div>
 
-        <SearchSelect
-          options={fatherOptions ?? []}
-          selected={
-            selectedFather
-              ? {
-                  id: selectedFather.id,
-                  value: selectedFather.fullName,
-                }
-              : null
-          }
-          onSelect={(option) => {
-            const father = members.find((m: PersonWithRelations) => m.id === option.id)
-            if (father) {
-              setSelectedFather(father);
-            }
-          }}
-          placeholder="Select a Father"
+  if (familiesError) return <ErrorAlert />
+
+  return (
+    <div className="max-w-md mx-auto mt-8 p-6 rounded-lg">
+      <div className="flex items-center justify-center w-full">
+        <h2 className="text-2xl font-semibold mb-4">
+          تعديل معلومات فرد
+        </h2>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input type="text" placeholder="الاسم الأول" onChange={(e) => setFirstName(e.target.value)} value={firstName} required dir="rtl"/>
+        
+        <SelectGender selected={gender} onChange={setGender}/>
+        
+         <SearchSelectMember
+            placeholder="اختر الأب (اختياري)"
+            selected={selectedFather}
+            onChange={setSelectedFather}
+            gender="MALE"
         />
-        <SearchSelect
-          options={motherOptions ?? []}
-          selected={
-            selectedMother
-              ? {
-                  id: selectedMother.id,
-                  value: selectedMother.fullName,
-                }
-              : null
-          }
-          onSelect={(option) => {
-            const mother = members.find((m) => m.id === option.id)
-            if (mother) {
-              setSelectedMother(mother);
-            }
-          }}
-          placeholder="Select a Mother"
+
+        <SearchSelectMember
+            placeholder="اختر الأم (اختياري)"
+            selected={selectedMother}
+            onChange={setSelectedMother}
+            gender="MALE"
         />
-        <DatePicker placeholder="Birth Date" selectedDate={birthDate} onSubmit={(date) => setBirthDate(date)}/>
-        <DatePicker placeholder="Death Date" selectedDate={deathDate} onSubmit={(date) => setDeathDate(date)}/>
+
+        <SelectFamily selected={family} onChange={setFamily}/>
+    
+        <DatePicker placeholder="تاريخ الميلاد (اختياري)" selectedDate={birthDate} onSubmit={(date) => setBirthDate(date)}/>
+        <DatePicker placeholder="تاريخ الوفاة (اختياري)" selectedDate={deathDate} onSubmit={(date) => setDeathDate(date)}/>
+
         <div>
           {spouses?.map((s) => {
             return (<div className="mb-1" key={s.id}>
@@ -192,13 +149,13 @@ const EditPersonForm = ({
                 <p>{s.fullName + ""}</p>
                 <Button
                   type="button"
+                  variant="destructive"
                   onClick={() => {
                     person.gender === "MALE" ? deleteRelation(person.id, s.id) : deleteRelation(s.id, person.id)
                     setSpouses(spouses => spouses?.filter(s => person.id !== s.id));
                   }}
-                  className="bg-secondary hover:bg-accent"
                 >
-                  Remove
+                  حذف
                 </Button>
               </div>
               <hr className="border-t border-border my-2" />
@@ -210,34 +167,33 @@ const EditPersonForm = ({
         <div className="flex flex-col gap-2 mt-3">
           <Button
             type="button"
-            className="w-full py-2 px-4 font-semibold rounded-md transition bg-secondary"
+            variant="secondary"
             onClick={() => setIsAddingChild(true)}
           >
-            ADD Child
+            إضافة ابن
           </Button>
           <Button
             type="button"
-            className="w-full py-2 px-4 font-semibold rounded-md transition bg-secondary"
+            variant="secondary"
             onClick={() => setIsAddingSpouse(true)}
           >
-            ADD Spuose
+            إضافة زوج
           </Button>
           <Button
             type="button"
-            className="w-full py-2 px-4 font-semibold rounded-md transition bg-secondary"
+            variant="destructive"
             onClick={() => setIsDeleting(true)}
           >
-            DELETE
+            حذف
           </Button>
+        <Button
+          type="submit"
+        >
+          تأكيد
+        </Button>
         </div>
       </div>
 
-        <Button
-          type="submit"
-          className="w-full py-2 px-4 font-semibold rounded-md transition"
-        >
-          Submit
-        </Button>
       </form>
       <Modal
         isOpen={!!isAddingChild}
@@ -248,7 +204,6 @@ const EditPersonForm = ({
         <div>
           <AddChildForm
             parent={person}
-            members={members}
             onAdd={() => {
               onEdit();
               setIsAddingChild(false);
@@ -266,10 +221,8 @@ const EditPersonForm = ({
         <div>
           <AddSpouseForm
             person={person}
-            members={members}
             onAdd={(s: PersonWithRelations) => {
               onEdit();
-              mutate;
               setIsAddingSpouse(false);
               setSpouses(spouses => [...spouses, s]);
             }}

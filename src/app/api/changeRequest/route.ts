@@ -42,15 +42,6 @@ export async function POST(req: NextRequest) {
         newChangeRequest = await createDeleteRequest(data)
       }
       
-//     const newPerson = await createPerson({
-//       firstName,
-//       familyName,
-//       gender,
-//       ...(birthDate ? { birthDate: new Date(birthDate) } : {}),
-//       ...(fatherId ? { fatherId: Number(fatherId) } : {}),
-//       ...(motherId ? { motherId: Number(motherId) } : {})
-//     });
-
     return NextResponse.json(newChangeRequest, { status: 201 });
   } catch (error: unknown) {
     if (error instanceof Error) {

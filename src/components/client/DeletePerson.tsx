@@ -2,6 +2,7 @@
 
 import { PersonWithRelations } from "@/types/family";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 const DeletePerson = ({
   person,
@@ -41,16 +42,17 @@ const DeletePerson = ({
   return (
     <div className="text-center">
       <h2 className="text-xl font-bold mb-4 mt-2">
-        Are you sure to delete {person.firstName}?
+        هل أنت متأكد من حذف {person.firstName}؟
       </h2>
-      <button
-        className="bg-rose-700 dark:bg-rose-700 rounded hover:cursor-pointer p-1 pl-4 pr-4"
+      <Button
+        className="p-1 pl-4 pr-4 w-1/6"
+        variant="destructive"
         onClick={(e) => {
           handleSubmit(e);
         }}
       >
-        CONFIRM
-      </button>
+        حذف
+      </Button>
     </div>
   );
 };

@@ -6,6 +6,8 @@ import { useMembersContext } from "./MembersContextProvider";
 import useSWR from "swr";
 import { FamilyWithRootPerson, SpouseRelationshipWithPartners } from "@/types/family";
 import JSONtoHTML from "./JSONtoHTML";
+import { Loader2 } from "lucide-react";
+import ErrorAlert from "../alerts/ErrorAlert";
 
 const ChangeRequestApproval = ({request, onChange}: {request: ChangeRequest, onChange: any}) => {
     const {
@@ -16,11 +18,11 @@ const ChangeRequestApproval = ({request, onChange}: {request: ChangeRequest, onC
       } = useMembersContext();
       
     const fetcher = (url: string) => fetch(url).then((res) => res.json());
-    const { data: relations } = useSWR<SpouseRelationshipWithPartners[]>(
+    const { data: relations, isLoading: relationsLoading, error: relationsError, mutate: mutateRelations } = useSWR<SpouseRelationshipWithPartners[]>(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/spouseRelationship`,
         fetcher
     );
-    const { data: families } = useSWR<FamilyWithRootPerson[]>(
+    const { data: families, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
         fetcher
     );
@@ -73,6 +75,16 @@ const ChangeRequestApproval = ({request, onChange}: {request: ChangeRequest, onC
             toast(`Request ${request.id} status did not change`)
         }
         
+    }
+
+    if (isLoading || familiesLoading || relationsLoading) return <div className="flex items-center justify-center w-full h-screen">
+        <Loader2 />
+    </div>
+
+    if (error || familiesError || relationsError) {
+        return <div>
+            <ErrorAlert title="حدث خطأ!" message="خطأ في الحصول على البيانات"/>
+        </div>
     }
 
     return (
@@ -193,20 +205,20 @@ const ChangeRequestApproval = ({request, onChange}: {request: ChangeRequest, onC
                 <div className="flex items-center justify-center w-full">
                     <div className="flex flex-row gap-2 mt-4">
                         <Button 
-                            className="bg-green-600 hover:bg-green-500 hover:cursor-pointer w-[7rem]" 
-                            onClick={(e) => {
-                                handleApprove(e)
-                            }}
-                        >
-                            Approve
-                        </Button>
-                        <Button 
-                            className="bg-red-500 hover:bg-red-400 hover:cursor-pointer w-[7rem]"
+                            className="bg-rose-700 hover:bg-rose-600  w-[7rem]"
                             onClick={(e) => {
                                 handleReject(e)
                             }}
                         >
-                            Reject
+                            رفض
+                        </Button>
+                        <Button 
+                            className="bg-green-700 hover:bg-green-500 w-[7rem]" 
+                            onClick={(e) => {
+                                handleApprove(e)
+                            }}
+                        >
+                            قبول
                         </Button>
                     </div>
                 </div>

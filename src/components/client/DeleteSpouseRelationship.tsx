@@ -2,6 +2,7 @@
 
 import { SpouseRelationship } from "@/generated/prisma";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 const DeleteSpouseRelationship = ({
   relation,
@@ -39,16 +40,17 @@ const DeleteSpouseRelationship = ({
   return (
     <div className="text-center">
       <h2 className="text-xl font-bold mb-2">
-        Are you sure to delete this relationship?
+        هل أنت متأكد من حذف هذه العلاقة؟
       </h2>
-      <button
-        className="bg-rose-700 dark:bg-rose-700 rounded hover:cursor-pointer p-1 pl-4 pr-4"
+      <Button
+        className="p-1 pl-4 pr-4"
+        variant="destructive"
         onClick={(e) => {
           handleSubmit(e);
         }}
       >
-        CONFIRM
-      </button>
+        تأكيد
+      </Button>
     </div>
   );
 };
