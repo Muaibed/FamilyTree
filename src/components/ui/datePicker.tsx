@@ -25,10 +25,10 @@ export default function DatePicker({ selectedDate, onSubmit, className, placehol
         <Button
           variant="outline"
           data-empty={!selectedDate}
-          className={`data-[empty=true]:text-muted-foreground justify-start text-left bg-background! font-normal w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-ring ${className ?? ""}`}
+          className={`data-[empty=true]:text-muted-foreground justify-between text-left bg-background! font-normal w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-ring ${className ?? ""}`}
         >
           <CalendarIcon />
-          {selectedDate ? format(selectedDate, "PPP") : <span>{placeholder ? placeholder : "Pick a date"}</span>}
+            {selectedDate ? format(selectedDate, "PPP") : <span>{placeholder ? placeholder : "Pick a date"}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0 z-60">

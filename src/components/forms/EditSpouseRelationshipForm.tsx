@@ -7,6 +7,7 @@ import { SpouseRelationship } from "@/generated/prisma";
 import ErrorAlert from "../alerts/ErrorAlert";
 import { Button } from "../ui/button";
 import DeleteSpouseRelationship from "../client/DeleteSpouseRelationship";
+import TrueFalseSelect from "../preDefinedData/TrueFalseSelect";
 
 const EditSpouseRelationshipForm = ({
   relation,
@@ -46,27 +47,28 @@ const EditSpouseRelationshipForm = ({
   if (!relation) return <ErrorAlert title="Something went wrong!" />
   
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 rounded-lg shadow-md">
+    <div className="max-w-md mx-auto mt-8 p-6 rounded-lg">
+      <div className="flex items-center justify-center w-full">
       <h2 className="text-2xl font-semibold mb-4">
-        Edit Spouse Relationship
+        تعديل علاقة
       </h2>
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-         <select
-          value={isActive ? "True" : "False"}
-          onChange={(e) => setIsActive(e.target.value === 'True' ? true : false)}
-          required
-          className={`w-full justify-between px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center`}
-        >
-          <option value="True">True</option>
-          <option value="False">False</option>
-        </select>
+         <TrueFalseSelect 
+            placeholder="العلاقة مستمرة؟" 
+            selected={isActive} 
+            onChange={(strBool:string) => {
+              strBool === "true" ? setIsActive(true) : setIsActive(false);
+              }} 
+          />
         <div>
           <Button
             type="button"
-            className="w-full py-2 px-4 font-semibold rounded-md transition bg-secondary"
+            className="w-full py-2 px-4 font-semibold"
+            variant="destructive"
             onClick={() => setIsDeleting(!isDeleting)}
           >
-            DELETE
+            حذف
           </Button>
         </div>
 
@@ -75,7 +77,7 @@ const EditSpouseRelationshipForm = ({
           className="w-full py-2 px-4 font-semibold rounded-md transition"
           onSubmit={() => {onEdit(); setIsDeleting(false)}}
         >
-          Submit
+          تأكيد
         </Button>
       </form>
       <div>

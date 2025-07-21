@@ -5,6 +5,12 @@ import SessionProviderWrapper from "@/components/client/SessionProviderWrapper";
 import MembersContextProvider from "@/components/client/MembersContextProvider";
 import ThemeToggle from "@/theme/theme-toggle";
 import { BlurBackground } from "@/components/ui/BlurBackground";
+import { Amiri, Cairo } from 'next/font/google'
+ 
+const amiri = Amiri({
+  weight: '400',
+  subsets: ['arabic'],
+})
 
 export default function RootLayout({
   children,
@@ -13,8 +19,8 @@ export default function RootLayout({
 }>) {
   
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
+    <html lang="ar" suppressHydrationWarning className={amiri.className}>
+      <body className="overflow-x-hidden">
         <SessionProviderWrapper>
           <ThemeProvider
             attribute="class"
@@ -26,7 +32,7 @@ export default function RootLayout({
               <ThemeToggle />
             </div>            
             <MembersContextProvider>
-              <BlurBackground className="">
+              <BlurBackground>
                 {children}
               </BlurBackground>
             </MembersContextProvider>

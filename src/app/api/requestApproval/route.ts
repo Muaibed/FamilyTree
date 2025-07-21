@@ -1,6 +1,5 @@
-import { deletePerson } from "@/components/server/deletePerson";
 import { updateChangeRequest } from "@/lib/changeRequest";
-import { createPerson, updatePerson } from "@/lib/person";
+import { createPerson, deletePerson, updatePerson } from "@/lib/person";
 import { isAdmin } from "@/lib/session";
 import { createSpouseRelationship } from "@/lib/spouseRelationship";
 import { NextRequest, NextResponse } from "next/server";

@@ -2,15 +2,15 @@
 
 import ErrorAlert from "@/components/alerts/ErrorAlert";
 import { useMembersContext } from "@/components/client/MembersContextProvider";
-import SearchSelect from "@/components/client/SearchSelect";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Option } from "@/types/ui";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PersonWithRelations } from "@/types/family";
+import SearchSelectMember from "@/components/preDefinedData/SearchSelectMember";
+import { Input } from "@/components/ui/input";
 
 const AddSpouseRelationship = () => {
   const session = useSession();
@@ -29,55 +29,40 @@ const AddSpouseRelationship = () => {
     session.data?.user.phone
   );
   const [isActive, setIsActive] = useState<boolean>(true);
-  const [spouseOptions, setSpouseOptions] = useState<Option[]>();
-  const [selectedSpouse, setSelectedSpouse] = useState<PersonWithRelations | undefined>();
-
-  useEffect(() => {
-    if (person && members) {
-        if (person.gender === "MALE") {
-          const options = members.filter((member) => member.gender === "FEMALE").map((member) => {
-            return {
-              id: member.id,
-              value: member.fullName,
-            };
-          });
-          setSpouseOptions(options);
-        } else if (person.gender === "FEMALE") {
-          const options = members.filter((member) => member.gender === "MALE").map((member) => {
-            return {
-              id: member.id,
-              value: member.fullName
-            };
-          });
-          setSpouseOptions(options);
-        }
-    }
-  }, []);
+  const [selectedSpouse, setSelectedSpouse] = useState<
+    PersonWithRelations | undefined
+  >();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/changeRequest`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        action: "ADD",
-        targetModel: "SPOUSERELATIONSHIP",
-        dataJSON: {
-          maleId: person?.gender === "MALE" ? personId : selectedSpouse?.id,
-          femaleId: person?.gender === "FEMALE" ? personId : selectedSpouse?.id,
-          isActive,
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/changeRequest`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        requesterId,
-        requesterName,
-        requesterPhone,
-      }),
-    });
+        body: JSON.stringify({
+          action: "ADD",
+          targetModel: "SPOUSERELATIONSHIP",
+          dataJSON: {
+            maleId: person?.gender === "MALE" ? personId : selectedSpouse?.id,
+            femaleId:
+              person?.gender === "FEMALE" ? personId : selectedSpouse?.id,
+            isActive,
+          },
+          requesterId,
+          requesterName,
+          requesterPhone,
+        }),
+      }
+    );
 
     if (response.ok) {
-      toast(`A change request for ${selectedSpouse?.fullName} has been added successfully.`);
+      toast(
+        `A change request for ${selectedSpouse?.fullName} has been added successfully.`
+      );
       window.location.href = "/";
     } else {
       toast(`Adding a change request for ${selectedSpouse?.fullName} Failed.`);
@@ -94,70 +79,39 @@ const AddSpouseRelationship = () => {
   if (!members || error)
     return (
       <ErrorAlert
-        title="Something wrong happened!"
-        message="Family members are missing."
+        title="!حدث خطأ"
       ></ErrorAlert>
     );
 
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-md mx-auto mt-8 p-10 bg-card rounded-lg shadow-md">
-      <div className="flex items-center justify-center w-full">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
-        طلب تعديل معلومات {person?.firstName}
-      </h2>
-      </div>  
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {
-            <SearchSelect
-            options={spouseOptions ?? []}
-            selected={
-                selectedSpouse
-                ? {
-                    id: selectedSpouse.id.toString(),
-                    value: selectedSpouse.fullName,
-                    }
-                : null
-            }
-            onSelect={(option) => {
-              const spouseOption = spouseOptions?.find(
-                  (f) => f.id.toString() === option.id
-                );
-                const spouse = members.find((m:PersonWithRelations) => m.id === option.id)
-                if (spouse) {
-                  setSelectedSpouse(spouse);
-                }
-              }}
-              placeholder="اختر الزوج"
+        <div className="flex items-center justify-center w-full">
+          <h2 className="text-2xl font-semibold mb-4">
+            طلب تعديل معلومات {person?.firstName}
+          </h2>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+           <SearchSelectMember
+                placeholder="اختر زوج"
+                onChange={setSelectedSpouse}
+                gender={person?.gender === "MALE" ? "FEMALE" : "MALE"}
             />
-        }
-        {!session.data && (
-          <div className="flex flex-col gap-2">
-            <hr className="w-60 h-0.5 mx-auto my-4 bg-gray-200 dark:bg-gray-700" />
-            <input
-              type="text"
-              value={requesterName ?? ""}
-              onChange={(e) => setRequesterName(e.target.value)}
-              placeholder="اسم مقدم الطلب"
-              className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-            />
-            <input
-              type="text"
-              value={requesterPhone ?? ""}
-              onChange={(e) => setRequesterPhone(e.target.value)}
-              placeholder="رقم مقدم الطلب"
-              className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-            />
-          </div>
-        )}
-       <Button
-          type="submit"
-          className="w-full py-2 px-4 font-semibold rounded-md transition"
-        >
-          تأكيد
-        </Button>
-      </form>
-    </div>
+          {!session.data && (
+            <div className="flex flex-col gap-2">
+              <hr className="w-60 h-0.5 mx-auto my-4 bg-gray-200 dark:bg-gray-700" />
+              <Input type="text" placeholder="اسم مقدم الطلب (اختياري)" onChange={(e) => setRequesterName(e.target.value)} dir="rtl"/>
+              <Input type="text" placeholder="رقم مقدم الطلب (اختياري)" onChange={(e) => setRequesterPhone(e.target.value)} dir="rtl"/>
+            </div>
+          )}
+          <Button
+            type="submit"
+            className="w-full py-2 px-4 font-semibold"
+          >
+            تأكيد
+          </Button>
+        </form>
+      </div>
     </div>
   );
 };

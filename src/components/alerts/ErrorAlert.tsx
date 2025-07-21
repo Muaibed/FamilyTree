@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 
 export default function ErrorPage({
   title = "Something went wrong",
-  message = "We couldn’t load the data. Please try again later.",
+  message = "We couldn’t load data. Please try again later.",
 }: {
   title?: string;
   message?: string;

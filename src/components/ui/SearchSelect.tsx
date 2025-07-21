@@ -19,7 +19,7 @@ import { SearchSelectProps } from '@/types/ui'
 
 export default function SearchSelect({
   options,
-  placeholder = "Select...",
+  placeholder = "اختر",
   onSelect,
   selected = null,
   className,
@@ -34,14 +34,14 @@ export default function SearchSelect({
           className={`w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center justify-between ${className ?? ""}`}
           aria-expanded={open}
         >
+          <ChevronsUpDown className="mr-2 h-4 w-4 text-muted-foreground justify-end" />
           {selected ? selected.value : placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 text-muted-foreground" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0 z-55">
+      <PopoverContent className="w-[200px] p-0 z-55" avoidCollisions={false}>
         <Command>
-          <CommandInput placeholder={`Search...`} />
-          <CommandEmpty>No match found.</CommandEmpty>
+          <CommandInput placeholder={`بحث`} />
+          <CommandEmpty>لا توجد نتائج</CommandEmpty>
           <CommandGroup>
             {options.map((option) => (
               <CommandItem
@@ -51,6 +51,7 @@ export default function SearchSelect({
                   onSelect(option);
                   setOpen(false);
                 }}
+                className="justify-between"
               >
                 <Check
                   className={cn(

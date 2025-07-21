@@ -1,17 +1,14 @@
 "use client";
 
-import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
+import { FamilyWithRootPerson } from "@/types/family";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
-import { Option } from "@/types/ui";
-import { useMembersContext } from "../client/MembersContextProvider";
+import { useState } from "react";
 import { Modal } from "../client/Modal";
 import DeleteFamily from "../client/DeleteFamily";
-import SearchSelect from "../client/SearchSelect";
 import { Person } from "@/generated/prisma";
-import ErrorAlert from "../alerts/ErrorAlert";
-import { Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import SearchSelectMember from "../preDefinedData/SearchSelectMember";
 
 const EditFamilyForm = ({
   family,
@@ -25,9 +22,6 @@ const EditFamilyForm = ({
     family.rootPerson ? family.rootPerson : undefined
   );
   const [isDeleting, setIsDeleting] = useState(false);
-  const [rootPersonOptions, setRootPersonOptions] = useState<Option[]>();
-
-  const { members, isLoading, error, mutate } = useMembersContext();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,77 +42,46 @@ const EditFamilyForm = ({
         toast(`${name} has been updated successfully.`);
         onEdit();
       } else {
-        const error = await response.json();
-        toast(`Updating ${name} Failed.` + error);
+        toast(`Updating ${name} Failed.`);
       }
     } catch (error) {
       console.error(error);
     }
   };
-
-   useEffect(() => {
-      const rootPersonOptions = Object.entries(members)
-        .map(([_, member]) => ({
-          id: member.id,
-          value: member.fullName,
-        }));
-      setRootPersonOptions(rootPersonOptions);
-   }, [members])
-
-  if (!family || error) return <ErrorAlert title="Something went wrong!" />
-  if (isLoading) return <Loader2 />
   
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-4">
-        Edit Family
-      </h2>
+    <div className="max-w-md mx-auto mt-8 p-6 rounded-lg">
+      <div className="flex items-center justify-center w-full">
+        <h2 className="text-2xl font-semibold mb-4">
+          تعديل معلومات العائلة
+        </h2>
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Name"
-          required
-          className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+        <Input type="text" placeholder="الاسم" value={family.name} onChange={(e) => setName(e.target.value)} required dir="rtl"/>
+
+        <SearchSelectMember
+            placeholder="اختر جذر العائلة"
+            selected={rootPerson}
+            onChange={setRootPerson}
         />
-         {
-          <SearchSelect
-            options={rootPersonOptions ?? []}
-            selected={
-              rootPerson
-                ? {
-                    id: rootPerson.id,
-                    value: rootPerson.fullName,
-                  }
-                : null
-            }
-            onSelect={(option) => {
-              const rootPerson = members.find((m) => m.id === option.id)
-              if (rootPerson) {
-                setRootPerson(rootPerson);
-              }
-            }}
-            placeholder="Select a root"
-          />
-        }
         <div>
+          <div className="flex flex-col gap-2 mt-3">
           <Button
             type="button"
-            className="w-full py-2 px-4 font-semibold rounded-md transition bg-secondary"
+            variant="destructive"
             onClick={() => setIsDeleting(!isDeleting)}
           >
-            DELETE
+            حذف
           </Button>
-        </div>
 
         <Button
           type="submit"
-          className="w-full py-2 px-4 font-semibold rounded-md transition"
           onSubmit={() => {onEdit(); setIsDeleting(false)}}
         >
-          Submit
+          تأكيد
         </Button>
+        </div>
+        </div>
       </form>
       <div>
       </div>

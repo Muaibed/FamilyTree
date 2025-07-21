@@ -32,7 +32,7 @@ export function columns({
         return (
           <Button
             variant="ghost"
-            className="h-8 w-8 p-0 hover:cursor-pointer"
+            className="h-8 w-8 p-0"
             onClick={() => onEdit(person)}
           >
             Edit
