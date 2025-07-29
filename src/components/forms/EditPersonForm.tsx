@@ -73,15 +73,48 @@ const EditPersonForm = ({
         }),
       });
 
+      
       if (response.ok) {
         toast(`${firstName} has been updated successfully.`);
         onEdit();
+        console.log("person.firstName: " + person.firstName)
+        console.log("firstName: " + firstName)
       } else {
         toast(`Updating ${firstName} Failed.`);
       }
+      
+      if (person.firstName !== firstName) {
+        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/addTask`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              "task": {
+                "type": "updateFullName",
+                "personId": person.id,
+              }
+            }),
+        });
+  
+        const updateNamesResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/processTask`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+
+        if (updateNamesResponse.ok) {
+          toast(`${person.firstName}'s descendants full names have been updated successfully!`)
+        } else {
+          toast(`Updating ${person.firstName}'s descendants full names failed!`)
+        }
+      }
+
     } catch (error) {
       console.error(error);
     }
+
   };
 
   const deleteRelation = async (maleId: string, femaleId: string) => {

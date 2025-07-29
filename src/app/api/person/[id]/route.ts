@@ -25,6 +25,7 @@ export async function GET(req:NextRequest) {
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const isPermitted = await isAdmin()
+    const { id } = await params;
 
     if (!isPermitted) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -38,16 +39,17 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       gender,
       birthDate,
       deathDate,
-      ...(fatherId ? { fatherId: fatherId } : {}),
-      ...(motherId ? { motherId: motherId } : {}),
+      fatherId,
+      motherId    
     }
 
-    if (!params.id) {
+    if (!id) {
       return new Response("Person ID is required", { status: 400});
     }
 
-    await updatePerson(params.id, data);
+    const update = await updatePerson(id, data);
 
+    console.log(update)
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
     console.error(error);
@@ -58,16 +60,17 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
       const isPermitted = await isAdmin()
+      const { id } = await params;
 
       if (!isPermitted) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
     
-      if (!params.id) {
+      if (!id) {
         return new Response("Person ID is required", { status: 400 });
       }
   
-      await deletePerson(params.id);
+      await deletePerson(id);
   
       return new Response("Person deleted successfully", { status: 200 });
     } catch (error) {

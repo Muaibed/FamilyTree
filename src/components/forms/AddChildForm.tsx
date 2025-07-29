@@ -48,7 +48,6 @@ const AddChildForm = ({
       },
       body: JSON.stringify({
         firstName,
-        fullName: firstName + " " + family?.name,
         familyId: family?.id,
         gender,
         birthDate,

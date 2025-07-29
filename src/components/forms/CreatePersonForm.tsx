@@ -60,7 +60,6 @@ const CreatePersonForm = ({
       },
       body: JSON.stringify({
         firstName,
-        fullName: firstName + " " + family?.name,
         familyId: family?.id,
         gender,
         fatherId: selectedFather?.id,
