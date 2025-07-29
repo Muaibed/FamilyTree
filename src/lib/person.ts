@@ -1,10 +1,8 @@
-import { PersonWithRelations } from '@/types/family';
 import { prisma } from './prisma';
 import isValidDateString from './date';
 
 export const createPerson = async (data: {
   firstName: string;
-  fullName: string;
   familyId: string;
   gender: 'MALE' | 'FEMALE';
   phone?: string;
@@ -13,7 +11,13 @@ export const createPerson = async (data: {
   fatherId?: string;
   motherId?: string;
 }) => {
-  const { firstName, fullName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
+  const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
+
+  const father = await prisma.person.findUnique({ where: { id: fatherId }});
+  const family = await prisma.family.findUnique({ where: { id: familyId }});
+
+  const theSonOf = gender === "MALE" ? " بن " : " بنت ";
+  const fullName = father ? firstName + theSonOf + father.fullName : firstName + " " + family?.name
 
   return prisma.person.create({
     data: {
@@ -73,33 +77,33 @@ export const getAllPersons = async () => {
   });
 };
 
-export const getFullName = (
-  members: PersonWithRelations[],
-  personId: string
-): string | null => {
-  let person = personId ? members.find((m) => m.id === personId) : null;
-  if (!person) return null;
-  const familyName = person.family.name;
-  let theChildOf = person.gender === "MALE" ? " بن " : " بنت ";
-  let fullName = "";
+// export const getFullName = (
+//   members: PersonWithRelations[],
+//   personId: string
+// ): string | null => {
+//   let person = personId ? members.find((m) => m.id === personId) : null;
+//   if (!person) return null;
+//   const familyName = person.family.name;
+//   let theChildOf = person.gender === "MALE" ? " بن " : " بنت ";
+//   let fullName = "";
 
-  let counter = 0;
+//   let counter = 0;
 
-  while (person.father && counter < 5) {
-    let father = person.father;
-    if (!father) break;
+//   while (person.father && counter < 5) {
+//     let father = person.father;
+//     if (!father) break;
 
-    if (!father.fatherId) break;
+//     if (!father.fatherId) break;
 
-    fullName += theChildOf + person.firstName;
-    theChildOf = " بن "
-    counter++;
-  }
+//     fullName += theChildOf + person.firstName;
+//     theChildOf = " بن "
+//     counter++;
+//   }
 
-  if (counter >= 0) return fullName + " " + familyName;
+//   if (counter >= 0) return fullName + " " + familyName;
 
-  return "";
-};
+//   return "";
+// };
 
 export const getAllMales = async () => {
   return prisma.person.findMany({
@@ -158,8 +162,8 @@ export const updatePerson = async (id: string, data: {
   phone?: string;
   fatherId?: string;
   motherId?: string;
-  birthDate?: string;
-  deathDate?: string;
+  birthDate?: Date;
+  deathDate?: Date;
 }) => {
   const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
   return prisma.person.update({
@@ -169,8 +173,8 @@ export const updatePerson = async (id: string, data: {
       family: familyId ? { connect: { id: familyId } } : undefined,
       gender,
       phone,
-      birthDate: birthDate && isValidDateString(birthDate) ? new Date(birthDate) : null,
-      deathDate: deathDate && isValidDateString(deathDate) ? new Date(deathDate) : null,
+      birthDate,
+      deathDate,
       father: fatherId ? { connect: { id: fatherId } } : undefined,
       mother: motherId ? { connect: { id: motherId } } : undefined,
     },
