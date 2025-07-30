@@ -6,6 +6,15 @@ export const getUserById = async (id: string) => {
   });
 };
 
+export const getAdminNumber = async () => {
+  const admin = await prisma.user.findFirst({
+    where: { 
+      role: "ADMIN"
+    }
+  });
+  return admin?.phone
+};
+
 export const getUserByEmail = async (email: string) => {
   return prisma.user.findUnique({
     where: { email },

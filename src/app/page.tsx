@@ -6,16 +6,12 @@ import ErrorAlert from "@/components/alerts/ErrorAlert";
 import FamilyTreeView from "@/components/client/FamilyTreeView";
 import { useMembersContext } from "@/components/client/MembersContextProvider";
 import { Modal } from "@/components/client/Modal";
-import NoDataAlert from "@/components/alerts/NoDataAlert";
 import { Button } from "@/components/ui/button";
-import { Family } from "@/generated/prisma";
 import { signOut, useSession } from "next-auth/react";
 import { Suspense, useState } from "react";
 import useSWR from "swr";
 import { FamilyWithRootPerson } from "@/types/family";
 import { Loader2 } from "lucide-react";
-import { BlurBackground } from "@/components/ui/BlurBackground";
-import SelectFamily from "@/components/preDefinedData/SelectFamily";
 
 export default function Home({
   children,

@@ -4,9 +4,9 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { PersonWithRelations } from "@/types/family";
 import { Button } from "../ui/button";
-import TrueFalseSelect from "../preDefinedData/TrueFalseSelect";
 import SearchSelectMember from "../preDefinedData/SearchSelectMember";
 import { Person } from "@/generated/prisma";
+import BooleanSelect from "../preDefinedData/BooleanSelect";
 
 const AddSpouseForm = ({
   person,
@@ -16,7 +16,9 @@ const AddSpouseForm = ({
   onAdd: any;
 }) => {
   const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
-  const [selectedSpouse, setSelectedSpouse] = useState<Person | undefined>(undefined);
+  const [selectedSpouse, setSelectedSpouse] = useState<Person | undefined>(
+    undefined
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,10 +28,10 @@ const AddSpouseForm = ({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ 
-        maleId: person.gender === "MALE" ? person.id : selectedSpouse?.id, 
-        femaleId: person.gender === "FEMALE" ? person.id : selectedSpouse?.id, 
-        isActive, 
+      body: JSON.stringify({
+        maleId: person.gender === "MALE" ? person.id : selectedSpouse?.id,
+        femaleId: person.gender === "FEMALE" ? person.id : selectedSpouse?.id,
+        isActive,
       }),
     });
 
@@ -50,19 +52,18 @@ const AddSpouseForm = ({
         </h2>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-
         <SearchSelectMember
-            placeholder="اختر زوج"
-            onChange={setSelectedSpouse}
-            gender={person.gender === "MALE" ? "FEMALE" : "MALE"}
+          placeholder="اختر زوج"
+          onChange={setSelectedSpouse}
+          gender={person.gender === "MALE" ? "FEMALE" : "MALE"}
         />
 
-        <TrueFalseSelect 
-          placeholder="العلاقة مستمرة؟" 
-          selected={isActive} 
-          onChange={(strBool:string) => {
+        <BooleanSelect
+          placeholder="العلاقة مستمرة؟"
+          selected={isActive}
+          onChange={(strBool: string) => {
             strBool === "true" ? setIsActive(true) : setIsActive(false);
-            }} 
+          }}
         />
         <Button
           type="submit"

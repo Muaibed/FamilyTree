@@ -30,11 +30,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     
-    const { name, rootPersonId } = await req.json();
+    const { name, rootPersonId, isDisplayed } = await req.json();
 
     const data = {
       name,
-      rootPersonId
+      rootPersonId,
+      isDisplayed
     }
 
     if (!params.id) {

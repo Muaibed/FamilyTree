@@ -22,6 +22,10 @@ export function columns({
       header: "Root",
     },
     {
+      accessorKey: "isDisplayed",
+      header: "Is Displayed",
+    },
+    {
       id: "actions",
       cell: ({ row }) => {
         const family = row.original;

@@ -9,6 +9,7 @@ import { Person } from "@/generated/prisma";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import SearchSelectMember from "../preDefinedData/SearchSelectMember";
+import SelectBoolean from "../preDefinedData/BooleanSelect";
 
 const EditFamilyForm = ({
   family,
@@ -21,6 +22,7 @@ const EditFamilyForm = ({
   const [rootPerson, setRootPerson] = useState<Person | undefined>(
     family.rootPerson ? family.rootPerson : undefined
   );
+  const [isDisplayed, setIsDisplayed] = useState(family.isDisplayed);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,6 +37,7 @@ const EditFamilyForm = ({
         body: JSON.stringify({
           name,
           rootPersonId: rootPerson?.id,
+          isDisplayed
         }),
       });
 
@@ -48,51 +51,67 @@ const EditFamilyForm = ({
       console.error(error);
     }
   };
-  
+
   return (
     <div className="max-w-md mx-auto mt-8 p-6 rounded-lg">
       <div className="flex items-center justify-center w-full">
-        <h2 className="text-2xl font-semibold mb-4">
-          تعديل معلومات العائلة
-        </h2>
+        <h2 className="text-2xl font-semibold mb-4">تعديل معلومات العائلة</h2>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input type="text" placeholder="الاسم" value={family.name} onChange={(e) => setName(e.target.value)} required dir="rtl"/>
+        <Input
+          type="text"
+          placeholder="الاسم"
+          value={family.name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          dir="rtl"
+        />
 
         <SearchSelectMember
-            placeholder="اختر جذر العائلة"
-            selected={rootPerson}
-            onChange={setRootPerson}
+          placeholder="اختر جذر العائلة"
+          selected={rootPerson}
+          onChange={setRootPerson}
         />
+
+        <SelectBoolean
+          placeholder="هل العائلة مرئية في شجرة العائلة؟"
+          selected={isDisplayed}
+          onChange={(strBool:string) => {
+            strBool === "true" ? setIsDisplayed(true) : setIsDisplayed(false);
+            }}
+        />
+
         <div>
           <div className="flex flex-col gap-2 mt-3">
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={() => setIsDeleting(!isDeleting)}
-          >
-            حذف
-          </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setIsDeleting(!isDeleting)}
+            >
+              حذف
+            </Button>
 
-        <Button
-          type="submit"
-          onSubmit={() => {onEdit(); setIsDeleting(false)}}
-        >
-          تأكيد
-        </Button>
-        </div>
+            <Button
+              type="submit"
+              onSubmit={() => {
+                onEdit();
+                setIsDeleting(false);
+              }}
+            >
+              تأكيد
+            </Button>
+          </div>
         </div>
       </form>
-      <div>
-      </div>
+      <div></div>
 
       {isDeleting && (
-      <Modal
-        isOpen={!!isDeleting}
-        onClose={() => {
-          setIsDeleting(false);
-        }}
-      >
+        <Modal
+          isOpen={!!isDeleting}
+          onClose={() => {
+            setIsDeleting(false);
+          }}
+        >
           <DeleteFamily
             family={family}
             onSubmit={() => {
@@ -100,7 +119,7 @@ const EditFamilyForm = ({
               setIsDeleting(false);
             }}
           />
-      </Modal>
+        </Modal>
       )}
     </div>
   );

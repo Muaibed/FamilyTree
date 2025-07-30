@@ -6094,18 +6094,21 @@ export namespace Prisma {
     id: string | null
     name: string | null
     rootPersonId: string | null
+    isDisplayed: boolean | null
   }
 
   export type FamilyMaxAggregateOutputType = {
     id: string | null
     name: string | null
     rootPersonId: string | null
+    isDisplayed: boolean | null
   }
 
   export type FamilyCountAggregateOutputType = {
     id: number
     name: number
     rootPersonId: number
+    isDisplayed: number
     _all: number
   }
 
@@ -6114,18 +6117,21 @@ export namespace Prisma {
     id?: true
     name?: true
     rootPersonId?: true
+    isDisplayed?: true
   }
 
   export type FamilyMaxAggregateInputType = {
     id?: true
     name?: true
     rootPersonId?: true
+    isDisplayed?: true
   }
 
   export type FamilyCountAggregateInputType = {
     id?: true
     name?: true
     rootPersonId?: true
+    isDisplayed?: true
     _all?: true
   }
 
@@ -6205,6 +6211,7 @@ export namespace Prisma {
     id: string
     name: string
     rootPersonId: string | null
+    isDisplayed: boolean
     _count: FamilyCountAggregateOutputType | null
     _min: FamilyMinAggregateOutputType | null
     _max: FamilyMaxAggregateOutputType | null
@@ -6228,6 +6235,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     rootPersonId?: boolean
+    isDisplayed?: boolean
     rootPerson?: boolean | Family$rootPersonArgs<ExtArgs>
     members?: boolean | Family$membersArgs<ExtArgs>
     _count?: boolean | FamilyCountOutputTypeDefaultArgs<ExtArgs>
@@ -6237,6 +6245,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     rootPersonId?: boolean
+    isDisplayed?: boolean
     rootPerson?: boolean | Family$rootPersonArgs<ExtArgs>
   }, ExtArgs["result"]["family"]>
 
@@ -6244,6 +6253,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     rootPersonId?: boolean
+    isDisplayed?: boolean
     rootPerson?: boolean | Family$rootPersonArgs<ExtArgs>
   }, ExtArgs["result"]["family"]>
 
@@ -6251,9 +6261,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     rootPersonId?: boolean
+    isDisplayed?: boolean
   }
 
-  export type FamilyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "rootPersonId", ExtArgs["result"]["family"]>
+  export type FamilyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "rootPersonId" | "isDisplayed", ExtArgs["result"]["family"]>
   export type FamilyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     rootPerson?: boolean | Family$rootPersonArgs<ExtArgs>
     members?: boolean | Family$membersArgs<ExtArgs>
@@ -6276,6 +6287,7 @@ export namespace Prisma {
       id: string
       name: string
       rootPersonId: string | null
+      isDisplayed: boolean
     }, ExtArgs["result"]["family"]>
     composites: {}
   }
@@ -6704,6 +6716,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Family", 'String'>
     readonly name: FieldRef<"Family", 'String'>
     readonly rootPersonId: FieldRef<"Family", 'String'>
+    readonly isDisplayed: FieldRef<"Family", 'Boolean'>
   }
     
 
@@ -7235,7 +7248,8 @@ export namespace Prisma {
   export const FamilyScalarFieldEnum: {
     id: 'id',
     name: 'name',
-    rootPersonId: 'rootPersonId'
+    rootPersonId: 'rootPersonId',
+    isDisplayed: 'isDisplayed'
   };
 
   export type FamilyScalarFieldEnum = (typeof FamilyScalarFieldEnum)[keyof typeof FamilyScalarFieldEnum]
@@ -7756,6 +7770,7 @@ export namespace Prisma {
     id?: UuidFilter<"Family"> | string
     name?: StringFilter<"Family"> | string
     rootPersonId?: UuidNullableFilter<"Family"> | string | null
+    isDisplayed?: BoolFilter<"Family"> | boolean
     rootPerson?: XOR<PersonNullableScalarRelationFilter, PersonWhereInput> | null
     members?: PersonListRelationFilter
   }
@@ -7764,6 +7779,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     rootPersonId?: SortOrderInput | SortOrder
+    isDisplayed?: SortOrder
     rootPerson?: PersonOrderByWithRelationInput
     members?: PersonOrderByRelationAggregateInput
   }
@@ -7775,6 +7791,7 @@ export namespace Prisma {
     OR?: FamilyWhereInput[]
     NOT?: FamilyWhereInput | FamilyWhereInput[]
     name?: StringFilter<"Family"> | string
+    isDisplayed?: BoolFilter<"Family"> | boolean
     rootPerson?: XOR<PersonNullableScalarRelationFilter, PersonWhereInput> | null
     members?: PersonListRelationFilter
   }, "id" | "rootPersonId">
@@ -7783,6 +7800,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     rootPersonId?: SortOrderInput | SortOrder
+    isDisplayed?: SortOrder
     _count?: FamilyCountOrderByAggregateInput
     _max?: FamilyMaxOrderByAggregateInput
     _min?: FamilyMinOrderByAggregateInput
@@ -7795,6 +7813,7 @@ export namespace Prisma {
     id?: UuidWithAggregatesFilter<"Family"> | string
     name?: StringWithAggregatesFilter<"Family"> | string
     rootPersonId?: UuidNullableWithAggregatesFilter<"Family"> | string | null
+    isDisplayed?: BoolWithAggregatesFilter<"Family"> | boolean
   }
 
   export type UserCreateInput = {
@@ -8133,6 +8152,7 @@ export namespace Prisma {
   export type FamilyCreateInput = {
     id?: string
     name: string
+    isDisplayed?: boolean
     rootPerson?: PersonCreateNestedOneWithoutRootOfFamilyInput
     members?: PersonCreateNestedManyWithoutFamilyInput
   }
@@ -8141,12 +8161,14 @@ export namespace Prisma {
     id?: string
     name: string
     rootPersonId?: string | null
+    isDisplayed?: boolean
     members?: PersonUncheckedCreateNestedManyWithoutFamilyInput
   }
 
   export type FamilyUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    isDisplayed?: BoolFieldUpdateOperationsInput | boolean
     rootPerson?: PersonUpdateOneWithoutRootOfFamilyNestedInput
     members?: PersonUpdateManyWithoutFamilyNestedInput
   }
@@ -8155,6 +8177,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     rootPersonId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDisplayed?: BoolFieldUpdateOperationsInput | boolean
     members?: PersonUncheckedUpdateManyWithoutFamilyNestedInput
   }
 
@@ -8162,17 +8185,20 @@ export namespace Prisma {
     id?: string
     name: string
     rootPersonId?: string | null
+    isDisplayed?: boolean
   }
 
   export type FamilyUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    isDisplayed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type FamilyUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     rootPersonId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDisplayed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UuidFilter<$PrismaModel = never> = {
@@ -8729,18 +8755,21 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     rootPersonId?: SortOrder
+    isDisplayed?: SortOrder
   }
 
   export type FamilyMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     rootPersonId?: SortOrder
+    isDisplayed?: SortOrder
   }
 
   export type FamilyMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     rootPersonId?: SortOrder
+    isDisplayed?: SortOrder
   }
 
   export type ChangeRequestCreateNestedManyWithoutRequesterInput = {
@@ -9585,6 +9614,7 @@ export namespace Prisma {
   export type FamilyCreateWithoutMembersInput = {
     id?: string
     name: string
+    isDisplayed?: boolean
     rootPerson?: PersonCreateNestedOneWithoutRootOfFamilyInput
   }
 
@@ -9592,6 +9622,7 @@ export namespace Prisma {
     id?: string
     name: string
     rootPersonId?: string | null
+    isDisplayed?: boolean
   }
 
   export type FamilyCreateOrConnectWithoutMembersInput = {
@@ -9820,12 +9851,14 @@ export namespace Prisma {
   export type FamilyCreateWithoutRootPersonInput = {
     id?: string
     name: string
+    isDisplayed?: boolean
     members?: PersonCreateNestedManyWithoutFamilyInput
   }
 
   export type FamilyUncheckedCreateWithoutRootPersonInput = {
     id?: string
     name: string
+    isDisplayed?: boolean
     members?: PersonUncheckedCreateNestedManyWithoutFamilyInput
   }
 
@@ -9848,6 +9881,7 @@ export namespace Prisma {
   export type FamilyUpdateWithoutMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    isDisplayed?: BoolFieldUpdateOperationsInput | boolean
     rootPerson?: PersonUpdateOneWithoutRootOfFamilyNestedInput
   }
 
@@ -9855,6 +9889,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     rootPersonId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDisplayed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PersonUpsertWithoutFatherChildrenInput = {
@@ -10053,12 +10088,14 @@ export namespace Prisma {
   export type FamilyUpdateWithoutRootPersonInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    isDisplayed?: BoolFieldUpdateOperationsInput | boolean
     members?: PersonUpdateManyWithoutFamilyNestedInput
   }
 
   export type FamilyUncheckedUpdateWithoutRootPersonInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    isDisplayed?: BoolFieldUpdateOperationsInput | boolean
     members?: PersonUncheckedUpdateManyWithoutFamilyNestedInput
   }
 
