@@ -1,5 +1,5 @@
 import { Option } from "@/types/ui";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Select from "../ui/Select";
 import { Family } from "@/generated/prisma";
 import useSWR from "swr";
@@ -8,11 +8,13 @@ import { FamilyWithRootPerson } from "@/types/family";
 type FamilySelectProps = {
   selected: FamilyWithRootPerson | undefined;
   onChange: (value: FamilyWithRootPerson) => void;
+  isDisplayed?: boolean;
 };
 
 export default function SelectFamily({
   selected,
   onChange,
+  isDisplayed,
 }: FamilySelectProps) {
   const [selectedFamily, setSelectedFamily] = useState<Option | undefined>(
     undefined
@@ -28,10 +30,14 @@ export default function SelectFamily({
     fetcher
   );
 
-  const options = data.map((family: Family) => ({
-    id: family.id,
-    value: family.name,
-  }));
+  const filteredData = useMemo(() => {
+    return isDisplayed ? data.filter((f:Family) => f.isDisplayed === isDisplayed) : data;
+  }, [isDisplayed, data]);
+
+  const options = filteredData.map((family: Family) => ({
+      id: family.id,
+      value: family.name,
+    }));
 
   return (
     <div>

@@ -1,4 +1,4 @@
-import { createFamily, getAllFamilies, getFamilyByName } from '@/lib/family';
+import { createFamily, getAllDisplayedFamilies, getAllFamilies, getFamilyByName } from '@/lib/family';
 import { isAdmin } from '@/lib/session';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -27,13 +27,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req:NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const name = searchParams.get("name")
-
-    if (name)
-      return NextResponse.json(await getFamilyByName(name));
-    
+  try { 
     const families = await getAllFamilies();
     return NextResponse.json(families);
   } catch (error: unknown) {

@@ -113,4 +113,5 @@ model Family {
   rootPerson   Person?    @relation("RootPersonRelation", fields: [rootPersonId], references: [id])
   rootPersonId String?    @db.Uuid       @unique
   members      Person[]   @relation("FamilyMembers")
+  isDisplayed  Boolean    @default(false)
 }

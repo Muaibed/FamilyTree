@@ -7,7 +7,7 @@ import { SpouseRelationship } from "@/generated/prisma";
 import ErrorAlert from "../alerts/ErrorAlert";
 import { Button } from "../ui/button";
 import DeleteSpouseRelationship from "../client/DeleteSpouseRelationship";
-import TrueFalseSelect from "../preDefinedData/TrueFalseSelect";
+import TrueFalseSelect from "../preDefinedData/BooleanSelect";
 
 const EditSpouseRelationshipForm = ({
   relation,
@@ -44,23 +44,21 @@ const EditSpouseRelationshipForm = ({
     }
   };
 
-  if (!relation) return <ErrorAlert title="Something went wrong!" />
-  
+  if (!relation) return <ErrorAlert title="Something went wrong!" />;
+
   return (
     <div className="max-w-md mx-auto mt-8 p-6 rounded-lg">
       <div className="flex items-center justify-center w-full">
-      <h2 className="text-2xl font-semibold mb-4">
-        تعديل علاقة
-      </h2>
+        <h2 className="text-2xl font-semibold mb-4">تعديل علاقة</h2>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-         <TrueFalseSelect 
-            placeholder="العلاقة مستمرة؟" 
-            selected={isActive} 
-            onChange={(strBool:string) => {
-              strBool === "true" ? setIsActive(true) : setIsActive(false);
-              }} 
-          />
+        <TrueFalseSelect
+          placeholder="العلاقة مستمرة؟"
+          selected={isActive}
+          onChange={(strBool: string) => {
+            strBool === "true" ? setIsActive(true) : setIsActive(false);
+          }}
+        />
         <div>
           <Button
             type="button"
@@ -75,21 +73,23 @@ const EditSpouseRelationshipForm = ({
         <Button
           type="submit"
           className="w-full py-2 px-4 font-semibold rounded-md transition"
-          onSubmit={() => {onEdit(); setIsDeleting(false)}}
+          onSubmit={() => {
+            onEdit();
+            setIsDeleting(false);
+          }}
         >
           تأكيد
         </Button>
       </form>
-      <div>
-      </div>
+      <div></div>
 
       {isDeleting && (
-      <Modal
-        isOpen={!!isDeleting}
-        onClose={() => {
-          setIsDeleting(false);
-        }}
-      >
+        <Modal
+          isOpen={!!isDeleting}
+          onClose={() => {
+            setIsDeleting(false);
+          }}
+        >
           <DeleteSpouseRelationship
             relation={relation}
             onSubmit={() => {
@@ -97,7 +97,7 @@ const EditSpouseRelationshipForm = ({
               setIsDeleting(false);
             }}
           />
-      </Modal>
+        </Modal>
       )}
     </div>
   );

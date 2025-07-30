@@ -43,12 +43,24 @@ export const getAllFamilies = async () => {
   });
 };
 
+export const getAllDisplayedFamilies = async () => {
+  return prisma.family.findMany({
+    where: {
+      isDisplayed: true,
+    },
+    include: {
+      rootPerson: true,
+    }
+  });
+};
+
 export const updateFamily = async (id: string, data: {
   name?: string,
   rootPersonId?: string
+  isDisplayed?: boolean
 }) => {
   
-  const { name, rootPersonId } = data;
+  const { name, rootPersonId, isDisplayed } = data;
 
   return prisma.family.update({
     where: { id },
@@ -57,6 +69,7 @@ export const updateFamily = async (id: string, data: {
       ...(rootPersonId
       ? { rootPerson: { connect: { id: rootPersonId } } }
       : { rootPerson: { disconnect: true } }),
+      isDisplayed
     },
   });
 };

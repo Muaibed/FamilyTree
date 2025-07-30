@@ -85,25 +85,14 @@ export default function FamilyTreeView({
   const [selectedFamily, setSelectedFamily] = useState<
     FamilyWithRootPerson | undefined
   >(family);
-  const [familyOptions, setFamilyOptions] = useState<Option[]>();
 
   const { data: session, status } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
 
   useEffect(() => {
     const familyFromSessionStorage = sessionStorage.getItem("selectedFamily")
-    console.log(familyFromSessionStorage)
     if (familyFromSessionStorage)
       setSelectedFamily(families?.find((f) => f.id === familyFromSessionStorage))
-
-    if (families) {
-      const options = families.map((f) => ({
-        id: f.id.toString(),
-        value: f.name,
-      }));
-
-      setFamilyOptions(options);
-    }
 
     if (members && selectedFamily && selectedFamily.rootPersonId) {
       const formattedData = prepareTreeData(
@@ -123,7 +112,7 @@ export default function FamilyTreeView({
       <div className="flex flex-col items-center align-middle">
         <div>
           <div className="flex items-center justify-center p-4">
-        <SelectFamily selected={selectedFamily} onChange={setSelectedFamily}
+        <SelectFamily selected={selectedFamily} onChange={setSelectedFamily} isDisplayed={true}
         />
        </div> 
         </div>
@@ -151,7 +140,7 @@ export default function FamilyTreeView({
 
   if (!treeData) {
     return <div className="flex items-center justify-center p-4">
-        <SelectFamily selected={selectedFamily} onChange={setSelectedFamily}
+        <SelectFamily selected={selectedFamily} onChange={setSelectedFamily} isDisplayed={true}
         />
        </div> 
   }
@@ -159,7 +148,7 @@ export default function FamilyTreeView({
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <div className="absolute top-4 left-0 w-full flex items-center justify-center z-50">
-        <SelectFamily selected={selectedFamily} onChange={setSelectedFamily}
+        <SelectFamily selected={selectedFamily} onChange={setSelectedFamily} isDisplayed={true}
         />
       </div>
       <div
