@@ -43,7 +43,7 @@ export default function SearchSelect({
           <Command>
             <CommandInput placeholder={`بحث`} />
             <CommandEmpty>لا توجد نتائج</CommandEmpty>
-            <ScrollArea className="h-64">
+            <ScrollArea className="max-h-[50vh] md:max-h-[300px] overflow-auto">
               <CommandGroup>
                 {options.map((option) => (
                   <CommandItem

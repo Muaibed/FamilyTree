@@ -91,6 +91,11 @@ export default function FamilyTreeView({
   const isAdmin = session?.user?.role === "ADMIN";
 
   useEffect(() => {
+    const familyFromSessionStorage = sessionStorage.getItem("selectedFamily")
+    console.log(familyFromSessionStorage)
+    if (familyFromSessionStorage)
+      setSelectedFamily(families?.find((f) => f.id === familyFromSessionStorage))
+
     if (families) {
       const options = families.map((f) => ({
         id: f.id.toString(),
@@ -118,7 +123,8 @@ export default function FamilyTreeView({
       <div className="flex flex-col items-center align-middle">
         <div>
           <div className="flex items-center justify-center p-4">
-        <SelectFamily selected={undefined} onChange={setSelectedFamily}/>
+        <SelectFamily selected={selectedFamily} onChange={setSelectedFamily}
+        />
        </div> 
         </div>
         <NoDataAlert
@@ -145,29 +151,15 @@ export default function FamilyTreeView({
 
   if (!treeData) {
     return <div className="flex items-center justify-center p-4">
-        <SelectFamily selected={undefined} onChange={setSelectedFamily}/>
+        <SelectFamily selected={selectedFamily} onChange={setSelectedFamily}
+        />
        </div> 
   }
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <div className="absolute top-4 left-0 w-full flex items-center justify-center z-50">
-        <SearchSelect
-          className="w-32!"
-          options={familyOptions ?? []}
-          selected={
-            selectedFamily
-              ? {
-                  id: selectedFamily.id.toString(),
-                  value: selectedFamily.name,
-                }
-              : null
-          }
-          onSelect={(option) => {
-            const family = families?.find((f) => f.id.toString() === option.id);
-            setSelectedFamily(family || undefined);
-          }}
-          placeholder="اختر عائلة"
+        <SelectFamily selected={selectedFamily} onChange={setSelectedFamily}
         />
       </div>
       <div
