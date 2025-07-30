@@ -42,7 +42,7 @@ export default function Select({
       <PopoverContent className="w-[200px] p-0 z-55" side="bottom" avoidCollisions={false}>
         <Command>
           <CommandEmpty>لا توجد نتائج.</CommandEmpty>
-          <ScrollArea className="h-64">
+            <ScrollArea className="max-h-[50vh] md:max-h-[300px] overflow-auto">
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem

@@ -43,6 +43,7 @@ export default function SelectFamily({
           if (family) {
             setSelectedFamily(option);
             onChange(family);
+            sessionStorage.setItem("selectedFamily", family.id)
           }
         }}
         placeholder="اختر العائلة"
