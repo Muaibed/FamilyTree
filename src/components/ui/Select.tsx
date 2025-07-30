@@ -16,6 +16,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SearchSelectProps } from '@/types/ui'
+import { ScrollArea } from "./scroll-area";
 
 export default function Select({
   options,
@@ -41,27 +42,29 @@ export default function Select({
       <PopoverContent className="w-[200px] p-0 z-55" side="bottom" avoidCollisions={false}>
         <Command>
           <CommandEmpty>لا توجد نتائج.</CommandEmpty>
-          <CommandGroup>
-            {options.map((option) => (
-              <CommandItem
-                key={option.id}
-                value={option.value}
-                onSelect={() => {
-                  onSelect(option);
-                  setOpen(false);
-                }}
-                className="justify-between"
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    selected?.id === option.id ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {option.value}
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          <ScrollArea className="h-64">
+            <CommandGroup>
+              {options.map((option) => (
+                <CommandItem
+                  key={option.id}
+                  value={option.value}
+                  onSelect={() => {
+                    onSelect(option);
+                    setOpen(false);
+                  }}
+                  className="justify-between"
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      selected?.id === option.id ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {option.value}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </ScrollArea>
         </Command>
       </PopoverContent>
     </Popover>

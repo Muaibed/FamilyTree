@@ -16,6 +16,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SearchSelectProps } from '@/types/ui'
+import { ScrollArea } from "./scroll-area";
 
 export default function SearchSelect({
   options,
@@ -28,44 +29,51 @@ export default function SearchSelect({
 
   return (
     <div>
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          className={`w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center justify-between ${className ?? ""}`}
-          aria-expanded={open}
-        >
-          <ChevronsUpDown className="mr-2 h-4 w-4 text-muted-foreground justify-end" />
-          {selected ? selected.value : placeholder}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0 z-55" avoidCollisions={false}>
-        <Command>
-          <CommandInput placeholder={`بحث`} />
-          <CommandEmpty>لا توجد نتائج</CommandEmpty>
-          <CommandGroup>
-            {options.map((option) => (
-              <CommandItem
-                key={option.id}
-                value={option.value}
-                onSelect={() => {
-                  onSelect(option);
-                  setOpen(false);
-                }}
-                className="justify-between"
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    selected?.id === option.id ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {option.value}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
-    </div>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            className={`w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center justify-between ${className ?? ""}`}
+            aria-expanded={open}
+            >
+            <ChevronsUpDown className="mr-2 h-4 w-4 text-muted-foreground justify-end" />
+            {selected ? selected.value : placeholder}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0 z-55" avoidCollisions={false}>
+          <Command>
+            <CommandInput placeholder={`بحث`} />
+            <CommandEmpty>لا توجد نتائج</CommandEmpty>
+            <ScrollArea className="h-64">
+              <CommandGroup>
+                {options.map((option) => (
+                  <CommandItem
+                    key={option.id}
+                    value={option.value}
+                    onSelect={() => {
+                      onSelect(option);
+                      setOpen(false);
+                    }}
+                    className="justify-between"
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        selected?.id === option.id ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <div className="flex flex-col items-end justify-end">
+                      <div>
+                        {option.value.split(" ")[0]}  
+                      </div>
+                      <div className="text-xs opacity-35">{option.value}</div>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+          </ScrollArea>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      </div>
   );
 }

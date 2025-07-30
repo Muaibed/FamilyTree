@@ -20,7 +20,7 @@ export default function RootLayout({
   
   return (
     <html lang="ar" suppressHydrationWarning className={amiri.className}>
-      <body className="overflow-x-hidden">
+      <body className="overflow-x-hidden overflow-y-hidden">
         <SessionProviderWrapper>
           <ThemeProvider
             attribute="class"
