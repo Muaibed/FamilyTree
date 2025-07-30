@@ -18,6 +18,10 @@ export function columns({
       header: "First Name",
     },
     {
+      accessorKey: "fullName",
+      header: "Full Name",
+    },
+    {
       accessorKey: "family.name",
       header: "Family Name",
     },
