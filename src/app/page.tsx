@@ -89,6 +89,7 @@ export default function Home({
       )}
       </div>
       </div>
+      <div className="flex items-center-safe justify-center-safe w-full h-screen">
       <Suspense>
         <FamilyTreeView
           members={members}
@@ -96,6 +97,7 @@ export default function Home({
           onChange={mutateMembers}
         />
       </Suspense>
+      </div>
     </div>
   );
 }

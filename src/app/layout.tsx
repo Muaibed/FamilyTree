@@ -6,6 +6,7 @@ import MembersContextProvider from "@/components/client/MembersContextProvider";
 import ThemeToggle from "@/theme/theme-toggle";
 import { BlurBackground } from "@/components/ui/BlurBackground";
 import { Amiri, Cairo } from 'next/font/google'
+import Head from "next/head";
  
 const amiri = Amiri({
   weight: '400',
@@ -20,7 +21,10 @@ export default function RootLayout({
   
   return (
     <html lang="ar" suppressHydrationWarning className={amiri.className}>
-      <body className="overflow-x-hidden overflow-y-hidden">
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
+      <body className="w-full overflow-x-hidden ">
         <SessionProviderWrapper>
           <ThemeProvider
             attribute="class"
@@ -33,7 +37,9 @@ export default function RootLayout({
             </div>            
             <MembersContextProvider>
               <BlurBackground>
-                {children}
+                <div className="w-full">
+                  {children}
+                </div>
               </BlurBackground>
             </MembersContextProvider>
             <Toaster />
