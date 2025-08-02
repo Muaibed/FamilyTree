@@ -22,7 +22,7 @@ export function PersonModal({ isOpen, onClose, gender, children }: PersonModalPr
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50 shadow-md"
+      className="absolute z-50 inset-0 flex items-center-safe justify-center-safe w-full h-screen shadow-md"
     >
       <div className={`bg-card text-card-foreground border-t-5 p-6 rounded-lg max-w-md w-full relative ${gender === "MALE" ? "border-t-male" : (gender === "FEMALE" ? "border-t-female" : "border-t-card")} `}>
         {children}
@@ -45,7 +45,7 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
     <div
       className="fixed inset-0 flex items-center justify-center z-50 shadow-md"
     >
-      <div className="bg-card text-card-foreground p-6 rounded-lg max-w-md w-full relative">
+      <div className="bg-card text-card-foreground p-6 rounded-lg max-w-md relative">
         {children}
         <Button
           onClick={onClose}

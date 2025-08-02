@@ -152,10 +152,11 @@ export default function FamilyTreeView({
         />
       </div>
       <div
-        className={`relative w-full h-screen ${
-          detailModalOpen ? "blur-xs" : ""
-        } transition-all duration-200`}
       >
+        <div className={`flex w-full h-full min-h-screen`}>
+          <div className={`${
+          detailModalOpen ? "md:blur-xs" : ""
+        } transition-all duration-200 w-full`}>
         <Tree
           data={treeData}
           renderCustomNodeElement={renderCustomNode}
@@ -167,16 +168,12 @@ export default function FamilyTreeView({
           pathClassFunc={() => "custom-link"}
           onNodeClick={(nodeData, event) => {
             const personId = nodeData.data.attributes?.id;
-
-            if (personId && personId !== true) {
-              // exclude (true) if assigned to personId
-              setSelectedPerson(members.find((p) => p.id === personId));
-            }
+            setSelectedPerson(members.find((p) => p.id === personId));
             setDetailModalOpen(true);
           }}
         />
-      </div>
-
+          </div>
+        <div className="">
       <PersonModal
         isOpen={!!selectedPerson}
         onClose={() => {
@@ -194,14 +191,14 @@ export default function FamilyTreeView({
               <p className="text-sm opacity-50">{selectedPerson.fullName}</p>
             </div>
             <div className="m-4">
-              <div className="bg-accent dark:bg-secondary rounded m-1">
+              <div className="bg-accent dark:bg-secondary rounded m-1 relative p-2">
                 {(selectedPerson.femaleSpouses.filter(
                   (s) => s.isActive === true
                 ).length > 0 ||
                   selectedPerson.maleSpouses.filter((s) => s.isActive === true)
                     .length > 0) && (
-                  <div className="flex items-center justify-between py-2 relative min-h-[2.5rem]">
-                    <div className="relative left-1/2 transform -translate-x-1/2">
+                  <div className="flex flex-row items-center justify-between py-2 relative min-h-[2.5rem]">
+                    <div className="absolute left-1/2 transform -translate-x-1/2">
                       <div className="flex flex-col">
                         {selectedPerson.gender === "FEMALE"
                           ? selectedPerson.femaleSpouses
@@ -340,6 +337,9 @@ export default function FamilyTreeView({
           </div>
         )}
       </PersonModal>
+        </div>
+      </div>
+        </div>
 
       <Modal
         isOpen={!!isDeleting}
