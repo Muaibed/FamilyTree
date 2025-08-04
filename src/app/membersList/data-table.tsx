@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useState } from "react"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -43,7 +44,6 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-
       <input
         placeholder="Search..."
         value={searchValue}
@@ -61,7 +61,7 @@ export function DataTable<TData, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
+                        header.column.columnDef.header,
                           header.getContext()
                         )}
                   </TableHead>

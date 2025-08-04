@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import SearchSelectMember from "../preDefinedData/SearchSelectMember";
 import SelectBoolean from "../preDefinedData/BooleanSelect";
+import { ScrollArea } from "../ui/scroll-area";
 
 const EditFamilyForm = ({
   family,
@@ -57,7 +58,8 @@ const EditFamilyForm = ({
       <div className="flex items-center justify-center w-full">
         <h2 className="text-2xl font-semibold mb-4">تعديل معلومات العائلة</h2>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <ScrollArea className="max-h-[100vh] md:max-h-[600px] overflow-auto">
+      <form onSubmit={handleSubmit} className="space-y-4 m-1">
         <Input
           type="text"
           placeholder="الاسم"
@@ -121,6 +123,7 @@ const EditFamilyForm = ({
           />
         </Modal>
       )}
+    </ScrollArea>
     </div>
   );
 };

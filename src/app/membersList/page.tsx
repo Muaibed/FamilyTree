@@ -15,7 +15,7 @@ export default function Page() {
   if (error) return <ErrorAlert title="حدث خطأ!" message="خطأ في الحصول على البيانات" />
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-5 overflow-y-auto min-h-screen">
       <FamilyTableClient data={members} onChange={() => mutate} />
     </div>
   );

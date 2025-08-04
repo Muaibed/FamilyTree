@@ -88,7 +88,7 @@ const ChangeRequestApproval = ({request, onChange}: {request: ChangeRequest, onC
     }
 
     return (
-        <div className="m-4">
+        <div className="m-4 min-w-[400px]">
             <div className="bg-accent dark:bg-secondary rounded m-1">
                 <div className="relative py-2 min-h-[2.5rem]">
                     <div className="absolute left-1/2 transform -translate-x-1/2">
@@ -118,12 +118,12 @@ const ChangeRequestApproval = ({request, onChange}: {request: ChangeRequest, onC
                 </div>
             </div>
             {request.targetId && request.targetModel === "PERSON" && (
-                <div className="bg-accent dark:bg-secondary rounded m-1">
-                    <div className="relative py-2 min-h-[2.5rem]">
-                        <div className="absolute left-1/2 transform -translate-x-1/2">
+                <div className="bg-accent dark:bg-secondary rounded m-1 h-auto p-2">
+                  <div className="flex flex-row items-center justify-between py-2 relative min-h-[2.5rem]">
+                        <div className="relative left-1/2 transform -translate-x-1/2 w-2/3">
                             <p>{members.find((m) => m.id === request.targetId)?.fullName}</p>
                         </div>
-                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                        <div className="relative right-4 top-1/2 transform -translate-y-1/2">
                             <Image src="/icons/user.png" alt="Star" width={512} height={512} className="w-6 block dark:hidden" />
                             <Image src="/icons/white-user.png" alt="Star" width={512} height={512} className="w-6 hidden dark:block" />
                         </div>

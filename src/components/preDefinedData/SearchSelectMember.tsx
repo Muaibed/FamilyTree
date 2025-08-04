@@ -17,7 +17,7 @@ export default function SearchSelectMember({
   gender?: "MALE" | "FEMALE";
 }) {
   const [selectedMember, setSelectedMember] = useState<Option | undefined>(
-    selected ? { id: selected.id, value: selected.fullName } : undefined
+    selected ? { id: selected.id, value: selected.fullName, label: selected.firstName } : undefined
   );
   const [options, setOptions] = useState<Option[]>([]);
 
@@ -29,25 +29,18 @@ export default function SearchSelectMember({
   } = useMembersContext();
 
   useEffect(() => {
-    if (gender) {
       const options = members
-        .filter((m) => m.gender === gender)
+        .filter((m) => {
+          return !gender || m.gender === gender
+        })
         .map((m) => {
           return {
             id: m.id,
             value: m.fullName,
+            label: m.firstName,
           };
         });
       setOptions(options);
-    } else {
-      const options = members.map((m) => {
-        return {
-          id: m.id,
-          value: m.fullName,
-        };
-      });
-      setOptions(options);
-    }
   }, [members]);
 
   return (

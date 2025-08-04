@@ -88,7 +88,7 @@ const AddSpouseRelationship = () => {
       <div className="w-md mx-auto mt-8 p-10 bg-card rounded-lg shadow-md">
         <div className="flex items-center justify-center w-full">
           <h2 className="text-2xl font-semibold mb-4">
-            طلب تعديل معلومات {person?.firstName}
+            طلب إضافة زوج لـ {person?.firstName}
           </h2>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">

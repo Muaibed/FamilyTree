@@ -109,7 +109,7 @@ const CreatePersonForm = ({
         <SearchSelectMember
             placeholder="اختر الأم (اختياري)"
             onChange={setSelectedMother}
-            gender="MALE"
+            gender="FEMALE"
         />
 
         <SelectFamily selected={family} onChange={setFamily}/>
