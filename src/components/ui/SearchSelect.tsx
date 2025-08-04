@@ -63,7 +63,7 @@ export default function SearchSelect({
                     />
                     <div className="flex flex-col items-end justify-end">
                       <div>
-                        {option.value.split(" ")[0]}  
+                        {option.label}  
                       </div>
                       <div className="text-xs opacity-35">{option.value}</div>
                     </div>

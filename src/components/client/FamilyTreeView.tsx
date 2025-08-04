@@ -20,6 +20,7 @@ import NoDataAlert from "../alerts/NoDataAlert";
 import EditFamilyForm from "../forms/EditFamilyForm";
 import Image from "next/image";
 import SelectFamily from "../preDefinedData/SelectFamily";
+import { ScrollArea } from "../ui/scroll-area";
 
 const renderCustomNode: RenderCustomNodeElementFn = (
   rd3tNodeProps: CustomNodeElementProps
@@ -188,32 +189,36 @@ export default function FamilyTreeView({
           <div className="text-center">
             <div>
               <h1 className="text-2xl font-bold">{selectedPerson.firstName}</h1>
-              <p className="text-sm opacity-50">{selectedPerson.fullName}</p>
+              <p className="text-sm opacity-50 mt-1">{selectedPerson.fullName}</p>
             </div>
             <div className="m-4">
-              <div className="bg-accent dark:bg-secondary rounded m-1 relative p-2">
                 {(selectedPerson.femaleSpouses.filter(
                   (s) => s.isActive === true
                 ).length > 0 ||
                   selectedPerson.maleSpouses.filter((s) => s.isActive === true)
                     .length > 0) && (
+              <div className="bg-accent dark:bg-secondary rounded m-1 h-auto p-2">
                   <div className="flex flex-row items-center justify-between py-2 relative min-h-[2.5rem]">
-                    <div className="absolute left-1/2 transform -translate-x-1/2">
+                    <div className="relative left-1/2 transform -translate-x-1/2 w-2/3">
                       <div className="flex flex-col">
                         {selectedPerson.gender === "FEMALE"
                           ? selectedPerson.femaleSpouses
                               .filter((s) => s.isActive === true)
-                              .map((s) => (
-                                <div key={s.id} className="py-1">
+                              .map((s) => (<>
+                                <div key={s.id} className="py-1 flex items-center-safe justify-center-safe w-full h-full">
                                   {s.male.fullName}
                                 </div>
+                              <div className="w-full bg-primary-foreground h-0.5 opacity-50 dark:opacity-10 rounded-4xl"></div>
+                              </>
                               ))
-                          : selectedPerson.maleSpouses
+                              : selectedPerson.maleSpouses
                               .filter((s) => s.isActive === true)
-                              .map((s) => (
-                                <div key={s.id} className="py-1">
+                              .map((s) => (<>
+                                <div key={s.id} className="py-1 flex items-center-safe justify-center-safe w-full h-full">
                                   {s.female.fullName}
                                 </div>
+                              <div className="w-full bg-primary-foreground h-0.5 opacity-50 dark:opacity-10 rounded-4xl"></div>
+                              </>
                               ))}
                       </div>
                     </div>
@@ -234,8 +239,8 @@ export default function FamilyTreeView({
                       />
                     </div>
                   </div>
-                )}
               </div>
+                )}
               {selectedPerson.deathDate && (
                 <div className="bg-accent dark:bg-secondary rounded m-1">
                   <div className="relative py-2 min-h-[2.5rem]">
@@ -269,7 +274,7 @@ export default function FamilyTreeView({
 
             {isAdmin && (
               <div>
-                <div className="flex flex-col gap-2 mt-3 px-4">
+                <div className="flex flex-col gap-2 mt-4 px-4">
                   <Button
                     onClick={() => {
                       setIsAddingChild(!isAddingChild);
@@ -296,6 +301,7 @@ export default function FamilyTreeView({
                 </div>
                 {isAddingChild && (
                   <div>
+                  <ScrollArea className="max-h-[50vh] md:max-h-[300px] overflow-auto">
                     <AddChildForm
                       parent={selectedPerson}
                       onAdd={() => {
@@ -305,10 +311,12 @@ export default function FamilyTreeView({
                         setSelectedPerson(undefined);
                       }}
                     />
+                    </ScrollArea>
                   </div>
                 )}
                 {isAddingSpouse && (
                   <div>
+                    <ScrollArea className="max-h-[50vh] md:max-h-[300px] overflow-auto">
                     <AddSpouseForm
                       person={selectedPerson}
                       onAdd={() => {
@@ -317,11 +325,13 @@ export default function FamilyTreeView({
                         setIsAddingSpouse(false);
                         setSelectedPerson(undefined);
                       }}
-                    />
+                      />
+                    </ScrollArea>
                   </div>
                 )}
               </div>
             )}
+
             {!isAdmin && (
               <div className="flex flex-col gap-2 mt-3 px-4">
                 <Button

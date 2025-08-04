@@ -10,6 +10,7 @@ import SelectFamily from "../preDefinedData/SelectFamily";
 import ErrorAlert from "../alerts/ErrorAlert";
 import { Input } from "../ui/input";
 import SearchSelectSpouse from "../preDefinedData/SearchSelectSpouse";
+import { ScrollArea } from "../ui/scroll-area";
 
 const AddChildForm = ({
   parent,
@@ -76,6 +77,7 @@ const AddChildForm = ({
         إضافة ابن
       </h2>
       </div>
+      <ScrollArea className="max-h-[100vh] md:max-h-[600px] overflow-auto">
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input type="text" placeholder="الاسم الأول" onChange={(e) => setFirstName(e.target.value)} required dir="rtl"/>
 
@@ -105,6 +107,7 @@ const AddChildForm = ({
           تأكيد
         </Button>
       </form>
+      </ScrollArea>
     </div>
   );
 };

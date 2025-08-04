@@ -17,6 +17,7 @@ import SelectFamily from "../preDefinedData/SelectFamily";
 import useSWR from "swr";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "../alerts/ErrorAlert";
+import { ScrollArea } from "../ui/scroll-area";
 
 const EditPersonForm = ({
   person,
@@ -151,7 +152,8 @@ const EditPersonForm = ({
           تعديل معلومات فرد
         </h2>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <ScrollArea className="max-h-[100vh] md:max-h-[600px] overflow-auto">
+      <form onSubmit={handleSubmit} className="space-y-4 m-1">
         <Input type="text" placeholder="الاسم الأول" onChange={(e) => setFirstName(e.target.value)} value={firstName} required dir="rtl"/>
         
         <SelectGender selected={gender} onChange={setGender}/>
@@ -167,7 +169,7 @@ const EditPersonForm = ({
             placeholder="اختر الأم (اختياري)"
             selected={selectedMother}
             onChange={setSelectedMother}
-            gender="MALE"
+            gender="FEMALE"
         />
 
         <SelectFamily selected={family} onChange={setFamily}/>
@@ -279,6 +281,7 @@ const EditPersonForm = ({
           />
         )}
       </Modal>
+      </ScrollArea>
     </div>
   );
 };

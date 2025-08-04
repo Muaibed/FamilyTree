@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import SearchSelectMember from "../preDefinedData/SearchSelectMember";
 import { Person } from "@/generated/prisma";
 import BooleanSelect from "../preDefinedData/BooleanSelect";
+import { ScrollArea } from "../ui/scroll-area";
 
 const AddSpouseForm = ({
   person,
@@ -51,6 +52,7 @@ const AddSpouseForm = ({
           إضافة زوج
         </h2>
       </div>
+      <ScrollArea className="max-h-[100vh] md:max-h-[600px] overflow-auto">
       <form onSubmit={handleSubmit} className="space-y-4">
         <SearchSelectMember
           placeholder="اختر زوج"
@@ -72,6 +74,7 @@ const AddSpouseForm = ({
           تأكيد
         </Button>
       </form>
+      </ScrollArea>
     </div>
   );
 };

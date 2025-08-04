@@ -36,6 +36,7 @@ export default function SearchSelectSpouse({
         return {
           id: s.femaleId,
           value: s.female.fullName,
+          label: s.female.firstName,
         };
       });
       setSpouseOptions(options);
@@ -44,12 +45,13 @@ export default function SearchSelectSpouse({
         return {
           id: s.maleId,
           value: s.male.fullName,
+          label: s.male.firstName,
         };
       });
       setSpouseOptions(options);
     }
 
-    if (spouse) setSelectedSpouse({ id: spouse.id, value: spouse.fullName });
+    if (spouse) setSelectedSpouse({ id: spouse.id, value: spouse.fullName, label: spouse.firstName });
   }, [person, spouse]);
 
   return (
