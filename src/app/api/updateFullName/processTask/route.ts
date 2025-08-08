@@ -6,7 +6,7 @@ import { updateFullNames } from "@/lib/updateFullName";
 
 export async function POST(req: NextRequest) {
     try {
-        console.log('PROCESS TASK')
+        // console.log('PROCESS TASK')
         const isPermitted = await isAdmin()
         
         if (!isPermitted) {
