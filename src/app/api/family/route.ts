@@ -1,8 +1,8 @@
 import { createFamily, getAllDisplayedFamilies, getAllFamilies, getFamilyByName } from '@/lib/family';
 import { isAdmin } from '@/lib/session';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
     const isPermitted = await isAdmin();
     
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req:NextRequest) {
+export async function GET(req:Request) {
   try { 
     const families = await getAllFamilies();
     return NextResponse.json(families);

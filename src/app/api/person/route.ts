@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createPerson, getAllPersons } from '@/lib/person';
 import { isAdmin } from '@/lib/session';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
     const isPermitted = await isAdmin()
     

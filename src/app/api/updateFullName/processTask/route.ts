@@ -1,10 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { redis } from "@/lib/redis";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/session";
 import { updateFullNames } from "@/lib/updateFullName";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
     try {
         // console.log('PROCESS TASK')
         const isPermitted = await isAdmin()

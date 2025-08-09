@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createAddRequest, createDeleteRequest, createUpdateRequest, getAllChangeRequests } from '@/lib/changeRequest';
 import { isAdmin } from '@/lib/session';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
     const { action, targetModel, targetId, dataJSON, requesterName, requesterPhone, requesterId } = await req.json();
 

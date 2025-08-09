@@ -1,8 +1,8 @@
 import { redis } from "@/lib/redis";
 import { isAdmin } from "@/lib/session";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
     try {
         // console.log('ADD TASK')
         const isPermitted = await isAdmin()
