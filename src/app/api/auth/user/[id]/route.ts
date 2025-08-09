@@ -5,11 +5,11 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const isPermitted = await isAdmin();
+    const { id } = await params;
 
     if (!isPermitted) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
-    const id = params.id;
 
     if (!id) {
         return new Response("User ID is required", { status: 400 });
@@ -29,12 +29,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const isPermitted = await isAdmin();
+    const { id } = await params;
 
     if (!isPermitted) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
-
-    const id = params.id;
 
     const { email, phone, name } = await req.json();
 
@@ -60,12 +59,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
       const isPermitted = await isAdmin();
+      const { id } = await params;
 
       if (!isPermitted) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
-
-      const id = params.id;
   
       if (!id) {
         return new Response("User ID is required", { status: 400 });
