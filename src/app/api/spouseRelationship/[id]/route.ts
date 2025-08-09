@@ -1,8 +1,8 @@
 import { isAdmin } from '@/lib/session';
 import { deleteRelationById, getRelationById, updateRelationStatusById } from '@/lib/spouseRelationship';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function GET(req:NextRequest) {
+export async function GET(req:Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
@@ -22,7 +22,7 @@ export async function GET(req:NextRequest) {
   }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: { id: string } }) {
   try {
     const isPermitted = await isAdmin();
     const { id } = await params;
@@ -52,7 +52,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
     try {
       const isPermitted = await isAdmin();
       const { id } = await params;

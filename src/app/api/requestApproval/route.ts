@@ -2,9 +2,9 @@ import { updateChangeRequest } from "@/lib/changeRequest";
 import { createPerson, deletePerson, updatePerson } from "@/lib/person";
 import { isAdmin } from "@/lib/session";
 import { createSpouseRelationship } from "@/lib/spouseRelationship";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {    
     const isPermitted = await isAdmin();
         

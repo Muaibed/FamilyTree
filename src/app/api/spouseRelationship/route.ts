@@ -1,8 +1,8 @@
 import { isAdmin } from '@/lib/session';
 import {createSpouseRelationship, deleteRelation, getAllRelations, getAllRelationsForPerson, updateRelationStatus} from '@/lib/spouseRelationship';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
     const isPermitted = await isAdmin();
     
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   try {
     const relations = await getAllRelations();
     
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: Request) {
   try {
     const isPermitted = await isAdmin();
 
@@ -69,7 +69,7 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE(req: Request) {
     try {
       const isPermitted = await isAdmin();
 
