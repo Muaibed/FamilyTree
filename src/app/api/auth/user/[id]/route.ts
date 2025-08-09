@@ -2,12 +2,10 @@ import { isAdmin } from '@/lib/session';
 import { deleteUser, getUserById, updateUser } from '@/lib/user';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params } : { params: Promise<{ id: string }> }) {
   try {
     const isPermitted = await isAdmin();
-    
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
+    const { id } = await params;
 
     if (!isPermitted) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -28,7 +26,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params } : { params: Promise<{ id: string }> }
+) {
   try {
     const isPermitted = await isAdmin();
     const { id } = await params;
@@ -58,7 +57,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params } : { params: Promise<{ id: string }> }) {
     try {
       const isPermitted = await isAdmin();
       const { id } = await params;
