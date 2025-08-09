@@ -2,10 +2,12 @@ import { isAdmin } from '@/lib/session';
 import { deleteUser, getUserById, updateUser } from '@/lib/user';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest) {
   try {
     const isPermitted = await isAdmin();
-    const { id } = await params;
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
 
     if (!isPermitted) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
