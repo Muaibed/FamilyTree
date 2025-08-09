@@ -13,11 +13,13 @@ import useSWR from "swr";
 import { FamilyWithRootPerson } from "@/types/family";
 import { Loader2 } from "lucide-react";
 
-export default function Home({
-  children,
-}: Readonly<{
+interface Props {
   children: React.ReactNode;
-}>) {
+}
+
+export default function Home(
+  { children }: Props
+) {
   const [isAddingFamily, setIsAddingFamily] = useState<boolean>(false);
   const [isCreatingPerson, setIsCreatingPerson] = useState<boolean>(false);
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
