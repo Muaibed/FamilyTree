@@ -8,18 +8,12 @@ import { useMembersContext } from "@/components/client/MembersContextProvider";
 import { Modal } from "@/components/client/Modal";
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "next-auth/react";
-import { ReactNode, Suspense, useState } from "react";
+import { Suspense, useState } from "react";
 import useSWR from "swr";
 import { FamilyWithRootPerson } from "@/types/family";
 import { Loader2 } from "lucide-react";
 
-interface Props {
-  children: ReactNode;
-}
-
-export default function Home(
-  { children }: Props
-) {
+export default function Home() {
   const [isAddingFamily, setIsAddingFamily] = useState<boolean>(false);
   const [isCreatingPerson, setIsCreatingPerson] = useState<boolean>(false);
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
