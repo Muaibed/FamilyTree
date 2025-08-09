@@ -8,13 +8,13 @@ import { useMembersContext } from "@/components/client/MembersContextProvider";
 import { Modal } from "@/components/client/Modal";
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "next-auth/react";
-import { Suspense, useState } from "react";
+import { ReactNode, Suspense, useState } from "react";
 import useSWR from "swr";
 import { FamilyWithRootPerson } from "@/types/family";
 import { Loader2 } from "lucide-react";
 
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function Home(
