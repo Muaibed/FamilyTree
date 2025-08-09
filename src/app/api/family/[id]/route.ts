@@ -25,6 +25,7 @@ export async function GET(req:NextRequest) {
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const isPermitted = await isAdmin();
+    const { id } = await params;
 
     if (!isPermitted) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -38,11 +39,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       isDisplayed
     }
 
-    if (!params.id) {
+    if (!id) {
       return new Response("Family ID is required", { status: 400});
     }
 
-    await updateFamily(params.id, data);
+    await updateFamily(id, data);
 
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
@@ -55,16 +56,17 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     try {
 
       const isPermitted = await isAdmin();
+      const { id } = await params;
 
       if (!isPermitted) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
       
-      if (!params.id) {
+      if (!id) {
         return new Response("Family ID is required", { status: 400 });
       }
   
-      await deleteFamily(params.id);
+      await deleteFamily(id);
   
       return new Response("Family deleted successfully", { status: 200 });
     } catch (error) {

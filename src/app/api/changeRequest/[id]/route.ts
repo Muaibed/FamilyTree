@@ -31,18 +31,19 @@ export async function GET(req:NextRequest) {
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const permitted = await isAdmin();
-    
+    const { id } = await params;
+
     if (!permitted) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     const { status } = await req.json();
 
-    if (!params.id) {
+    if (!id) {
       return new Response("Change Request ID is required", { status: 400});
     }
 
-    await updateChangeRequest(params.id, status);
+    await updateChangeRequest(id, status);
 
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
@@ -54,16 +55,17 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
       const permitted = await isAdmin();
+      const { id } = await params;
 
       if (permitted) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
       }
     
-      if (!params.id) {
+      if (!id) {
         return new Response("Change Request ID is required", { status: 400 });
       }
   
-      await deleteChangeRequest(params.id);
+      await deleteChangeRequest(id);
   
       return new Response("Chagne Request deleted successfully", { status: 200 });
     } catch (error) {
