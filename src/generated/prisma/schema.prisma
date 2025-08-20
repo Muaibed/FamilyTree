@@ -21,7 +21,15 @@ model User {
   password       String
   role           Role            @default(USER)
   name           String?
+  verified       Boolean         @default(false)
   changeRequests ChangeRequest[] @relation("ChangeRequester")
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
 }
 
 enum Role {
@@ -55,24 +63,24 @@ model Person {
   fatherChildren Person[] @relation("FatherRelation")
   motherChildren Person[] @relation("MotherRelation")
 
-  spouseConnections    SpouseRelationship[] @relation("PersonToSpouse")
-  spousedByConnections SpouseRelationship[] @relation("SpouseToPersons")
+  maleSpouses   SpouseRelationship[] @relation("Males")
+  femaleSpouses SpouseRelationship[] @relation("Females")
 
   rootOfFamily Family? @relation("RootPersonRelation")
 }
 
 model SpouseRelationship {
   id       String @id @default(uuid()) @db.Uuid
-  person   Person @relation("PersonToSpouse", fields: [personId], references: [id])
-  personId String @db.Uuid
-  spouse   Person @relation("SpouseToPersons", fields: [spouseId], references: [id])
-  spouseId String @db.Uuid
+  male     Person @relation("Males", fields: [maleId], references: [id])
+  maleId   String @db.Uuid
+  female   Person @relation("Females", fields: [femaleId], references: [id])
+  femaleId String @db.Uuid
 
   startDate DateTime?
   endDate   DateTime?
   isActive  Boolean   @default(true)
 
-  @@unique([personId, spouseId])
+  @@unique([maleId, femaleId])
 }
 
 enum ChangeRequestAction {
@@ -94,7 +102,7 @@ enum ChangeRequestTargetModel {
 
 model ChangeRequest {
   id             String                   @id @default(uuid()) @db.Uuid
-  displayId      Int
+  displayId      Int                      @default(autoincrement())
   action         ChangeRequestAction
   status         ChangeRequestStatus      @default(PENDING)
   targetModel    ChangeRequestTargetModel
@@ -113,4 +121,5 @@ model Family {
   rootPerson   Person?  @relation("RootPersonRelation", fields: [rootPersonId], references: [id])
   rootPersonId String?  @unique @db.Uuid
   members      Person[] @relation("FamilyMembers")
+  isDisplayed  Boolean  @default(false)
 }

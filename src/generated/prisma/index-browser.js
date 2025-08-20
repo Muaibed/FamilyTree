@@ -123,7 +123,15 @@ exports.Prisma.UserScalarFieldEnum = {
   phone: 'phone',
   password: 'password',
   role: 'role',
-  name: 'name'
+  name: 'name',
+  verified: 'verified'
+};
+
+exports.Prisma.VerificationTokenScalarFieldEnum = {
+  id: 'id',
+  identifier: 'identifier',
+  token: 'token',
+  expires: 'expires'
 };
 
 exports.Prisma.PersonScalarFieldEnum = {
@@ -223,6 +231,7 @@ exports.ChangeRequestTargetModel = exports.$Enums.ChangeRequestTargetModel = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  VerificationToken: 'VerificationToken',
   Person: 'Person',
   SpouseRelationship: 'SpouseRelationship',
   ChangeRequest: 'ChangeRequest',
