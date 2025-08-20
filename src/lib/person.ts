@@ -1,6 +1,4 @@
 import { prisma } from './prisma';
-import isValidDateString from './date';
-import { Person } from '@/generated/prisma';
 
 export const createPerson = async (data: {
   firstName: string;

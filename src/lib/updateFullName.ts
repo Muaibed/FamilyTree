@@ -22,6 +22,7 @@ export async function updateFullNames(personId: string, parentFullName = '') {
       : `${person.firstName} بنت ${parentFullName}`
   }
 
+  // console.log(newFullName)
   await prisma.person.update({
     where: { id: person.id },
     data: { fullName: newFullName },

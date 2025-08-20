@@ -70,6 +70,7 @@ export const authOptions: NextAuthOptions = {
   ],
   pages: {
     signIn: "/auth/signin",
+    verifyRequest: "/auth/verify"
   },
   session: {
     strategy: "jwt",

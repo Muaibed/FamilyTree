@@ -78,13 +78,14 @@ const EditPersonForm = ({
       if (response.ok) {
         toast(`${firstName} has been updated successfully.`);
         onEdit();
-        console.log("person.firstName: " + person.firstName)
-        console.log("firstName: " + firstName)
+        // console.log("person.firstName: " + person.firstName)
+        // console.log("firstName: " + firstName)
       } else {
         toast(`Updating ${firstName} Failed.`);
       }
       
       if (person.firstName !== firstName) {
+        // console.log('updating full names')
         await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/addTask`, {
             method: "POST",
             headers: {
