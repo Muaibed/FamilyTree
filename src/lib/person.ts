@@ -12,7 +12,10 @@ export const createPerson = async (data: {
 }) => {
   const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
 
-  const father = await prisma.person.findUnique({ where: { id: fatherId }});
+  let father;
+  if (fatherId)
+   father = await prisma.person.findUnique({ where: { id: fatherId }});
+  
   const family = await prisma.family.findUnique({ where: { id: familyId }});
 
   const theSonOf = gender === "MALE" ? " بن " : " بنت ";
