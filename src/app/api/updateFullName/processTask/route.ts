@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         }
         
         const jsonTask = JSON.parse(task)
-        updateFullNames(jsonTask.personId)
+        await updateFullNames(jsonTask.personId)
         console.log('Processing ...')
 
         return NextResponse.json("Task is processed successfully", { status: 201 });
