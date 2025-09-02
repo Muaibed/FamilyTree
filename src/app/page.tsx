@@ -12,6 +12,7 @@ import { Suspense, useState } from "react";
 import useSWR from "swr";
 import { FamilyWithRootPerson } from "@/types/family";
 import { Loader2 } from "lucide-react";
+import ExportTreeButton from "@/components/client/ExportTreeButton";
 
 export default function Home() {
   const [isAddingFamily, setIsAddingFamily] = useState<boolean>(false);
@@ -70,6 +71,9 @@ export default function Home() {
           <div>
             {createMember}
           </div>
+          <div>
+                  <ExportTreeButton />
+                </div>
           <div>
           <Button onClick={() => setIsAddingFamily(true)}>إضافة عائلة</Button>
           </div>
