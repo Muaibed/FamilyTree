@@ -48,7 +48,7 @@ export default function Home() {
         isOpen={!!isCreatingPerson}
         onClose={() => setIsCreatingPerson(false)}
       >
-        <CreatePersonForm members={members} onCreate={() => {mutateMembers; setIsCreatingPerson(false)}} />
+        <CreatePersonForm members={members} onCreate={() => {mutateMembers(); setIsCreatingPerson(false)}} />
       </Modal>
     </>
   );
