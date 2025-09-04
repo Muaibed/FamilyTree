@@ -34,7 +34,7 @@ const AddChildForm = ({
       setFamily(parent.family);
     } else if (parent.gender === "FEMALE") {
       setMother(parent);
-      if (father) setFamily(parent.family);
+      if (father) setFamily(father.family);
     }
 
   }, [father]);
