@@ -21,7 +21,6 @@ import EditFamilyForm from "../forms/EditFamilyForm";
 import Image from "next/image";
 import SelectFamily from "../preDefinedData/SelectFamily";
 import { ScrollArea } from "../ui/scroll-area";
-import ExportTreeButton from "./ExportTreeButton";
 
 const renderCustomNode: RenderCustomNodeElementFn = (
   rd3tNodeProps: CustomNodeElementProps
@@ -99,7 +98,8 @@ export default function FamilyTreeView({
     if (members && selectedFamily && selectedFamily.rootPersonId) {
       const formattedData = prepareTreeData(
         members,
-        selectedFamily.rootPersonId.toString()
+        selectedFamily.rootPersonId.toString(),
+        selectedFamily.id,
       );
       setTreeData(formattedData);
     }
