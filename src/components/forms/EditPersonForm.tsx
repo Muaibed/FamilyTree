@@ -19,6 +19,7 @@ import { Loader2 } from "lucide-react";
 import ErrorAlert from "../alerts/ErrorAlert";
 import { ScrollArea } from "../ui/scroll-area";
 import TrueFalseSelect from "../preDefinedData/BooleanSelect";
+import { qstash } from "@/lib/qstash";
 
 const EditPersonForm = ({
   person,
@@ -88,32 +89,42 @@ const EditPersonForm = ({
       }
       
       if (person.firstName !== firstName) {
-        // console.log('updating full names')
-        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/addTask`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+        const updateNamesResponse = await qstash.publish({
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/processTask`, 
+          body: JSON.stringify({
               "task": {
                 "type": "updateFullName",
                 "personId": person.id,
               }
             }),
         });
-  
-        const updateNamesResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/processTask`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
 
-        if (updateNamesResponse.ok) {
-          toast(`${person.firstName}'s descendants full names have been updated successfully!`)
-        } else {
-          toast(`Updating ${person.firstName}'s descendants full names failed!`)
-        }
+        // // console.log('updating full names')
+        // await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/addTask`, {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //       "task": {
+        //         "type": "updateFullName",
+        //         "personId": person.id,
+        //       }
+        //     }),
+        // });
+  
+        // const updateNamesResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/processTask`, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // })
+
+        // if (updateNamesResponse.ok) {
+        //   toast(`${person.firstName}'s descendants full names have been updated successfully!`)
+        // } else {
+        //   toast(`Updating ${person.firstName}'s descendants full names failed!`)
+        // }
       }
 
     } catch (error) {
