@@ -3606,6 +3606,7 @@ export namespace Prisma {
     birthDate: Date | null
     deathDate: Date | null
     phone: string | null
+    isDead: boolean | null
     familyId: string | null
     fatherId: string | null
     motherId: string | null
@@ -3619,6 +3620,7 @@ export namespace Prisma {
     birthDate: Date | null
     deathDate: Date | null
     phone: string | null
+    isDead: boolean | null
     familyId: string | null
     fatherId: string | null
     motherId: string | null
@@ -3632,6 +3634,7 @@ export namespace Prisma {
     birthDate: number
     deathDate: number
     phone: number
+    isDead: number
     familyId: number
     fatherId: number
     motherId: number
@@ -3647,6 +3650,7 @@ export namespace Prisma {
     birthDate?: true
     deathDate?: true
     phone?: true
+    isDead?: true
     familyId?: true
     fatherId?: true
     motherId?: true
@@ -3660,6 +3664,7 @@ export namespace Prisma {
     birthDate?: true
     deathDate?: true
     phone?: true
+    isDead?: true
     familyId?: true
     fatherId?: true
     motherId?: true
@@ -3673,6 +3678,7 @@ export namespace Prisma {
     birthDate?: true
     deathDate?: true
     phone?: true
+    isDead?: true
     familyId?: true
     fatherId?: true
     motherId?: true
@@ -3759,6 +3765,7 @@ export namespace Prisma {
     birthDate: Date | null
     deathDate: Date | null
     phone: string | null
+    isDead: boolean
     familyId: string
     fatherId: string | null
     motherId: string | null
@@ -3789,6 +3796,7 @@ export namespace Prisma {
     birthDate?: boolean
     deathDate?: boolean
     phone?: boolean
+    isDead?: boolean
     familyId?: boolean
     fatherId?: boolean
     motherId?: boolean
@@ -3811,6 +3819,7 @@ export namespace Prisma {
     birthDate?: boolean
     deathDate?: boolean
     phone?: boolean
+    isDead?: boolean
     familyId?: boolean
     fatherId?: boolean
     motherId?: boolean
@@ -3827,6 +3836,7 @@ export namespace Prisma {
     birthDate?: boolean
     deathDate?: boolean
     phone?: boolean
+    isDead?: boolean
     familyId?: boolean
     fatherId?: boolean
     motherId?: boolean
@@ -3843,12 +3853,13 @@ export namespace Prisma {
     birthDate?: boolean
     deathDate?: boolean
     phone?: boolean
+    isDead?: boolean
     familyId?: boolean
     fatherId?: boolean
     motherId?: boolean
   }
 
-  export type PersonOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "fullName" | "gender" | "birthDate" | "deathDate" | "phone" | "familyId" | "fatherId" | "motherId", ExtArgs["result"]["person"]>
+  export type PersonOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "fullName" | "gender" | "birthDate" | "deathDate" | "phone" | "isDead" | "familyId" | "fatherId" | "motherId", ExtArgs["result"]["person"]>
   export type PersonInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     family?: boolean | FamilyDefaultArgs<ExtArgs>
     father?: boolean | Person$fatherArgs<ExtArgs>
@@ -3891,6 +3902,7 @@ export namespace Prisma {
       birthDate: Date | null
       deathDate: Date | null
       phone: string | null
+      isDead: boolean
       familyId: string
       fatherId: string | null
       motherId: string | null
@@ -4332,6 +4344,7 @@ export namespace Prisma {
     readonly birthDate: FieldRef<"Person", 'DateTime'>
     readonly deathDate: FieldRef<"Person", 'DateTime'>
     readonly phone: FieldRef<"Person", 'String'>
+    readonly isDead: FieldRef<"Person", 'Boolean'>
     readonly familyId: FieldRef<"Person", 'String'>
     readonly fatherId: FieldRef<"Person", 'String'>
     readonly motherId: FieldRef<"Person", 'String'>
@@ -8305,6 +8318,7 @@ export namespace Prisma {
     birthDate: 'birthDate',
     deathDate: 'deathDate',
     phone: 'phone',
+    isDead: 'isDead',
     familyId: 'familyId',
     fatherId: 'fatherId',
     motherId: 'motherId'
@@ -8671,6 +8685,7 @@ export namespace Prisma {
     birthDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     deathDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     phone?: StringNullableFilter<"Person"> | string | null
+    isDead?: BoolFilter<"Person"> | boolean
     familyId?: UuidFilter<"Person"> | string
     fatherId?: UuidNullableFilter<"Person"> | string | null
     motherId?: UuidNullableFilter<"Person"> | string | null
@@ -8692,6 +8707,7 @@ export namespace Prisma {
     birthDate?: SortOrderInput | SortOrder
     deathDate?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    isDead?: SortOrder
     familyId?: SortOrder
     fatherId?: SortOrderInput | SortOrder
     motherId?: SortOrderInput | SortOrder
@@ -8716,6 +8732,7 @@ export namespace Prisma {
     birthDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     deathDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     phone?: StringNullableFilter<"Person"> | string | null
+    isDead?: BoolFilter<"Person"> | boolean
     familyId?: UuidFilter<"Person"> | string
     fatherId?: UuidNullableFilter<"Person"> | string | null
     motherId?: UuidNullableFilter<"Person"> | string | null
@@ -8737,6 +8754,7 @@ export namespace Prisma {
     birthDate?: SortOrderInput | SortOrder
     deathDate?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
+    isDead?: SortOrder
     familyId?: SortOrder
     fatherId?: SortOrderInput | SortOrder
     motherId?: SortOrderInput | SortOrder
@@ -8756,6 +8774,7 @@ export namespace Prisma {
     birthDate?: DateTimeNullableWithAggregatesFilter<"Person"> | Date | string | null
     deathDate?: DateTimeNullableWithAggregatesFilter<"Person"> | Date | string | null
     phone?: StringNullableWithAggregatesFilter<"Person"> | string | null
+    isDead?: BoolWithAggregatesFilter<"Person"> | boolean
     familyId?: UuidWithAggregatesFilter<"Person"> | string
     fatherId?: UuidNullableWithAggregatesFilter<"Person"> | string | null
     motherId?: UuidNullableWithAggregatesFilter<"Person"> | string | null
@@ -9096,6 +9115,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     family: FamilyCreateNestedOneWithoutMembersInput
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
@@ -9114,6 +9134,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     familyId: string
     fatherId?: string | null
     motherId?: string | null
@@ -9132,6 +9153,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     family?: FamilyUpdateOneRequiredWithoutMembersNestedInput
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
@@ -9150,6 +9172,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     familyId?: StringFieldUpdateOperationsInput | string
     fatherId?: NullableStringFieldUpdateOperationsInput | string | null
     motherId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9168,6 +9191,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     familyId: string
     fatherId?: string | null
     motherId?: string | null
@@ -9181,6 +9205,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type PersonUncheckedUpdateManyInput = {
@@ -9191,6 +9216,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     familyId?: StringFieldUpdateOperationsInput | string
     fatherId?: NullableStringFieldUpdateOperationsInput | string | null
     motherId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9693,6 +9719,7 @@ export namespace Prisma {
     birthDate?: SortOrder
     deathDate?: SortOrder
     phone?: SortOrder
+    isDead?: SortOrder
     familyId?: SortOrder
     fatherId?: SortOrder
     motherId?: SortOrder
@@ -9706,6 +9733,7 @@ export namespace Prisma {
     birthDate?: SortOrder
     deathDate?: SortOrder
     phone?: SortOrder
+    isDead?: SortOrder
     familyId?: SortOrder
     fatherId?: SortOrder
     motherId?: SortOrder
@@ -9719,6 +9747,7 @@ export namespace Prisma {
     birthDate?: SortOrder
     deathDate?: SortOrder
     phone?: SortOrder
+    isDead?: SortOrder
     familyId?: SortOrder
     fatherId?: SortOrder
     motherId?: SortOrder
@@ -10867,6 +10896,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     family: FamilyCreateNestedOneWithoutMembersInput
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
@@ -10884,6 +10914,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     familyId: string
     fatherId?: string | null
     motherId?: string | null
@@ -10906,6 +10937,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     family: FamilyCreateNestedOneWithoutMembersInput
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
@@ -10923,6 +10955,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     familyId: string
     fatherId?: string | null
     motherId?: string | null
@@ -10945,6 +10978,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     family: FamilyCreateNestedOneWithoutMembersInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
@@ -10962,6 +10996,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     familyId: string
     motherId?: string | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
@@ -10989,6 +11024,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     family: FamilyCreateNestedOneWithoutMembersInput
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
@@ -11006,6 +11042,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     familyId: string
     fatherId?: string | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
@@ -11140,6 +11177,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     family?: FamilyUpdateOneRequiredWithoutMembersNestedInput
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
@@ -11157,6 +11195,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     familyId?: StringFieldUpdateOperationsInput | string
     fatherId?: NullableStringFieldUpdateOperationsInput | string | null
     motherId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11185,6 +11224,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     family?: FamilyUpdateOneRequiredWithoutMembersNestedInput
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
@@ -11202,6 +11242,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     familyId?: StringFieldUpdateOperationsInput | string
     fatherId?: NullableStringFieldUpdateOperationsInput | string | null
     motherId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11238,6 +11279,7 @@ export namespace Prisma {
     birthDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     deathDate?: DateTimeNullableFilter<"Person"> | Date | string | null
     phone?: StringNullableFilter<"Person"> | string | null
+    isDead?: BoolFilter<"Person"> | boolean
     familyId?: UuidFilter<"Person"> | string
     fatherId?: UuidNullableFilter<"Person"> | string | null
     motherId?: UuidNullableFilter<"Person"> | string | null
@@ -11336,6 +11378,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     family: FamilyCreateNestedOneWithoutMembersInput
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
@@ -11353,6 +11396,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     familyId: string
     fatherId?: string | null
     motherId?: string | null
@@ -11375,6 +11419,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     family: FamilyCreateNestedOneWithoutMembersInput
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
@@ -11392,6 +11437,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     familyId: string
     fatherId?: string | null
     motherId?: string | null
@@ -11425,6 +11471,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     family?: FamilyUpdateOneRequiredWithoutMembersNestedInput
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
@@ -11442,6 +11489,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     familyId?: StringFieldUpdateOperationsInput | string
     fatherId?: NullableStringFieldUpdateOperationsInput | string | null
     motherId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11470,6 +11518,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     family?: FamilyUpdateOneRequiredWithoutMembersNestedInput
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
@@ -11487,6 +11536,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     familyId?: StringFieldUpdateOperationsInput | string
     fatherId?: NullableStringFieldUpdateOperationsInput | string | null
     motherId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11560,6 +11610,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     family: FamilyCreateNestedOneWithoutMembersInput
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
@@ -11577,6 +11628,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     familyId: string
     fatherId?: string | null
     motherId?: string | null
@@ -11599,6 +11651,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     father?: PersonCreateNestedOneWithoutFatherChildrenInput
     mother?: PersonCreateNestedOneWithoutMotherChildrenInput
     fatherChildren?: PersonCreateNestedManyWithoutFatherInput
@@ -11616,6 +11669,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     fatherId?: string | null
     motherId?: string | null
     fatherChildren?: PersonUncheckedCreateNestedManyWithoutFatherInput
@@ -11654,6 +11708,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     family?: FamilyUpdateOneRequiredWithoutMembersNestedInput
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
@@ -11671,6 +11726,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     familyId?: StringFieldUpdateOperationsInput | string
     fatherId?: NullableStringFieldUpdateOperationsInput | string | null
     motherId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11756,6 +11812,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     familyId: string
     motherId?: string | null
   }
@@ -11768,6 +11825,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     familyId: string
     fatherId?: string | null
   }
@@ -11796,6 +11854,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     family?: FamilyUpdateOneRequiredWithoutMembersNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
@@ -11813,6 +11872,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     familyId?: StringFieldUpdateOperationsInput | string
     motherId?: NullableStringFieldUpdateOperationsInput | string | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
@@ -11830,6 +11890,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     familyId?: StringFieldUpdateOperationsInput | string
     motherId?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -11842,6 +11903,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     family?: FamilyUpdateOneRequiredWithoutMembersNestedInput
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
@@ -11859,6 +11921,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     familyId?: StringFieldUpdateOperationsInput | string
     fatherId?: NullableStringFieldUpdateOperationsInput | string | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
@@ -11876,6 +11939,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     familyId?: StringFieldUpdateOperationsInput | string
     fatherId?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -11936,6 +12000,7 @@ export namespace Prisma {
     birthDate?: Date | string | null
     deathDate?: Date | string | null
     phone?: string | null
+    isDead?: boolean
     fatherId?: string | null
     motherId?: string | null
   }
@@ -11948,6 +12013,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     father?: PersonUpdateOneWithoutFatherChildrenNestedInput
     mother?: PersonUpdateOneWithoutMotherChildrenNestedInput
     fatherChildren?: PersonUpdateManyWithoutFatherNestedInput
@@ -11965,6 +12031,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     fatherId?: NullableStringFieldUpdateOperationsInput | string | null
     motherId?: NullableStringFieldUpdateOperationsInput | string | null
     fatherChildren?: PersonUncheckedUpdateManyWithoutFatherNestedInput
@@ -11982,6 +12049,7 @@ export namespace Prisma {
     birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deathDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    isDead?: BoolFieldUpdateOperationsInput | boolean
     fatherId?: NullableStringFieldUpdateOperationsInput | string | null
     motherId?: NullableStringFieldUpdateOperationsInput | string | null
   }
