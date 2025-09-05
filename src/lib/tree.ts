@@ -24,6 +24,7 @@ export const prepareTreeData = (
         attributes: {
           id: person.id,
           gender: person.gender,
+          isDead: person.isDead,
         },
         children: [],
       };
