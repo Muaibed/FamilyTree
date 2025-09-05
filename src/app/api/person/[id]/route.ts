@@ -31,7 +31,7 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     
-    const { firstName, familyName, gender, fatherId, motherId, birthDate, deathDate } = await req.json();
+    const { firstName, familyName, gender, fatherId, motherId, birthDate, deathDate, isDead } = await req.json();
 
     const data = {
       firstName,
@@ -40,7 +40,8 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
       birthDate,
       deathDate,
       fatherId,
-      motherId    
+      motherId,
+      isDead    
     }
 
     if (!id) {

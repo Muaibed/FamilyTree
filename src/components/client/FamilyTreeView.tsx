@@ -27,6 +27,7 @@ const renderCustomNode: RenderCustomNodeElementFn = (
 ) => {
   const { nodeDatum, onNodeClick } = rd3tNodeProps;
   const gender = nodeDatum.attributes?.gender;
+  const isDead = nodeDatum.attributes?.isDead;
   return (
     <g onClick={(e) => onNodeClick(e)}>
       <rect
@@ -45,7 +46,7 @@ const renderCustomNode: RenderCustomNodeElementFn = (
         height="40"
         x="-60"
         y="-20"
-        className="fill-white dark:fill-seondary dark:stroke-none stroke-none"
+        className={`${isDead ? 'fill-gray-400 dark:fill-gray-500' : 'fill-white dark:fill-seondary'}  dark:stroke-none stroke-none`}
         rx="10"
         ry="10"
       />

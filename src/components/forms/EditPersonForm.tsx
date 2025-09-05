@@ -18,6 +18,7 @@ import useSWR from "swr";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "../alerts/ErrorAlert";
 import { ScrollArea } from "../ui/scroll-area";
+import TrueFalseSelect from "../preDefinedData/BooleanSelect";
 
 const EditPersonForm = ({
   person,
@@ -30,6 +31,7 @@ const EditPersonForm = ({
   const [family, setFamily] = useState<FamilyWithRootPerson | undefined>(person.family);
   const [gender, setGender] = useState<"MALE" | "FEMALE">(person.gender);
   const [phone, setPhone] = useState<string | undefined>(person.phone ?? "");
+  const [isDead, setIsDead] = useState<boolean>(false);
   const [birthDate, setBirthDate] = useState<Date | undefined>(
     person.birthDate ? person.birthDate : undefined
   );
@@ -71,6 +73,7 @@ const EditPersonForm = ({
           motherId: selectedMother?.id,
           birthDate,
           deathDate,
+          isDead,
         }),
       });
 
@@ -175,6 +178,14 @@ const EditPersonForm = ({
 
         <SelectFamily selected={family} onChange={setFamily}/>
     
+        <TrueFalseSelect
+          placeholder="متوفى"
+          selected={isDead}
+          onChange={(strBool: string) => {
+            strBool === "true" ? setIsDead(true) : setIsDead(false);
+          }}
+        />
+
         <DatePicker placeholder="تاريخ الميلاد (اختياري)" selectedDate={birthDate} onSubmit={(date) => setBirthDate(date)}/>
         <DatePicker placeholder="تاريخ الوفاة (اختياري)" selectedDate={deathDate} onSubmit={(date) => setDeathDate(date)}/>
 

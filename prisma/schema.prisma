@@ -50,6 +50,8 @@ model Person {
   birthDate  DateTime?
   deathDate  DateTime?
   phone      String?
+
+  isDead     Boolean         @default(false)
   
   family     Family    @relation("FamilyMembers", fields: [familyId], references: [id])
   familyId   String @db.Uuid
