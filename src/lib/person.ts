@@ -162,12 +162,13 @@ export const updatePerson = async (id: string, data: {
   familyId?: string;
   gender?: 'MALE' | 'FEMALE';
   phone?: string;
+  isDead: boolean;
   fatherId?: string;
   motherId?: string;
   birthDate?: Date;
   deathDate?: Date;
 }) => {
-  const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
+  const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId, isDead } = data;
   return prisma.person.update({
     where: { id },
     data: {
@@ -175,6 +176,7 @@ export const updatePerson = async (id: string, data: {
       family: familyId ? { connect: { id: familyId } } : undefined,
       gender,
       phone,
+      isDead,
       birthDate,
       deathDate,
       father: fatherId ? { connect: { id: fatherId } } : undefined,
