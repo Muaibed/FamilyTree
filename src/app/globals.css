@@ -113,7 +113,7 @@
 }
 
 .custom-link {
-  stroke: #4b5462 !important;
+  stroke: light-dark(#4b5462, #7d868e) !important;
   stroke-width: 1;
 }
 
