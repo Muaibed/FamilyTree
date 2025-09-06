@@ -88,17 +88,11 @@ const EditPersonForm = ({
         toast(`Updating ${firstName} Failed.`);
       }
       
-      if (person.firstName !== firstName) {
-        const updateNamesResponse = await qstash.publish({
-          url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/processTask`, 
-          method: 'POST',
-          body: JSON.stringify({
-              "task": {
-                "type": "updateFullName",
-                "personId": person.id,
-              }
-            }),
-        });
+      // if (person.firstName !== firstName) {
+        // const updateNamesResponse = await qstash.publish({
+        //   url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/processTask/${person.id}`, 
+        //   method: 'POST',
+        // });
 
         // // console.log('updating full names')
         // await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/addTask`, {
@@ -126,7 +120,7 @@ const EditPersonForm = ({
         // } else {
         //   toast(`Updating ${person.firstName}'s descendants full names failed!`)
         // }
-      }
+      // }
 
     } catch (error) {
       console.error(error);
