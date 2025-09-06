@@ -31,10 +31,10 @@ const renderCustomNode: RenderCustomNodeElementFn = (
   return (
     <g onClick={(e) => onNodeClick(e)}>
       <rect
-        width="120"
-        height="40"
-        x="-60"
-        y="-23"
+        width="60"
+        height="25"
+        x="-30"
+        y="-15"
         className={`${
           gender == "MALE" ? "fill-male" : "fill-female"
         } stroke-none`}
@@ -42,10 +42,10 @@ const renderCustomNode: RenderCustomNodeElementFn = (
         ry="10"
       />
       <rect
-        width="120"
-        height="40"
-        x="-60"
-        y="-20"
+        width="60"
+        height="25"
+        x="-30"
+        y="-13"
         className={`${isDead ? 'fill-gray-400 dark:fill-gray-500' : 'fill-white dark:fill-seondary'}  dark:stroke-none stroke-none`}
         rx="10"
         ry="10"
@@ -57,6 +57,7 @@ const renderCustomNode: RenderCustomNodeElementFn = (
         dominantBaseline="middle"
         x="0"
         y="0"
+        fontSize={12}
       >
         {nodeDatum.name}
       </text>
@@ -164,7 +165,7 @@ export default function FamilyTreeView({
           data={treeData}
           renderCustomNodeElement={renderCustomNode}
           orientation="vertical"
-          pathFunc="step"
+          pathFunc="diagonal"
           collapsible={false}
           zoomable={true}
           draggable={true}
@@ -174,6 +175,8 @@ export default function FamilyTreeView({
             setSelectedPerson(members.find((p) => p.id === personId));
             setDetailModalOpen(true);
           }}
+          separation={{ siblings: 1, nonSiblings: 1 }}
+          nodeSize={{ x: 65, y: 100}}
         />
           </div>
         <div className="">
