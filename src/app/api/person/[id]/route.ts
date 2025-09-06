@@ -1,4 +1,5 @@
 import { deletePerson, getPersonById, updatePerson } from '@/lib/person';
+import { qstash } from '@/lib/qstash';
 import { isAdmin } from '@/lib/session';
 import { NextResponse } from 'next/server';
 
@@ -26,7 +27,6 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
   try {
     const isPermitted = await isAdmin()
     const { id } = await params;
-
     if (!isPermitted) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
@@ -50,7 +50,16 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
 
     const update = await updatePerson(id, data);
 
-    console.log(update)
+    const result = await qstash.publishJSON({
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName`,
+      body: { personId: id },
+    })
+
+    // return NextResponse.json({
+    //   message: "Person queued for processing!",
+    //   qstashMessageId: result.messageId,
+    // })
+    
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
     console.error(error);
