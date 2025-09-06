@@ -91,6 +91,7 @@ const EditPersonForm = ({
       if (person.firstName !== firstName) {
         const updateNamesResponse = await qstash.publish({
           url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName/processTask`, 
+          method: 'POST',
           body: JSON.stringify({
               "task": {
                 "type": "updateFullName",

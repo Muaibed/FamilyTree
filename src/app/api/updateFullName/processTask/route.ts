@@ -29,9 +29,8 @@ import { updateFullNames } from "@/lib/updateFullName";
 //     }
 // }
 
-import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function POST(req: Request, res: Response) {
     try {
         const isPermitted = await isAdmin()
               
@@ -49,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         await updateFullNames(jsonTask.personId)
       
         console.log('processing...')
-        res.status(200).json({ ok: true });
+        // res.status(200).json({ ok: true });
     } catch (err) {
         return err
     }
