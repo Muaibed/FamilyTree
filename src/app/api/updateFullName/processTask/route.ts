@@ -1,5 +1,5 @@
 // import { redis } from "@/lib/redis";
-// import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/session";
 import { updateFullNames } from "@/lib/updateFullName";
 
@@ -30,7 +30,7 @@ import { updateFullNames } from "@/lib/updateFullName";
 // }
 
 
-export default async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
     try {
         const isPermitted = await isAdmin()
               
@@ -38,7 +38,7 @@ export default async function POST(req: Request, res: Response) {
           return new Response("Unauthorized!", { status: 403 });
         }
       
-        const task = req.body; 
+        const task = await req.json(); 
       
         if (!task) {
           return new Response("No Task Found!", { status: 400});
@@ -48,9 +48,10 @@ export default async function POST(req: Request, res: Response) {
         await updateFullNames(jsonTask.personId)
       
         console.log('processing...')
-        // res.status(200).json({ ok: true });
+
+        return NextResponse.json("Task is processed successfully", { status: 201 });
     } catch (err) {
-        return err
+        return new Response("Failed to process task", { status: 500 });
     }
 
 }
