@@ -21,6 +21,7 @@ import EditFamilyForm from "../forms/EditFamilyForm";
 import Image from "next/image";
 import SelectFamily from "../preDefinedData/SelectFamily";
 import { ScrollArea } from "../ui/scroll-area";
+import { Slider } from "../ui/slider";
 
 const renderCustomNode: RenderCustomNodeElementFn = (
   rd3tNodeProps: CustomNodeElementProps
@@ -88,6 +89,7 @@ export default function FamilyTreeView({
   const [selectedFamily, setSelectedFamily] = useState<
     FamilyWithRootPerson | undefined
   >(family);
+  const [treeNodeSizeY, setTreeNodeSizeY] = useState(100);
 
   const { data: session, status } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
@@ -161,6 +163,9 @@ export default function FamilyTreeView({
           <div className={`${
           detailModalOpen ? "md:blur-xs" : ""
         } transition-all duration-200 w-full`}>
+          <div className="fixed bottom-0 left-0 w-full p-4">
+            <Slider defaultValue={[100]} max={1000} step={1} onValueChange={(value)=>setTreeNodeSizeY(value[0])}/>
+          </div>
         <Tree
           data={treeData}
           renderCustomNodeElement={renderCustomNode}
@@ -176,7 +181,7 @@ export default function FamilyTreeView({
             setDetailModalOpen(true);
           }}
           separation={{ siblings: 1, nonSiblings: 1 }}
-          nodeSize={{ x: 65, y: 100}}
+          nodeSize={{ x: 65, y: treeNodeSizeY}}
         />
           </div>
         <div className="">
