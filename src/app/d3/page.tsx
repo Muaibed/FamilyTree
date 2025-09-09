@@ -5,20 +5,8 @@ import { useMembersContext } from "@/components/client/MembersContextProvider";
 import { FamilyWithRootPerson } from "@/types/family";
 import useSWR from "swr";
 import RadialCluster from "@/components/client/RadialClsuter";
+import ExportTreeButton from "@/components/client/ExportTreeButton";
 
-// const data: TreeNode = {
-//   name: "root",
-//   children: [
-//     { name: "child1" },
-//     {
-//       name: "child2",
-//       children: [
-//         { name: "grandchild1" },
-//         { name: "grandchild2" },
-//       ],
-//     },
-//   ],
-// };
 
 export default function d3() {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -36,6 +24,9 @@ export default function d3() {
   );
 
   return <div className="flex items-center-safe justify-center-safe w-full h-screen">
+     <div>
+                  <ExportTreeButton />
+                </div>
         <Suspense>
           <RadialCluster
             members={members}
