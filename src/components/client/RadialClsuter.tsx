@@ -310,7 +310,7 @@ export default function RadialCluster({
               </div>
             )}
 
-            {!isAdmin && (
+            {/* {!isAdmin && (
               <div className="flex flex-col gap-2 mt-3 px-4">
                 <Button
                   className="w-full py-2 px-4 font-semibold"
@@ -321,7 +321,7 @@ export default function RadialCluster({
                   طلب تعديل
                 </Button>
               </div>
-            )}
+            )} */}
           </div>
         )}
       </PersonModal>

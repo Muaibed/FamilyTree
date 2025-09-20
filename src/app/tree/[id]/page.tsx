@@ -24,7 +24,8 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${id}`,
         fetcher
     );
-    
+    sessionStorage.setItem("selectedFamily", id)
+
     const { data: session, status } = useSession();
     const isAdmin = session?.user?.role === "ADMIN";
 

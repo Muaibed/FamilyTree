@@ -20,17 +20,19 @@ import SelectFamily from "@/components/preDefinedData/SelectFamily";
 const AddChild = () => {
   const session = useSession();
 
-  const {
-    members,
-    isLoading: membersLoading,
-    error: membersError,
-    mutate: mutateMembers,
-  } = useMembersContext();
+  const familyFromSessionStorage = sessionStorage.getItem("selectedFamily")
+
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+    const { data: members, isLoading: membersLoading, error: membersError, mutate: mutateMembers } = useSWR<PersonWithRelations[]>(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${familyFromSessionStorage}`,
+        fetcher
+    );
 
   const searchParams = useSearchParams();
   const parentId = searchParams.get("parentId");
   const parent = parentId
-    ? members.find((m: PersonWithRelations) => m.id === parentId)
+    ? members?.find((m: PersonWithRelations) => m.id === parentId)
     : undefined;
 
   const [requesterId, setRequesterId] = useState<string | undefined>(
@@ -51,7 +53,6 @@ const AddChild = () => {
     PersonWithRelations | undefined
   >();
 
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const {
     data: families,
     isLoading: familiesLoading,
