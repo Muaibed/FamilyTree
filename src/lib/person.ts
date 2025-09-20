@@ -79,33 +79,38 @@ export const getAllPersons = async () => {
   });
 };
 
-// export const getFullName = (
-//   members: PersonWithRelations[],
-//   personId: string
-// ): string | null => {
-//   let person = personId ? members.find((m) => m.id === personId) : null;
-//   if (!person) return null;
-//   const familyName = person.family.name;
-//   let theChildOf = person.gender === "MALE" ? " بن " : " بنت ";
-//   let fullName = "";
-
-//   let counter = 0;
-
-//   while (person.father && counter < 5) {
-//     let father = person.father;
-//     if (!father) break;
-
-//     if (!father.fatherId) break;
-
-//     fullName += theChildOf + person.firstName;
-//     theChildOf = " بن "
-//     counter++;
-//   }
-
-//   if (counter >= 0) return fullName + " " + familyName;
-
-//   return "";
-// };
+export const getAllPersonsWithSameOwner = async (userId: string) => {
+  return prisma.person.findMany({
+    where: {
+      family: {
+        ownerId: userId
+      }
+    },
+    include: {
+           father: true,
+           mother: true,
+           fatherChildren: true,
+           motherChildren: true,
+           maleSpouses: {
+            include: {
+              male: true,
+              female: true,
+            }
+           },
+           femaleSpouses: {
+            include: {
+              male: true,
+              female: true,
+            }
+           },
+           family: {
+            include: {
+              rootPerson: true,
+            }
+           },
+         },
+  });
+};
 
 export const getAllMales = async () => {
   return prisma.person.findMany({

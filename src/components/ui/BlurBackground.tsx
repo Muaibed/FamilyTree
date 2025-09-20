@@ -12,7 +12,7 @@ interface GlassCardProps {
 
 const BlurBackground: React.FC<BlurBackgroundProps> = ({ children, className = '' }) => {
   return (
-    <div className={`relative min-h-screen w-full overflow-clip ${className}`}>
+    <div className={`relative min-h-screen w-full  ${className}`}>
       {/* Background with gradient and blur */}
       <div className="bg-blue-300 w-[1000px] h-[1000px] rounded-full absolute -z-1 top-1/2 left-1/2 -translate-x-1/10 -translate-y-1/4 opacity-5 blur-2xl"></div>
       <div className="bg-primary w-[1000px] h-[1000px] rounded-full absolute -z-1 top-1/2 left-1/2 -translate-x-5/6 -translate-y-1/4 opacity-5 blur-2xl"></div>

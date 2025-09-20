@@ -174,6 +174,7 @@ exports.Prisma.ChangeRequestScalarFieldEnum = {
 exports.Prisma.FamilyScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  ownerId: 'ownerId',
   rootPersonId: 'rootPersonId',
   isDisplayed: 'isDisplayed'
 };
