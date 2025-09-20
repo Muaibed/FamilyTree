@@ -34,12 +34,8 @@ export default function RadialCluster({
         d3.select(svgRef.current).selectAll("*").remove();
         
         const cx = width * 0.5; // adjust as needed to fit
-        const cy = height * 0.59; // adjust as needed to fit
-        const radius = Math.min(width, height) / 2 - 30;
-
-        const familyFromSessionStorage = sessionStorage.getItem("selectedFamily")
-        if (familyFromSessionStorage)
-            setSelectedFamily(families?.find((f) => f.id === familyFromSessionStorage))
+        const cy = height * 0.5; // adjust as needed to fit
+        const radius = Math.min(width, height) / 2 - 60;
         
         let formattedData;
         if (members && selectedFamily && selectedFamily.rootPersonId) {
@@ -49,7 +45,6 @@ export default function RadialCluster({
                 selectedFamily.id,
             );
         }
-    
 
     // Create tree layout
     const tree = d3.tree<TreeNode>()
@@ -102,7 +97,7 @@ export default function RadialCluster({
       .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0) rotate(${d.x >= Math.PI ? 180 : 0})`)
       .attr("dy", "0.31em")
       .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
-      .style("font-size", d => `${18 - d.depth * 2}px`)
+      .style("font-size", d => `${23 - d.depth * 2}px`)
       .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
       .attr("paint-order", "stroke")
       .attr("stroke", "white")
@@ -111,44 +106,7 @@ export default function RadialCluster({
       .clone(true)
       .lower()
   }, [members, families, selectedFamily]);
-
-  //   if (family && !treeData) {
-  //       return (
-  //       <div className="flex flex-col items-center align-middle">
-  //           <div>
-  //           <div className="flex items-center justify-center p-4">
-  //           <SelectFamily selected={selectedFamily} onChange={setSelectedFamily} isDisplayed={true}
-  //           />
-  //       </div> 
-  //           </div>
-  //           <NoDataAlert
-  //           title={`${selectedFamily?.name}`}
-  //           message={"No Data\nAdd a Root To Visualize The Tree."}
-  //           ></NoDataAlert>
-  //           <Button onClick={() => setIsEditingFamily(!isEditingFamily)}>
-  //           تعديل معلومات العائلة
-  //           </Button>
-  //           {isEditingFamily && selectedFamily && (
-  //           <Modal
-  //               isOpen={isEditingFamily}
-  //               onClose={() => setIsEditingFamily(false)}
-  //           >
-  //               <EditFamilyForm
-  //               family={selectedFamily}
-  //               onEdit={() => {}}
-  //               ></EditFamilyForm>
-  //           </Modal>
-  //           )}
-  //       </div>
-  //       );
-  //   }
-
-  // if (!treeData) {
-  //   return <div className="flex items-center justify-center p-4">
-  //       <SelectFamily selected={selectedFamily} onChange={setSelectedFamily} isDisplayed={true}
-  //       />
-  //      </div> 
-  // }
+  
   return (
     <div>
       <svg ref={svgRef} width={width} height={height} style={{ overflow: 'visible'}} className="rd3t-svg"/>

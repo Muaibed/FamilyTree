@@ -1,102 +1,79 @@
 "use client";
 
-import AddFamilyForm from "@/components/forms/AddFamilyForm";
-import CreatePersonForm from "@/components/forms/CreatePersonForm";
 import ErrorAlert from "@/components/alerts/ErrorAlert";
-import FamilyTreeView from "@/components/client/FamilyTreeView";
-import { useMembersContext } from "@/components/client/MembersContextProvider";
-import { Modal } from "@/components/client/Modal";
 import { Button } from "@/components/ui/button";
-import { signOut, useSession } from "next-auth/react";
-import { Suspense, useState } from "react";
 import useSWR from "swr";
 import { FamilyWithRootPerson } from "@/types/family";
 import { Loader2 } from "lucide-react";
-import ExportTreeButton from "@/components/client/ExportTreeButton";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [isAddingFamily, setIsAddingFamily] = useState<boolean>(false);
-  const [isCreatingPerson, setIsCreatingPerson] = useState<boolean>(false);
+  const [families, setFamilies] = useState<FamilyWithRootPerson[] | null>();
+
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-  const {
-    members,
-    isLoading,
-    error,
-    mutate: mutateMembers,
-  } = useMembersContext();
+  
+  const router = useRouter();
+  
+  const handleRedirect = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const id = formData.get("familyId") as string;
+    
+    if (id) {
+      router.push(`/tree/${id}`);
+    }
+  };
+  
   const { data: session, status } = useSession();
-  const isAdmin = session?.user?.role === "ADMIN";
-
-  const { data: families, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
+  const { data, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
     fetcher
   );
+  
+  useEffect(() => {
+    if (session && data) {
+      data?.filter((f) => f.ownerId === session.user.id);
+      setFamilies(data)
+    }
+  }, [data])
+  
+  if (familiesError) return <ErrorAlert title="حدث خطأ!"/>
+  if (familiesLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
 
-  const createMember = (
-    <>
-      {isAdmin && (
-        <Button
-          onClick={() => {
-            setIsCreatingPerson(true);
-          }}
-        >
-          إضافة فرد
-        </Button>
-      )}
-      <Modal
-        isOpen={!!isCreatingPerson}
-        onClose={() => setIsCreatingPerson(false)}
-      >
-        <CreatePersonForm members={members} onCreate={() => {mutateMembers(); setIsCreatingPerson(false)}} />
-      </Modal>
-    </>
-  );
+  if (!families) {
+    return (
+      <div className="flex justify-center items-center h-screen w-full text-4xl">
+        No Families to Display!
+      </div>
+    )
+  }
 
-  if (error || familiesError) return <ErrorAlert title="حدث خطأ!"/>
-
-  if (familiesLoading || isLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
 
   return (
     <div className="font-arabic">
       <div className="absolute z-55">
-      <div className="flex flex-row gap-2 pt-4 pl-4">
-      {session && (
-        <div>
-          <Button className="" onClick={() => signOut()}>تسجيل خروج</Button>
-        </div>
-      )}
-      {session && isAdmin && (
-        <>
-          <div>
-            {createMember}
-          </div>
-          <div>
-                  <ExportTreeButton />
-                </div>
-          <div>
-          <Button onClick={() => setIsAddingFamily(true)}>إضافة عائلة</Button>
-          </div>
-          <Modal
-            isOpen={!!isAddingFamily}
-            onClose={() => setIsAddingFamily(false)}
-          >
-            <AddFamilyForm
-              onAdd={() => setIsAddingFamily(false)}
-            ></AddFamilyForm>
-          </Modal>
-        </>
-      )}
-      </div>
       </div>
       <div className="flex items-center-safe justify-center-safe w-full h-screen">
-      <Suspense>
-        <FamilyTreeView
-          members={members}
-          families={families}
-          onChange={mutateMembers}
-        />
-      </Suspense>
+
+      <form onSubmit={handleRedirect} className="space-y-4">
+        <select name="familyId" className="border rounded-lg p-2">
+          <option value="">Select a family</option>
+          {families && families.filter((f) => f.isDisplayed === true).map((f) => (
+            <option key={f.id} value={f.id} className="text-black">
+              {f.name}
+            </option>
+          ))}
+        </select>
+
+        <Button
+          type="submit"
+        >
+          Go to Family
+        </Button>
+      </form>
       </div>
     </div>
   );
