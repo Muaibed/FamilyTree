@@ -20,7 +20,7 @@ const AddFamilyForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const rootPersonId = selectedRootPerson?.id;
-    const response = await fetch("api/family", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family`, {
       method: "POST",
       credentials: "include",
       headers: {

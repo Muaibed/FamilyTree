@@ -53,7 +53,7 @@ const CreatePersonForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const response = await fetch("api/person", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/person`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

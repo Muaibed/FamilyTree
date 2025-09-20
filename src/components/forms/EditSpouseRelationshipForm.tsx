@@ -23,7 +23,7 @@ const EditSpouseRelationshipForm = ({
     e.preventDefault();
 
     try {
-      const response = await fetch(`api/spouseRelationship/${relation.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/spouseRelationship/${relation.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

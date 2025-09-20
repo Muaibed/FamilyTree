@@ -30,7 +30,7 @@ const EditFamilyForm = ({
     e.preventDefault();
 
     try {
-      const response = await fetch(`api/family/${family.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family/${family.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
