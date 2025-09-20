@@ -10,22 +10,18 @@ import { Button } from "@/components/ui/button";
 import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
 import { Loader2 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import { FC, Suspense, useState } from "react";
+import { FC, Suspense, use, useState } from "react";
 import useSWR from "swr";
 
-interface TreePageProps {
-  params: {
-    id: string;
-  };
-}
+export default function Tree({ params }: {params: Promise<{id: string}>}) {
+    const { id } = use(params);
 
-const Tree: FC<TreePageProps> = ({ params }) => {
     const [isAddingFamily, setIsAddingFamily] = useState<boolean>(false);
     const [isCreatingPerson, setIsCreatingPerson] = useState<boolean>(false);
     const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
     const { data: members, isLoading: membersLoading, error: membersError, mutate: mutateMembers } = useSWR<PersonWithRelations[]>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${params.id}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${id}`,
         fetcher
     );
     
@@ -105,12 +101,10 @@ const Tree: FC<TreePageProps> = ({ params }) => {
           members={members}
           families={families}
           onChange={mutateMembers}
-          family={families?.find(f => f.id === params.id)}
+          family={families?.find(f => f.id === id)}
         />
       </Suspense>
       </div>
     </div>
   );
 };
-
-export default Tree;
