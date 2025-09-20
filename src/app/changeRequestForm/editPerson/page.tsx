@@ -19,11 +19,17 @@ import SelectGender from "@/components/preDefinedData/SelectGender";
 const PersonChangeRequestForm = () => {
   const session = useSession();
 
-  const { members, isLoading, error, mutate } = useMembersContext();
+  const familyFromSessionStorage = sessionStorage.getItem("selectedFamily")
 
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+  const { data: members, isLoading: membersLoading, error: membersError, mutate: mutateMembers } = useSWR<PersonWithRelations[]>(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${familyFromSessionStorage}`,
+      fetcher
+  );
   const searchParams = useSearchParams();
   const personId = searchParams.get("personId");
-  const person = personId ? members.find((m) => m.id === personId) : undefined;
+  const person = personId ? members?.find((m) => m.id === personId) : undefined;
 
   const [requesterId, setRequesterId] = useState<string | undefined>(
     session.data?.user.id
@@ -42,18 +48,17 @@ const PersonChangeRequestForm = () => {
   const [selectedFather, setSelectedFather] = useState<
     PersonWithRelations | undefined
   >(
-    person?.fatherId ? members.find((m) => m.id === person.fatherId) : undefined
+    person?.fatherId ? members?.find((m) => m.id === person.fatherId) : undefined
   );
   const [selectedMother, setSelectedMother] = useState<
     PersonWithRelations | undefined
   >(
-    person?.motherId ? members.find((m) => m.id === person.motherId) : undefined
+    person?.motherId ? members?.find((m) => m.id === person.motherId) : undefined
   );
   const [deathDate, setDeathDate] = useState<Date | undefined>(
     person?.deathDate ? person.deathDate : undefined
   );
 
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const {
     data: families,
     isLoading: familiesLoading,
@@ -104,7 +109,7 @@ const PersonChangeRequestForm = () => {
     }
   };
 
-  if (isLoading || familiesLoading) {
+  if (membersLoading || familiesLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
         <Loader2 />
@@ -112,7 +117,7 @@ const PersonChangeRequestForm = () => {
     );
   }
 
-  if (familiesError || error)
+  if (familiesError || membersError)
     return (
       <ErrorAlert
         title="!حدث خطأ"
