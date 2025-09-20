@@ -1,6 +1,6 @@
 # Gosn | غصن
 
-Gosn is a web application that provide visual representaions of family trees. Make it easy on you to keep track of your family members from their oldest to the youngest, with optional details like birth date, death date, and spouses.
+Gosn is a web application that provideS visual representations of family trees. Make it easy on you to keep track of your family members from their oldest to the youngest, with optional details like birth date, death date, and spouses.
 
 ---
 
