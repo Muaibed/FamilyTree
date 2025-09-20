@@ -12,8 +12,6 @@ import AddSpouseForm from "../forms/AddSpouseForm";
 import { TreeNode } from "@/types/tree";
 import { prepareTreeData } from "@/lib/tree";
 import DeletePerson from "./DeletePerson";
-import SearchSelect from "../ui/SearchSelect";
-import { Option } from "@/types/ui";
 import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
 import NoDataAlert from "../alerts/NoDataAlert";
