@@ -35,8 +35,8 @@ export default function Home() {
   
   useEffect(() => {
     if (session && data) {
-      data?.filter((f) => f.ownerId === session.user.id);
-      setFamilies(data)
+      const filteredData = data?.filter((f) => f.ownerId === session.user.id);
+      setFamilies(filteredData)
     }
   }, [data])
   
