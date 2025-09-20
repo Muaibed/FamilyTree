@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
 import { Loader2 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import { FC, Suspense, use, useState } from "react";
+import { Suspense, use, useState } from "react";
 import useSWR from "swr";
 
 export default function Tree({ params }: {params: Promise<{id: string}>}) {
