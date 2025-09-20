@@ -23,6 +23,7 @@ model User {
   name           String?
   verified       Boolean         @default(false)
   changeRequests ChangeRequest[] @relation("ChangeRequester")
+  familiesOwner  Family[]
 }
 
 model VerificationToken {
@@ -120,6 +121,8 @@ model ChangeRequest {
 model Family {
   id           String     @id @default(uuid()) @db.Uuid
   name         String
+  owner        User?       @relation(fields: [ownerId], references: [id])
+  ownerId      String?     @db.Uuid
   rootPerson   Person?    @relation("RootPersonRelation", fields: [rootPersonId], references: [id])
   rootPersonId String?    @db.Uuid       @unique
   members      Person[]   @relation("FamilyMembers")

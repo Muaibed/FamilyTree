@@ -11,3 +11,14 @@ export async function isAdmin() {
   return false;
 }
 }
+
+export async function getUserId() {
+  try {
+    const session = await getServerSession(authOptions);
+    const id = session?.user.id;
+
+    return id;
+  } catch (error) {
+    return null
+  }
+}
