@@ -1,8 +1,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 
-const ExportTreeButton = () => {
-  const downloadSVG = () => {
+const downloadSVG = () => {
     const svg = document.querySelector(".rd3t-svg"); 
     if (!svg) {
       alert("No tree SVG found!");
@@ -100,14 +99,4 @@ const ExportTreeButton = () => {
     URL.revokeObjectURL(url);
   };
 
-  return (
-    <Button
-      onClick={downloadSVG}
-      className="px-4 py-2"
-    >
-      Export Tree as SVG
-    </Button>
-  );
-};
-
-export default ExportTreeButton;
+export default downloadSVG; 

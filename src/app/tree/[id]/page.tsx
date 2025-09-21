@@ -1,6 +1,8 @@
 "use client"
 
 import ErrorAlert from "@/components/alerts/ErrorAlert";
+import BurgerMenu from "@/components/client/BurgerMenu";
+import downloadSVG from "@/components/client/ExportTreeButton";
 import ExportTreeButton from "@/components/client/ExportTreeButton";
 import { Modal } from "@/components/client/Modal";
 import RadialCluster from "@/components/client/RadialClsuter";
@@ -44,16 +46,7 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
             </div>
     }
     const createMember = (
-        <>
-      {isAdmin && (
-          <Button
-          onClick={() => {
-              setIsCreatingPerson(true);
-            }}
-            >
-          إضافة فرد
-        </Button>
-      )}
+      <>
       <Modal
         isOpen={!!isCreatingPerson}
         onClose={() => setIsCreatingPerson(false)}
@@ -67,22 +60,18 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
   return (
     <div className="font-arabic">
       <div className="absolute z-55">
-      <div className="flex flex-row gap-2 pt-4 pl-4">
-      {session && (
-        <div>
-          <Button className="" onClick={() => signOut()}>تسجيل خروج</Button>
-        </div>
-      )}
+      <div className="flex flex-row gap-2 p-4">
+        <BurgerMenu 
+          onCreatePerson={() => {setIsCreatingPerson(true)}}
+          onAddFamily={() => {setIsAddingFamily(true)}}
+          onExport={() => {downloadSVG()}}
+          onSignout={() => {signOut()}}
+
+        />
       {session && isAdmin && (
         <>
           <div>
             {createMember}
-          </div>
-          <div>
-            <ExportTreeButton />
-          </div>
-          <div>
-          <Button onClick={() => setIsAddingFamily(true)}>إضافة عائلة</Button>
           </div>
           <Modal
             isOpen={!!isAddingFamily}
@@ -96,7 +85,7 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
       )}
       </div>
       </div>
-      <div className="flex items-center-safe justify-center-safe w-full h-screen">
+      <div className="flex items-center-safe justify-center-safe w-full h-screen overflow-auto">
       <Suspense>
         <RadialCluster
           members={members}

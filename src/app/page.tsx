@@ -55,7 +55,6 @@ export default function Home() {
   return (
     <div className="font-arabic">
       <div className="absolute z-55">
-      </div>
       <div className="flex items-center-safe justify-center-safe w-full h-screen">
 
       <form onSubmit={handleRedirect} className="space-y-4">
@@ -75,6 +74,7 @@ export default function Home() {
         </Button>
       </form>
       </div>
+    </div>
     </div>
   );
 }
