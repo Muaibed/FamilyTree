@@ -2,17 +2,21 @@ import { prisma } from './prisma';
 
 export const createFamily = async (data: {
   name: string,
-  rootPersonId?: string
+  rootPersonId?: string,
+  ownerId?: string
 }) => {
   
-  const { name, rootPersonId } = data;
+  const { name, rootPersonId, ownerId } = data;
 
   return prisma.family.create({
     data: {
       name,
       ...(rootPersonId && {
         rootPerson: { connect: { id: rootPersonId } }
-      })
+      }),
+      ...(ownerId && {
+        owner: { connect: { id: ownerId } }
+      }),
     }
   });
 };
@@ -42,6 +46,19 @@ export const getAllFamilies = async () => {
     }
   });
 };
+
+export const getAllFamiliesWithSameOwner = async (userId: string) => {
+  return prisma.family.findMany({
+    where: {
+        owner: {
+          id: userId
+        }
+      },
+      include: {
+        rootPerson: true,
+    }
+  })
+}
 
 export const getAllDisplayedFamilies = async () => {
   return prisma.family.findMany({

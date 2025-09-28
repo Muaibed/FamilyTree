@@ -39,6 +39,7 @@ export default function RadialCluster({
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [modalPos, setModalPos] = useState<[number, number]>([0,0])
     
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -46,10 +47,10 @@ export default function RadialCluster({
   const isAdmin = session?.user?.role === "ADMIN";
   
   function handleClick(event: MouseEvent, d: d3.HierarchyPointNode<TreeNode>) {
-    console.log("Clicked:", d.data.attributes?.id);
     const personId = d.data.attributes?.id;
     setSelectedPerson(members.find((p) => p.id === personId));
     setDetailModalOpen(true);
+    setModalPos([d.x, d.y])
   }
 
     useEffect(() => {
@@ -152,7 +153,7 @@ export default function RadialCluster({
   return (
     <div>
       <svg ref={svgRef} width={width} height={height} style={{ overflow: 'visible'}} className="rd3t-svg"/>
-      <div className="">
+      <div className={`flex left-${modalPos[0]} top-${modalPos[1]}`}>
         <PersonModal
           isOpen={!!selectedPerson}
           onClose={() => {

@@ -6,6 +6,7 @@ import { Person } from "@/generated/prisma";
 import { Button } from "../ui/button";
 import SearchSelectMember from "../preDefinedData/SearchSelectMember";
 import { Input } from "../ui/input";
+import { useSession } from "next-auth/react";
 
 const AddFamilyForm = ({
   onAdd,
@@ -16,6 +17,9 @@ const AddFamilyForm = ({
   const [selectedRootPerson, setSelectedRootPerson] = useState<
     Person | undefined
   >();
+  
+  const { data: session, status } = useSession();
+  const ownerId = session?.user.id;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +33,7 @@ const AddFamilyForm = ({
       body: JSON.stringify({
         name,
         rootPersonId,
+        ownerId,
       }),
     });
 

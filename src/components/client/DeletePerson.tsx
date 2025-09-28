@@ -15,7 +15,7 @@ const DeletePerson = ({
     try {
       e.preventDefault();
 
-      const response = await fetch(`api/person/${person.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/person/${person.id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
