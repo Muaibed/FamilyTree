@@ -29,10 +29,11 @@ export const prepareTreeData = (
         children: [],
       };
     }
+    
+    addedMembers.push({"id" : person.id})
   }
 
-  addedMembers.push({"id" : person.id})
-
+  
   if (person.gender === "MALE" && person.fatherChildren.length > 0) {
     person.fatherChildren.forEach((childId) => {
       const childNode = prepareTreeData(members, childId.id, familyId, person.gender);
