@@ -49,6 +49,7 @@
     "@types/node": "^20.19.9",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint": "^9.36.0",
     "prisma": "^6.6.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3"
