@@ -2,21 +2,15 @@ import { ChangeRequest, SpouseRelationship } from "@/generated/prisma"
 import { Button } from "../ui/button"
 import { toast } from "sonner";
 import Image from 'next/image';
-import { useMembersContext } from "./MembersContextProvider";
 import useSWR from "swr";
-import { FamilyWithRootPerson, SpouseRelationshipWithPartners } from "@/types/family";
+import { FamilyWithRootPerson, PersonWithRelations, SpouseRelationshipWithPartners } from "@/types/family";
 import JSONtoHTML from "./JSONtoHTML";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "../alerts/ErrorAlert";
 
 const ChangeRequestApproval = ({request, onChange}: {request: ChangeRequest, onChange: any}) => {
-    const {
-        members,
-        isLoading,
-        error,
-        mutate: mutateMembers,
-      } = useMembersContext();
-      
+    const familyId = sessionStorage.getItem('selectedFamily')
+
     const fetcher = (url: string) => fetch(url).then((res) => res.json());
     const { data: relations, isLoading: relationsLoading, error: relationsError, mutate: mutateRelations } = useSWR<SpouseRelationshipWithPartners[]>(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/spouseRelationship`,
@@ -26,7 +20,11 @@ const ChangeRequestApproval = ({request, onChange}: {request: ChangeRequest, onC
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
         fetcher
     );
-      
+    const { data: members, isLoading, error, mutate } = useSWR<PersonWithRelations[]>(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${familyId}`,
+      fetcher
+    );
+
     const handleApprove = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -81,7 +79,7 @@ const ChangeRequestApproval = ({request, onChange}: {request: ChangeRequest, onC
         <Loader2 />
     </div>
 
-    if (error || familiesError || relationsError) {
+    if (error || familiesError || relationsError || !members) {
         return <div>
             <ErrorAlert title="حدث خطأ!" message="خطأ في الحصول على البيانات"/>
         </div>

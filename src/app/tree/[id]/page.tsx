@@ -10,7 +10,7 @@ import CreatePersonForm from "@/components/forms/CreatePersonForm";
 import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
 import { Loader2 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import { Suspense, use, useState } from "react";
+import { Suspense, use, useEffect, useState } from "react";
 import useSWR from "swr";
 
 export default function Tree({ params }: {params: Promise<{id: string}>}) {
@@ -24,15 +24,18 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${id}`,
         fetcher
     );
-    sessionStorage.setItem("selectedFamily", id)
-
+    
     const { data: session, status } = useSession();
     const isAdmin = session?.user?.role === "ADMIN";
-
+    
     const { data: families, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
-        fetcher
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/relatedFamilies/${id}`,
+      fetcher
     );
+    
+    useEffect(() => {
+      sessionStorage.setItem("selectedFamily", id)
+    }, []);
     
     if (membersError || familiesError) return <ErrorAlert title="حدث خطأ!"/>
   

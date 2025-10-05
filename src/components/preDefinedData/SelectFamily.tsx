@@ -1,3 +1,5 @@
+"use client" 
+
 import { Option } from "@/types/ui";
 import { useEffect, useMemo, useState } from "react";
 import Select from "../ui/Select";
@@ -24,9 +26,10 @@ export default function SelectFamily({
     if (selected) setSelectedFamily({ id: selected.id, value: selected.name });
   }, [selected]);
 
+  const viewedFamily = sessionStorage.getItem('selectedFamily')
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data, isLoading, error, mutate } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/relatedFamilies/${viewedFamily}`,
     fetcher
   );
 

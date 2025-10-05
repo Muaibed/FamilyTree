@@ -1,9 +1,13 @@
+"use client" 
+
 import { Option } from "@/types/ui";
 import { useEffect, useState } from "react";
 import { Person } from "@/generated/prisma";
-import { useMembersContext } from "../client/MembersContextProvider";
 import { PersonWithRelations } from "@/types/family";
 import SearchSelect from "../ui/SearchSelect";
+import useSWR from "swr";
+import { Loader2 } from "lucide-react";
+import ErrorAlert from "../alerts/ErrorAlert";
 
 export default function SearchSelectMember({
   placeholder,
@@ -21,12 +25,23 @@ export default function SearchSelectMember({
   );
   const [options, setOptions] = useState<Option[]>([]);
 
-  const {
-    members,
-    isLoading,
-    error,
-    mutate: mutateMembers,
-  } = useMembersContext();
+  const familyId = sessionStorage.getItem('selectedFamily')
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+    const { data: members, isLoading, error, mutate } = useSWR<PersonWithRelations[]>(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${familyId}`,
+        fetcher
+    );
+
+  if (isLoading) return <div className="flex items-center justify-center w-full h-screen">
+        <Loader2 />
+    </div>
+
+    if (error || !members) {
+        return <div>
+            <ErrorAlert title="حدث خطأ!" message="خطأ في الحصول على البيانات"/>
+        </div>
+    }
 
   useEffect(() => {
       const options = members
