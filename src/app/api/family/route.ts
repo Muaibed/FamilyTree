@@ -27,22 +27,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
   }
 }
-
-export async function GET(req:Request) {
-  try { 
-    const userId = await getUserId()
-    let families:FamilyWithRootPerson[];
-
-    if (!userId)
-      return NextResponse.json("Not Found", {status: 404})
-    
-    families = await getAllFamiliesWithSameOwner(userId)
-
-    return NextResponse.json(families);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-    return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
-  }
-}

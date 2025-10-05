@@ -14,6 +14,7 @@ import { Input } from "../ui/input";
 import SearchSelectMember from "../preDefinedData/SearchSelectMember";
 import SelectFamily from "../preDefinedData/SelectFamily";
 import SelectGender from "../preDefinedData/SelectGender";
+import { useParams } from "next/navigation";
 
 const CreatePersonForm = ({
   FID,
@@ -37,6 +38,8 @@ const CreatePersonForm = ({
   );
   const [birthDate, setBirthDate] = React.useState<Date>()
   const [deathDate, setDeathDate] = React.useState<Date>()
+  
+  const viewedFamily = sessionStorage.getItem('selecedFamily');
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const {
@@ -44,7 +47,7 @@ const CreatePersonForm = ({
     isLoading,
     error,
     mutate,
-  } = useSWR(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family`, fetcher);
+  } = useSWR(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family/relatedFamilies/${viewedFamily}`, fetcher);
 
   useEffect(() => {
     setFamily(selectedFather?.family)

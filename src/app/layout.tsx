@@ -35,13 +35,11 @@ export default function RootLayout({
             <div className="absolute top-4 right-4 z-60">
               <ThemeToggle />
             </div>            
-            <MembersContextProvider>
               <BlurBackground>
                 <div className="w-full">
                   {children}
                 </div>
               </BlurBackground>
-            </MembersContextProvider>
             <Toaster />
           </ThemeProvider>
         </SessionProviderWrapper>

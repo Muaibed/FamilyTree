@@ -47,15 +47,30 @@ export const getAllFamilies = async () => {
   });
 };
 
-export const getAllFamiliesWithSameOwner = async (userId: string) => {
-  return prisma.family.findMany({
-    where: {
-        owner: {
-          id: userId
+export const getAllFamiliesWithSameOwner = async (familyId: string) => {
+  return await prisma.$transaction(async (tx) => {
+    const family = await tx.family.findUnique({
+      where: { id: familyId },
+      select: { ownerId: true },
+    });
+
+      console.log(family?.ownerId)
+      return tx.family.findMany({
+        where: { ownerId: family?.ownerId },
+        include: {
+          rootPerson: true
         }
-      },
-      include: {
-        rootPerson: true,
+      });
+  });
+}
+
+export const getAllFamiliesFromOwnerId = async (ownerId: string) => {
+  return await prisma.family.findMany({
+    where: {
+      ownerId
+    },
+    include: {
+      rootPerson: true
     }
   })
 }

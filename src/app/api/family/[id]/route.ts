@@ -2,10 +2,9 @@ import { deleteFamily, getFamilyById, updateFamily } from '@/lib/family';
 import { isAdmin } from '@/lib/session';
 import { NextResponse } from 'next/server';
 
-export async function GET(req:Request) {
+export async function GET(req:Request, { params } : { params: Promise<{ id: string }> }) {
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
+    const { id } = await params;
 
     if (!id) {
         return new Response("Family ID is required", { status: 400 });

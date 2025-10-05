@@ -13,7 +13,6 @@ export default function Home() {
   const [families, setFamilies] = useState<FamilyWithRootPerson[] | null>();
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
   
   const router = useRouter();
   
@@ -29,7 +28,7 @@ export default function Home() {
   
   const { data: session, status } = useSession();
   const { data, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/owner`,
     fetcher
   );
   

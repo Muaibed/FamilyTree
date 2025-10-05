@@ -7,7 +7,6 @@ import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
-import { useMembersContext } from "@/components/client/MembersContextProvider";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "@/components/alerts/ErrorAlert";
 import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";

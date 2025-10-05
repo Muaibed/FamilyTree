@@ -46,9 +46,10 @@ const EditPersonForm = ({
   const [selectedFather, setSelectedFather] = useState<Person | undefined>(person.father ?? undefined);
   const [selectedMother, setSelectedMother] = useState<Person | undefined>(person.mother ?? undefined);
 
+  const viewedFamily = sessionStorage.getItem('selectedFamily')
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data: families, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/relatedFamilies/${viewedFamily}`,
     fetcher
   );
   

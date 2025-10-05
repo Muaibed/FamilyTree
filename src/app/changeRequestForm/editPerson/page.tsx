@@ -2,7 +2,6 @@
 
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import { useMembersContext } from "@/components/client/MembersContextProvider";
 import useSWR from "swr";
 import { useSearchParams } from "next/navigation";
 import ErrorAlert from "@/components/alerts/ErrorAlert";
