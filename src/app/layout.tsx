@@ -7,6 +7,7 @@ import ThemeToggle from "@/theme/theme-toggle";
 import { BlurBackground } from "@/components/ui/BlurBackground";
 import { Amiri, Cairo } from 'next/font/google'
 import Head from "next/head";
+import { Suspense } from "react";
  
 const amiri = Amiri({
   weight: '400',
@@ -37,7 +38,9 @@ export default function RootLayout({
             </div>            
               <BlurBackground>
                 <div className="w-full">
-                  {children}
+                  <Suspense>
+                    {children}
+                  </Suspense>
                 </div>
               </BlurBackground>
             <Toaster />

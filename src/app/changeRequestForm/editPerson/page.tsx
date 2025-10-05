@@ -16,20 +16,28 @@ import SearchSelectMember from "@/components/preDefinedData/SearchSelectMember";
 import SelectGender from "@/components/preDefinedData/SelectGender";
 
 const PersonChangeRequestForm = () => {
-  const session = useSession();
-
-  const familyFromSessionStorage = sessionStorage.getItem("selectedFamily")
+  const [currentFamily, setCurrentFamily] = useState<string | null>();
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const {
+    data: families,
+    isLoading: familiesLoading,
+    error: familiesError,
+    mutate: mutateFamilies,
+  } = useSWR(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family`, fetcher);
+  
 
   const { data: members, isLoading: membersLoading, error: membersError, mutate: mutateMembers } = useSWR<PersonWithRelations[]>(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${familyFromSessionStorage}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${currentFamily}`,
       fetcher
   );
+
+  const session = useSession();
+
   const searchParams = useSearchParams();
   const personId = searchParams.get("personId");
   const person = personId ? members?.find((m) => m.id === personId) : undefined;
-
+  
   const [requesterId, setRequesterId] = useState<string | undefined>(
     session.data?.user.id
   );
@@ -45,30 +53,25 @@ const PersonChangeRequestForm = () => {
     person?.gender ?? "MALE"
   );
   const [selectedFather, setSelectedFather] = useState<
-    PersonWithRelations | undefined
+  PersonWithRelations | undefined
   >(
     person?.fatherId ? members?.find((m) => m.id === person.fatherId) : undefined
   );
   const [selectedMother, setSelectedMother] = useState<
-    PersonWithRelations | undefined
+  PersonWithRelations | undefined
   >(
     person?.motherId ? members?.find((m) => m.id === person.motherId) : undefined
   );
   const [deathDate, setDeathDate] = useState<Date | undefined>(
     person?.deathDate ? person.deathDate : undefined
   );
-
-  const {
-    data: families,
-    isLoading: familiesLoading,
-    error: familiesError,
-    mutate: mutateFamilies,
-  } = useSWR(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family`, fetcher);
-
+  
   useEffect(() => {
     if (selectedFather) {
       setFamily(selectedFather.family);
     }
+
+    setCurrentFamily(sessionStorage.getItem('selectedFamily'))
   }, [members, person, families]);
 
   const handleSubmit = async (e: React.FormEvent) => {
