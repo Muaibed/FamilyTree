@@ -17,14 +17,14 @@ import SearchSelectSpouse from "@/components/preDefinedData/SearchSelectSpouse";
 import SelectFamily from "@/components/preDefinedData/SelectFamily";
 
 const AddChild = () => {
-  const session = useSession();
+  const [currentFamily, setCurrentFamily] = useState<string | null>();
 
-  const familyFromSessionStorage = sessionStorage.getItem("selectedFamily")
+  const session = useSession();
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
     const { data: members, isLoading: membersLoading, error: membersError, mutate: mutateMembers } = useSWR<PersonWithRelations[]>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${familyFromSessionStorage}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${currentFamily}`,
         fetcher
     );
 
@@ -69,6 +69,8 @@ const AddChild = () => {
         if (father) setFamily(parent.family);
       }
     }
+
+    setCurrentFamily(sessionStorage.getItem('selectedFamily'));
   }, [members, parent, father]);
 
   const handleSubmit = async (e: React.FormEvent) => {
