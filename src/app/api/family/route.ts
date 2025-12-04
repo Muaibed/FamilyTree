@@ -1,6 +1,5 @@
-import { createFamily, getAllFamiliesWithSameOwner } from '@/lib/family';
-import { getUserId, isAdmin } from '@/lib/session';
-import { FamilyWithRootPerson } from '@/types/family';
+import { createFamily } from '@/lib/family';
+import { isAdmin } from '@/lib/session';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
