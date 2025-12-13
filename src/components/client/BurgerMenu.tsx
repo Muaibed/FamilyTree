@@ -13,11 +13,12 @@ import { Menu } from 'lucide-react';
 type BurgerMenuProps = {
   onCreatePerson: () => void;
   onAddFamily: () => void;
-  onExport: () => void;
+  onExportSVG: () => void;
+  onExportPDF: () => void;
   onSignout: () => void;
 };
 
-export default function BurgerMenu({ onCreatePerson, onAddFamily, onExport, onSignout }: BurgerMenuProps) {
+export default function BurgerMenu({ onCreatePerson, onAddFamily, onExportSVG, onExportPDF, onSignout }: BurgerMenuProps) {
     const { data: session, status } = useSession();
     const isAdmin = session?.user?.role === "ADMIN";
     
@@ -46,13 +47,19 @@ export default function BurgerMenu({ onCreatePerson, onAddFamily, onExport, onSi
                     )
                 }
                 <li
-                  key={'Export'}
-                  onClick={() => onExport()}
+                  key={'ExportPDF'}
+                  onClick={() => onExportPDF()}
                 >
-                    Export as SVG
+                    PDF استيراد الشجرة 
                 </li>
-                {session && (
-                    <>
+              {session && (
+                  <>
+                <li
+                  key={'ExportSVG'}
+                  onClick={() => onExportSVG()}
+                >
+                    SVG استيراد الشجرة
+                </li>
                         <li
                         key={'Signout'}
                         onClick={() => onSignout()}

@@ -2,7 +2,7 @@
 
 import ErrorAlert from "@/components/alerts/ErrorAlert";
 import BurgerMenu from "@/components/client/BurgerMenu";
-import downloadSVG from "@/components/client/ExportTreeButton";
+import { downloadSVG, downloadPDF } from "@/components/client/ExportTreeButton";
 import { Modal } from "@/components/client/Modal";
 import RadialCluster from "@/components/client/RadialClsuter";
 import AddFamilyForm from "@/components/forms/AddFamilyForm";
@@ -65,7 +65,8 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
         <BurgerMenu 
           onCreatePerson={() => {setIsCreatingPerson(true)}}
           onAddFamily={() => {setIsAddingFamily(true)}}
-          onExport={() => {downloadSVG()}}
+          onExportSVG={() => {downloadSVG()}}
+          onExportPDF={() => {downloadPDF()}}
           onSignout={() => {signOut()}}
 
         />
