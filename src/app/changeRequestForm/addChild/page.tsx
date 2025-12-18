@@ -7,7 +7,6 @@ import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
-import { useMembersContext } from "@/components/client/MembersContextProvider";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "@/components/alerts/ErrorAlert";
 import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
@@ -18,19 +17,21 @@ import SearchSelectSpouse from "@/components/preDefinedData/SearchSelectSpouse";
 import SelectFamily from "@/components/preDefinedData/SelectFamily";
 
 const AddChild = () => {
+  const [currentFamily, setCurrentFamily] = useState<string | null>();
+
   const session = useSession();
 
-  const {
-    members,
-    isLoading: membersLoading,
-    error: membersError,
-    mutate: mutateMembers,
-  } = useMembersContext();
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+    const { data: members, isLoading: membersLoading, error: membersError, mutate: mutateMembers } = useSWR<PersonWithRelations[]>(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${currentFamily}`,
+        fetcher
+    );
 
   const searchParams = useSearchParams();
   const parentId = searchParams.get("parentId");
   const parent = parentId
-    ? members.find((m: PersonWithRelations) => m.id === parentId)
+    ? members?.find((m: PersonWithRelations) => m.id === parentId)
     : undefined;
 
   const [requesterId, setRequesterId] = useState<string | undefined>(
@@ -51,7 +52,6 @@ const AddChild = () => {
     PersonWithRelations | undefined
   >();
 
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const {
     data: families,
     isLoading: familiesLoading,
@@ -69,6 +69,8 @@ const AddChild = () => {
         if (father) setFamily(parent.family);
       }
     }
+
+    setCurrentFamily(sessionStorage.getItem('selectedFamily'));
   }, [members, parent, father]);
 
   const handleSubmit = async (e: React.FormEvent) => {

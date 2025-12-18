@@ -1,25 +1,32 @@
 "use client";
 
 import ErrorAlert from "@/components/alerts/ErrorAlert";
-import { useMembersContext } from "@/components/client/MembersContextProvider";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PersonWithRelations } from "@/types/family";
 import SearchSelectMember from "@/components/preDefinedData/SearchSelectMember";
 import { Input } from "@/components/ui/input";
+import useSWR from "swr";
 
 const AddSpouseRelationship = () => {
+  const [currentFamily, setCurrentFamily] = useState<string | null>();
+
   const session = useSession();
 
-  const { members, isLoading, error, mutate } = useMembersContext();
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+  const { data: members, isLoading: membersLoading, error: membersError, mutate: mutateMembers } = useSWR<PersonWithRelations[]>(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${currentFamily}`,
+      fetcher
+  );
 
   const searchParams = useSearchParams();
   const personId = searchParams.get("personId");
-  const person = personId ? members.find((m) => m.id === personId) : undefined;
+  const person = personId ? members?.find((m) => m.id === personId) : undefined;
 
   const [requesterId, setRequesterId] = useState<string | undefined>(
     session.data?.user.id
@@ -32,6 +39,10 @@ const AddSpouseRelationship = () => {
   const [selectedSpouse, setSelectedSpouse] = useState<
     PersonWithRelations | undefined
   >();
+
+  useEffect(() => {
+    setCurrentFamily(sessionStorage.getItem('selectedFamily'))
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,14 +80,14 @@ const AddSpouseRelationship = () => {
     }
   };
 
-  if (isLoading) {
+  if (membersLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
         <Loader2 />
       </div>
     );
   }
-  if (!members || error)
+  if (!members || membersError)
     return (
       <ErrorAlert
         title="!حدث خطأ"

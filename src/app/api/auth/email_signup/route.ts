@@ -5,7 +5,7 @@ import { randomBytes } from "crypto";
 import { sendEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
-    const { name, email, password } = await req.json();
+    let { name, email, password } = await req.json();
   
     if (!email || !password) {
       return NextResponse.json(
@@ -14,6 +14,7 @@ export async function POST(req: Request) {
       );
     }
   
+    email = email.toLowerCase();
     const existing = await prisma.user.findUnique({ where: { email } });
   
     if (existing) {
@@ -30,7 +31,6 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashed,
-        role: "ADMIN",
       },
     });
   

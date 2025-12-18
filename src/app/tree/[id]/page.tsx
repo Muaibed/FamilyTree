@@ -1,16 +1,16 @@
 "use client"
 
 import ErrorAlert from "@/components/alerts/ErrorAlert";
-import ExportTreeButton from "@/components/client/ExportTreeButton";
+import BurgerMenu from "@/components/client/BurgerMenu";
+import { downloadSVG, downloadPDF } from "@/components/client/ExportTreeButton";
 import { Modal } from "@/components/client/Modal";
 import RadialCluster from "@/components/client/RadialClsuter";
 import AddFamilyForm from "@/components/forms/AddFamilyForm";
 import CreatePersonForm from "@/components/forms/CreatePersonForm";
-import { Button } from "@/components/ui/button";
 import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
 import { Loader2 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import { Suspense, use, useState } from "react";
+import { Suspense, use, useEffect, useState } from "react";
 import useSWR from "swr";
 
 export default function Tree({ params }: {params: Promise<{id: string}>}) {
@@ -27,11 +27,15 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
     
     const { data: session, status } = useSession();
     const isAdmin = session?.user?.role === "ADMIN";
-
+    
     const { data: families, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
-        fetcher
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/relatedFamilies/${id}`,
+      fetcher
     );
+    
+    useEffect(() => {
+      sessionStorage.setItem("selectedFamily", id)
+    }, []);
     
     if (membersError || familiesError) return <ErrorAlert title="حدث خطأ!"/>
   
@@ -43,16 +47,7 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
             </div>
     }
     const createMember = (
-        <>
-      {isAdmin && (
-          <Button
-          onClick={() => {
-              setIsCreatingPerson(true);
-            }}
-            >
-          إضافة فرد
-        </Button>
-      )}
+      <>
       <Modal
         isOpen={!!isCreatingPerson}
         onClose={() => setIsCreatingPerson(false)}
@@ -66,22 +61,19 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
   return (
     <div className="font-arabic">
       <div className="absolute z-55">
-      <div className="flex flex-row gap-2 pt-4 pl-4">
-      {session && (
-        <div>
-          <Button className="" onClick={() => signOut()}>تسجيل خروج</Button>
-        </div>
-      )}
+      <div className="flex flex-row gap-2 p-4">
+        <BurgerMenu 
+          onCreatePerson={() => {setIsCreatingPerson(true)}}
+          onAddFamily={() => {setIsAddingFamily(true)}}
+          onExportSVG={() => {downloadSVG()}}
+          onExportPDF={() => {downloadPDF()}}
+          onSignout={() => {signOut()}}
+
+        />
       {session && isAdmin && (
         <>
           <div>
             {createMember}
-          </div>
-          <div>
-            <ExportTreeButton />
-          </div>
-          <div>
-          <Button onClick={() => setIsAddingFamily(true)}>إضافة عائلة</Button>
           </div>
           <Modal
             isOpen={!!isAddingFamily}
@@ -95,7 +87,7 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
       )}
       </div>
       </div>
-      <div className="flex items-center-safe justify-center-safe w-full h-screen">
+      <div className="flex items-center-safe justify-center-safe w-full h-screen overflow-auto">
       <Suspense>
         <RadialCluster
           members={members}

@@ -13,7 +13,6 @@ export default function Home() {
   const [families, setFamilies] = useState<FamilyWithRootPerson[] | null>();
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
   
   const router = useRouter();
   
@@ -29,7 +28,7 @@ export default function Home() {
   
   const { data: session, status } = useSession();
   const { data, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/owner`,
     fetcher
   );
   
@@ -55,7 +54,6 @@ export default function Home() {
   return (
     <div className="font-arabic">
       <div className="absolute z-55">
-      </div>
       <div className="flex items-center-safe justify-center-safe w-full h-screen">
 
       <form onSubmit={handleRedirect} className="space-y-4">
@@ -75,6 +73,7 @@ export default function Home() {
         </Button>
       </form>
       </div>
+    </div>
     </div>
   );
 }
