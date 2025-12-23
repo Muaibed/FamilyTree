@@ -42,4 +42,4 @@ next-env.d.ts
 
 
 # Ignore all generated files
-generated/
+src/generated/
