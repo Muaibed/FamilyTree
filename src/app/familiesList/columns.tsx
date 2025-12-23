@@ -15,15 +15,15 @@ export function columns({
   return [
     {
       accessorKey: "name",
-      header: "Name",
+      header: "الاسم",
     },
     {
       accessorKey: "rootPerson.fullName",
-      header: "Root",
+      header: "جذر العائلة",
     },
     {
       accessorKey: "isDisplayed",
-      header: "Is Displayed",
+      header: "أُنشئت لهذه العائلة شجرة",
     },
     {
       id: "actions",
@@ -35,7 +35,7 @@ export function columns({
             className="h-8 w-8 p-0"
             onClick={() => onEdit(family)}
           >
-            Edit
+            تعديل
           </Button>
         );
       },
