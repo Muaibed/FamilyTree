@@ -21,26 +21,61 @@ export default function SelectFamily({
   const [selectedFamily, setSelectedFamily] = useState<Option | undefined>(
     undefined
   );
+  const [options, setOptions] = useState<Option[]>([]);
 
   useEffect(() => {
     if (selected) setSelectedFamily({ id: selected.id, value: selected.name });
+
+    if (data) {
+      let options;
+      if (isDisplayed) {
+        options = data.filter((f:Family) => f.isDisplayed === isDisplayed)
+                      .map((family: Family) => ({
+                        id: family.id,
+                        value: family.name,
+                      }));
+      } else 
+        options = data.map((family: Family) => ({
+            id: family.id,
+            value: family.name,
+          }));;
+
+      setOptions(options)
+    }
   }, [selected]);
 
   const viewedFamily = sessionStorage.getItem('selectedFamily')
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data, isLoading, error, mutate } = useSWR(
+  const { data, isLoading, error, mutate } = useSWR<FamilyWithRootPerson[]>(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/relatedFamilies/${viewedFamily}`,
     fetcher
   );
 
   const filteredData = useMemo(() => {
-    return isDisplayed ? data.filter((f:Family) => f.isDisplayed === isDisplayed) : data;
+    if (data) {
+      if (isDisplayed)
+        return data.filter((f:Family) => f.isDisplayed === isDisplayed)
+
+      return data
+    }
   }, [isDisplayed, data]);
 
-  const options = filteredData.map((family: Family) => ({
-      id: family.id,
-      value: family.name,
-    }));
+  if (error || !data) {
+    return (
+      <div>
+        لا توجد عائلات
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div>
+        جار التحميل
+      </div>
+    )
+  }
+
 
   return (
     <div>

@@ -9,7 +9,7 @@ import AddFamilyForm from "@/components/forms/AddFamilyForm";
 import CreatePersonForm from "@/components/forms/CreatePersonForm";
 import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
 import { Loader2 } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { Suspense, use, useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -39,13 +39,14 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
     
     if (membersError || familiesError) return <ErrorAlert title="حدث خطأ!"/>
   
-    if (familiesLoading || membersLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
-
-    if (!members) {
+    if (!members || !families) {
         return <div className="flex flex-col items-center justify-center h-screen text-4xl">
-            No Members Found!
+            No Data Found!
             </div>
     }
+
+    if (familiesLoading || membersLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
+
     const createMember = (
       <>
       <Modal
@@ -67,7 +68,6 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
           onAddFamily={() => {setIsAddingFamily(true)}}
           onExportSVG={() => {downloadSVG()}}
           onExportPDF={() => {downloadPDF()}}
-          onSignout={() => {signOut()}}
 
         />
       {session && isAdmin && (

@@ -15,19 +15,19 @@ export function columns({
   return [
     {
       accessorKey: "firstName",
-      header: "First Name",
+      header: "الاسم",
     },
     {
       accessorKey: "fullName",
-      header: "Full Name",
+      header: "الاسم الكامل",
     },
     {
       accessorKey: "family.name",
-      header: "Family Name",
+      header: "العائلة",
     },
     {
       accessorKey: "gender",
-      header: "Gender",
+      header: "الجنس",
     },
     {
       id: "actions",
@@ -39,7 +39,7 @@ export function columns({
             className="h-8 w-8 p-0"
             onClick={() => onEdit(person)}
           >
-            Edit
+            تعديل
           </Button>
         );
       },

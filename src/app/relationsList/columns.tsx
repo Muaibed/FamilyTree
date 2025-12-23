@@ -15,15 +15,15 @@ export function columns({
   return [
     {
       accessorKey: "male.fullName",
-      header: "Male",
+      header: "الزوج",
     },
     {
       accessorKey: "female.fullName",
-      header: "Female",
+      header: "الزوجة",
     },
     {
       accessorKey: "isActive",
-      header: "isActive",
+      header: "مستمر",
     },
     {
       id: "actions",
@@ -35,7 +35,7 @@ export function columns({
             className="h-8 w-8 p-0 hover:cursor-pointer"
             onClick={() => onEdit(relation)}
           >
-            Edit
+            تعديل
           </Button>
         );
       },
