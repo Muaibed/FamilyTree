@@ -51,7 +51,7 @@ export default function Home() {
     }
   }, [data])
 
-  if (membersError ) return <ErrorAlert title="حدث خطأ!" message="حدث خطأ في الحصول على بيانات الأفراد"/>
+  if (membersError) return <ErrorAlert title="حدث خطأ!" message="حدث خطأ في الحصول على بيانات الأفراد"/>
   if (familiesError) return <ErrorAlert title="حدث خطأ!" message="حدث خطأ في الحصول على بيانات العائلات"/>
  
   if (familiesLoading || membersLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>

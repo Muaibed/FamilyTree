@@ -37,9 +37,9 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
       sessionStorage.setItem("selectedFamily", id)
     }, []);
     
-    if (membersError || familiesError || !families) return <ErrorAlert title="حدث خطأ!"/>
+    if (membersError || familiesError) return <ErrorAlert title="حدث خطأ!"/>
   
-    if (!members) {
+    if (!members || !families) {
         return <div className="flex flex-col items-center justify-center h-screen text-4xl">
             No Data Found!
             </div>
