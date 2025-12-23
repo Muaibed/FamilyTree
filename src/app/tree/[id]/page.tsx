@@ -37,15 +37,16 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
       sessionStorage.setItem("selectedFamily", id)
     }, []);
     
-    if (membersError || familiesError) return <ErrorAlert title="حدث خطأ!"/>
+    if (membersError || familiesError || !families) return <ErrorAlert title="حدث خطأ!"/>
   
-    if (familiesLoading || membersLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
-
     if (!members) {
         return <div className="flex flex-col items-center justify-center h-screen text-4xl">
-            No Members Found!
+            No Data Found!
             </div>
     }
+
+    if (familiesLoading || membersLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
+
     const createMember = (
       <>
       <Modal

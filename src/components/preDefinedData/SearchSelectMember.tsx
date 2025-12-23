@@ -33,7 +33,24 @@ export default function SearchSelectMember({
         fetcher
     );
 
-  if (isLoading) return <div className="flex items-center justify-center w-full h-screen">
+    useEffect(() => {
+      if (members) {
+        const options = members
+          .filter((m) => {
+            return !gender || m.gender === gender
+          })
+          .map((m) => {
+            return {
+              id: m.id,
+              value: m.fullName,
+              label: m.firstName,
+            };
+          });
+        setOptions(options);
+      }
+    }, [members]);
+    
+    if (isLoading) return <div className="flex items-center justify-center w-full h-screen">
         <Loader2 />
     </div>
 
@@ -42,21 +59,7 @@ export default function SearchSelectMember({
             <ErrorAlert title="حدث خطأ!" message="خطأ في الحصول على البيانات"/>
         </div>
     }
-
-  useEffect(() => {
-      const options = members
-        .filter((m) => {
-          return !gender || m.gender === gender
-        })
-        .map((m) => {
-          return {
-            id: m.id,
-            value: m.fullName,
-            label: m.firstName,
-          };
-        });
-      setOptions(options);
-  }, [members]);
+    
 
   return (
     <div>
