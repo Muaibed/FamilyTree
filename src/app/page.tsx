@@ -1,130 +1,140 @@
-"use client";
+"use client"
 
-import ErrorAlert from "@/components/alerts/ErrorAlert";
-import { Button } from "@/components/ui/button";
-import useSWR from "swr";
-import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
-import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import BurgerMenu from "@/components/client/BurgerMenu";
-import { Modal } from "@/components/client/Modal";
-import CreatePersonForm from "@/components/forms/CreatePersonForm";
-import AddFamilyForm from "@/components/forms/AddFamilyForm";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { TreeDeciduous, Users, ShieldCheck, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
-export default function Home() {
-  const [isAddingFamily, setIsAddingFamily] = useState<boolean>(false);
-  const [isCreatingPerson, setIsCreatingPerson] = useState<boolean>(false);
-  const [families, setFamilies] = useState<FamilyWithRootPerson[] | null>();
+const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: false, amount: 0.2 }} 
+    transition={{ duration: 0.6, delay }}
+  >
+    {children}
+  </motion.div>
+);
 
-  const { data: session, status } = useSession();
-  const isAdmin = session?.user?.role === "ADMIN";
-
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  
-  const router = useRouter();
-  
-  const handleRedirect = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const id = formData.get("familyId") as string;
-    
-    if (id) {
-      router.push(`/tree/${id}`);
-    }
-  };
-  
-  const { data, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/owner`,
-    fetcher
-  );
-  const { data: members, isLoading: membersLoading, error: membersError, mutate: mutateMembers } = useSWR<PersonWithRelations[]>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/owner`,
-        fetcher
-    );
-    
-  
-  useEffect(() => {
-    if (session && data) {
-      setFamilies(data)
-    }
-  }, [data])
-
-  if (membersError) return <ErrorAlert title="حدث خطأ!" message="حدث خطأ في الحصول على بيانات الأفراد"/>
-  if (familiesError) return <ErrorAlert title="حدث خطأ!" message="حدث خطأ في الحصول على بيانات العائلات"/>
- 
-  if (familiesLoading || membersLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
-
-  if (!families || !members) {
+export default function Homepage() {
     return (
-      <>
-        <div className="flex flex-row gap-2 p-4">
-        <BurgerMenu />
+        <div dir="rtl" className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans">
+          
+          <section className="relative pt-20 pb-32 px-6 overflow-hidden">
+            <div className="max-w-7xl mx-auto text-center">
+              <FadeIn>
+                <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
+                  لكل عائلة <span className="text-[var(--primary)]">قصة تستحق أن تُروى</span>
+                </h1>
+              </FadeIn>
+              
+              <FadeIn delay={0.2}>
+                <p className="text-lg md:text-xl opacity-80 max-w-2xl mx-auto mb-10 leading-relaxed">
+                  أبسط وسيلة لتوثيق تاريخك العائلي. صمم، شارك، واحفظ شجرة عائلتك من خلال أدواتنا البسيطة والسهلة.
+                </p>
+              </FadeIn>
+    
+              <FadeIn delay={0.4}>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button className="px-8 py-4 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-full font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 p-6">
+                    ابدأ شجرتك مجاناً <ArrowLeft size={20} />
+                  </Button>
+                   <Link rel="stylesheet" href="/demo">
+                  <Button className="px-8 py-4 bg-[var(--secondary)] text-[var(--secondary-foreground)] rounded-full font-bold border border-black/5 hover:bg-opacity-80 transition-all p-6">
+                    مشاهدة نموذج جاهز
+                  </Button>
+                  </Link>
+                </div>
+              </FadeIn>
+            </div>
+    
+            <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[var(--primary)] opacity-5 blur-[120px] rounded-full -z-10" />
+          </section>
+    
+          <section className="py-24 px-6 bg-[var(--card)] text-[var(--card-foreground)]">
+            <div className="max-w-7xl mx-auto">
+              <FadeIn>
+                <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">مميزات قوية للمهتم بحفظ إرث العائلة</h2>
+              </FadeIn>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <FeatureCard 
+                  icon={<TreeDeciduous className="text-[var(--primary)]" size={32} />}
+                  title="تنسيق ذكي"
+                  desc="تقنيتنا تقوم بترتيب الأقارب تلقائياً لمنع تداخل الخطوط، مهما كبر حجم العائلة."
+                  delay={0.1}
+                />
+                <FeatureCard 
+                  icon={<Users className="text-[var(--primary)]" size={32} />}
+                  title="تعديل بسيط"
+                  desc="يمكنك تعديل العلاقات بكل سهولة دون الحاجة للحذف والإضافة من جديد"
+                  delay={0.2}
+                />
+                <FeatureCard 
+                  icon={<ShieldCheck className="text-[var(--primary)]" size={32} />}
+                  title="خصوصية تامة"
+                  desc="بياناتك مشفرة وخاصة بشكل افتراضي. أنت وحدك من يمكنه تعديل عائلتك."
+                  delay={0.3}
+                />
+              </div>
+            </div>
+          </section>
+    
+          <section className="py-24 px-6">
+            <div className="max-w-5xl mx-auto text-center">
+              <FadeIn>
+                <h2 className="text-3xl md:text-4xl font-bold mb-16">ثلاث خطوات لتوثيق إرثك</h2>
+              </FadeIn>
+    
+              <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12">
+                {[
+                  { step: "٠١", title: "أضف عائلتك", text: "ابدأ بإضافة بيانات عائلتك." },
+                  { step: "٠٢", title: "أضف الأفراد", text: "ابدأ بالجذور. ثم أدخل جميع أفراد عائلتك." },
+                  { step: "٠٣", title: "تصدير ومشاركة", text: "قم بتحميل الشجرة كملف PDF عالي الجودة أو شاركها عبر رابط خاص." }
+                ].map((item, idx) => (
+                  <FadeIn key={idx} delay={idx * 0.2}>
+                    <div className="flex flex-col items-center">
+                      <span className="text-6xl font-black opacity-10 mb-4">{item.step}</span>
+                      <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                      <p className="opacity-70 leading-relaxed">{item.text}</p>
+                    </div>
+                  </FadeIn>
+                ))}
+              </div>
+            </div>
+          </section>
+    
+          <section className="py-24 px-6">
+            <FadeIn>
+              <div className="max-w-4xl mx-auto bg-[var(--card)] text-[var(--card-foreground)] rounded-3xl p-12 text-center shadow-2xl">
+                <h2 className="text-3xl md:text-5xl font-bold mb-6 italic">هل أنت جاهز لإضافة عائلتك؟</h2>
+                <p className="text-lg opacity-90 mb-8 max-w-xl mx-auto">
+                  جرب إضافة عائلتك (مجانا إلى حد 100 فرد).
+                </p>
+                <Button className="bg-white text-black px-10 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform">
+                  ابدأ الآن مجاناً
+                </Button>
+              </div>
+            </FadeIn>
+          </section>
+    
+          <footer className="py-10 text-center border-t border-black/5 opacity-50 text-sm">
+                © 2025 غصن. جميع الحقوق محفوظة
+          </footer>
         </div>
-        <div className="flex justify-center items-center h-screen w-full text-4xl">
-          No Data to Display!
+      );
+}
+    
+    
+function FeatureCard({ icon, title, desc, delay }: { icon: React.ReactNode, title: string, desc: string, delay: number }) {
+    return (
+    <FadeIn delay={delay}>
+        <div className="p-8 rounded-2xl border border-black/5 bg-[var(--background)] hover:shadow-xl transition-shadow group text-right">
+        <div className="mb-4 group-hover:scale-110 transition-transform duration-300 w-fit">{icon}</div>
+        <h3 className="text-xl font-bold mb-3">{title}</h3>
+        <p className="opacity-70 leading-relaxed italic">{desc}</p>
         </div>
-      </>
-    )
-  }
-
-  const createMember = (
-      <>
-      <Modal
-        isOpen={!!isCreatingPerson}
-        onClose={() => setIsCreatingPerson(false)}
-      >
-        <CreatePersonForm members={members} onCreate={() => {mutateMembers(); setIsCreatingPerson(false)}} />
-      </Modal>
-    </>
-  );
-  
-  return (
-    <div className="font-arabic w-full">
-      <div className="flex flex-row gap-2 p-4">
-        <BurgerMenu 
-          onAddFamily={() => {setIsAddingFamily(true)}}
-          onCreatePerson={() => {setIsCreatingPerson(true)}}
-        />
-      </div>
-      {session && isAdmin && (
-        <>
-          <div>
-            {createMember}
-          </div>
-          <Modal
-            isOpen={!!isAddingFamily}
-            onClose={() => setIsAddingFamily(false)}
-          >
-            <AddFamilyForm
-              onAdd={() => setIsAddingFamily(false)}
-            ></AddFamilyForm>
-          </Modal>
-        </>
-      )}
-      <div className="flex items-center-safe justify-center-safe h-screen w-full">
-        <form onSubmit={handleRedirect} className="flex flex-col gap-4 justify-center items-center h-screen w-full">
-          <div className="w-full flex items-center justify-center">
-          <select name="familyId" className="w-1/2 flex border rounded-lg p-2">
-            <option value="">اختر عائلة</option>
-            {families && families.filter((f) => f.isDisplayed === true).map((f) => (
-              <option key={f.id} value={f.id} className="text-black">
-                {f.name}
-              </option>
-            ))}
-          </select>
-          </div>
-          <div className="w-full flex items-center justify-center">
-            <Button
-              type="submit"
-              className="w-1/4 py-2 px-4 font-semibold rounded-md transition"
-            >
-              تأكيد
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+    </FadeIn>
+    );
 }
