@@ -37,10 +37,12 @@ export default function Homepage() {
     
               <FadeIn delay={0.4}>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button className="px-8 py-4 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-full font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 p-6">
-                    ابدأ شجرتك مجاناً <ArrowLeft size={20} />
-                  </Button>
-                   <Link rel="stylesheet" href="/demo">
+                  <Link href="/auth/signup">
+                    <Button className="px-8 py-4 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-full font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 p-6">
+                      ابدأ شجرتك مجاناً <ArrowLeft size={20} />
+                    </Button>
+                  </Link>
+                   <Link href="/demo">
                   <Button className="px-8 py-4 bg-[var(--secondary)] text-[var(--secondary-foreground)] rounded-full font-bold border border-black/5 hover:bg-opacity-80 transition-all p-6">
                     مشاهدة نموذج جاهز
                   </Button>
@@ -52,7 +54,7 @@ export default function Homepage() {
             <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[var(--primary)] opacity-5 blur-[120px] rounded-full -z-10" />
           </section>
     
-          <section className="py-24 px-6 bg-[var(--card)] text-[var(--card-foreground)]">
+          <section className="py-24 px-6 bg-[var(--popover)] text-[var(--card-foreground)]">
             <div className="max-w-7xl mx-auto">
               <FadeIn>
                 <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">مميزات قوية للمهتم بحفظ إرث العائلة</h2>
@@ -112,9 +114,11 @@ export default function Homepage() {
                 <p className="text-lg opacity-90 mb-8 max-w-xl mx-auto">
                   جرب إضافة عائلتك (مجانا إلى حد 100 فرد).
                 </p>
-                <Button className="bg-white text-black px-10 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform">
-                  ابدأ الآن مجاناً
-                </Button>
+                <Link href="/auth/signup">
+                  <Button className="px-10 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform">
+                    ابدأ الآن مجاناً
+                  </Button>
+                </Link>
               </div>
             </FadeIn>
           </section>
