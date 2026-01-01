@@ -37,11 +37,11 @@ export default function Homepage() {
     
               <FadeIn delay={0.4}>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href="/auth/signup">
+                  {/* <Link href="/auth/signup">
                     <Button className="px-8 py-4 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-full font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 p-6">
                       ابدأ شجرتك مجاناً <ArrowLeft size={20} />
                     </Button>
-                  </Link>
+                  </Link> */}
                    <Link href="/demo">
                   <Button className="px-8 py-4 bg-[var(--secondary)] text-[var(--secondary-foreground)] rounded-full font-bold border border-black/5 hover:bg-opacity-80 transition-all p-6">
                     مشاهدة نموذج جاهز
@@ -107,7 +107,7 @@ export default function Homepage() {
             </div>
           </section>
     
-          <section className="py-24 px-6">
+          {/* <section className="py-24 px-6">
             <FadeIn>
               <div className="max-w-4xl mx-auto bg-[var(--card)] text-[var(--card-foreground)] rounded-3xl p-12 text-center shadow-2xl">
                 <h2 className="text-3xl md:text-5xl font-bold mb-6 italic">هل أنت جاهز لإضافة عائلتك؟</h2>
@@ -121,7 +121,7 @@ export default function Homepage() {
                 </Link>
               </div>
             </FadeIn>
-          </section>
+          </section> */}
     
           <footer className="py-10 text-center border-t border-black/5 opacity-50 text-sm">
                 © 2025 غصن. جميع الحقوق محفوظة
