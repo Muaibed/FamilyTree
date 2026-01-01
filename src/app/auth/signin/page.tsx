@@ -26,7 +26,7 @@ export default function SignIn() {
 
               if (result?.ok) {
                 toast("Login Successfully.");
-                window.location.href = "/";
+                window.location.href = "/tree";
               } else {
                 toast("Login Failed.");
               }

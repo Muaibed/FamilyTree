@@ -39,14 +39,15 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
     
     if (membersError || familiesError) return <ErrorAlert title="حدث خطأ!"/>
   
+    
+    if (familiesLoading || membersLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
+    
     if (!members || !families) {
         return <div className="flex flex-col items-center justify-center h-screen text-4xl">
             No Data Found!
             </div>
     }
-
-    if (familiesLoading || membersLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
-
+    
     const createMember = (
       <>
       <Modal
