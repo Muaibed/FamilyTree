@@ -9,7 +9,7 @@ export default function Page() {
 
   
   if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error</p>;
+  if (error || !data) return <p>Error</p>;
 
   return (
     <div className="container mx-auto py-10">
