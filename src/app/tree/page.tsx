@@ -7,7 +7,7 @@ import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import BurgerMenu from "@/components/client/BurgerMenu";
 import { Modal } from "@/components/client/Modal";
 import CreatePersonForm from "@/components/forms/CreatePersonForm";
@@ -88,6 +88,7 @@ export default function TreeHome() {
             onCreatePerson={() => {setIsCreatingPerson(true)}}
           />
         </div>
+         <Suspense>
           <>
             <div>
               {createMember}
@@ -123,6 +124,7 @@ export default function TreeHome() {
             </div>
           </form>
         </div>
+         </Suspense>
       </div>
     );
 }
