@@ -54,7 +54,7 @@ export default function Homepage() {
             <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[var(--primary)] opacity-5 blur-[120px] rounded-full -z-10" />
           </section>
     
-          <section className="py-24 px-6 bg-[var(--popover)] text-[var(--card-foreground)]">
+          <section className="py-24 px-6 bg-[var(--card)] text-[var(--card-foreground)]">
             <div className="max-w-7xl mx-auto">
               <FadeIn>
                 <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">مميزات قوية للمهتم بحفظ إرث العائلة</h2>
