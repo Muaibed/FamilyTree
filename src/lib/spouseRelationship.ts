@@ -15,6 +15,21 @@ export const getRelationById = async (id: string) => {
   })
 }
 
+export const getAllRelationsWithSameOwner = async (userId: string) => {
+  return prisma.spouseRelationship.findMany({
+    where: {
+      OR: [
+        { male: { family: { ownerId: userId }}},
+        { female: {family: { ownerId: userId}}}
+      ]
+    },
+    include: {
+      male: true,
+      female: true
+    } 
+  })
+}
+
 export const getAllRelationsForPerson = async (personId: string) => {
   return prisma.spouseRelationship.findMany({
     where: {

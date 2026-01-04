@@ -14,6 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
   id             String          @id @default(uuid()) @db.Uuid
   email          String?         @unique
@@ -24,6 +25,8 @@ model User {
   verified       Boolean         @default(false)
   changeRequests ChangeRequest[] @relation("ChangeRequester")
   familiesOwner  Family[]
+  subscribtion   Subscribtion    @default(TRIAL)
+  recordsCount   Int             @default(0)
 }
 
 model VerificationToken {
@@ -33,6 +36,7 @@ model VerificationToken {
   expires    DateTime
 }
 
+
 enum Role {
   ADMIN
   USER
@@ -41,6 +45,11 @@ enum Role {
 enum Gender {
   MALE
   FEMALE
+}
+
+enum Subscribtion {
+  TRIAL
+  PRO
 }
 
 model Person {
@@ -127,4 +136,5 @@ model Family {
   rootPersonId String?    @db.Uuid       @unique
   members      Person[]   @relation("FamilyMembers")
   isDisplayed  Boolean    @default(false)
+  membersCount Int        @default(0)
 }

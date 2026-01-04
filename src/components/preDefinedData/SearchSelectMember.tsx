@@ -28,10 +28,7 @@ export default function SearchSelectMember({
   const familyId = sessionStorage.getItem('selectedFamily')
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-    const { data: members, isLoading, error, mutate } = useSWR<PersonWithRelations[]>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${familyId}`,
-        fetcher
-    );
+  const { data: members, isLoading, error, mutate } = useSWR<PersonWithRelations[]>(`${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/owner`, fetcher);
 
     useEffect(() => {
       if (members) {
