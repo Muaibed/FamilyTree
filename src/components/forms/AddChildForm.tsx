@@ -22,6 +22,7 @@ const AddChildForm = ({
   const [firstName, setFirstName] = useState<string | undefined>("");
   const [family, setFamily] = useState<FamilyWithRootPerson | undefined>(undefined);
   const [gender, setGender] = useState<"MALE" | "FEMALE" | undefined>(undefined);
+  const [kunya, setKunya] = useState<string | null>();
   const [father, setFather] = useState<PersonWithRelations | undefined>();
   const [mother, setMother] = useState<PersonWithRelations | undefined>();
   const [birthDate, setBirthDate] = useState<Date | undefined>(undefined);
@@ -51,6 +52,7 @@ const AddChildForm = ({
         firstName,
         familyId: family?.id,
         gender,
+        kunya,
         birthDate,
         deathDate,
         fatherId: father?.id,
@@ -80,6 +82,8 @@ const AddChildForm = ({
       <ScrollArea className="max-h-[100vh] md:max-h-[600px] overflow-auto">
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input type="text" placeholder="الاسم الأول" onChange={(e) => setFirstName(e.target.value)} required dir="rtl"/>
+
+        <Input type="text" placeholder="الكنية" onChange={(e) => setKunya(e.target.value)} dir="rtl"/>
 
         <SelectGender selected={gender} onChange={setGender}/>
 

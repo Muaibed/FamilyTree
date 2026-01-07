@@ -2,10 +2,10 @@
 
 import { Option } from "@/types/ui";
 import { useEffect, useMemo, useState } from "react";
-import Select from "../ui/Select";
 import { Family } from "@/generated/prisma";
 import useSWR from "swr";
 import { FamilyWithRootPerson } from "@/types/family";
+import SearchSelect from "../ui/SearchSelect";
 
 type FamilySelectProps = {
   selected: FamilyWithRootPerson | undefined;
@@ -44,10 +44,10 @@ export default function SelectFamily({
     }
   }, [selected]);
 
-  const viewedFamily = sessionStorage.getItem('selectedFamily')
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
   const { data, isLoading, error, mutate } = useSWR<FamilyWithRootPerson[]>(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/relatedFamilies/${viewedFamily}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/owner`,
     fetcher
   );
 
@@ -79,7 +79,7 @@ export default function SelectFamily({
 
   return (
     <div>
-      <Select
+      <SearchSelect
         options={options}
         selected={selectedFamily}
         onSelect={(option: Option) => {

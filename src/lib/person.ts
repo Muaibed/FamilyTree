@@ -1,16 +1,31 @@
 import { prisma } from './prisma';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from './auth';
 
 export const createPerson = async (data: {
   firstName: string;
   familyId: string;
   gender: 'MALE' | 'FEMALE';
+  kunya?: string;
   phone?: string;
   birthDate?: Date;
   deathDate?: Date;
   fatherId?: string;
   motherId?: string;
 }) => {
-  const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
+  const session = await getServerSession(authOptions);
+  if (!session?.user.id)
+    throw new Error ("Unauthorized")
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id }});
+
+  if (!user)
+    throw new Error("Unable to identify user.")
+
+  if (user.subscribtion != "PRO" && user.recordsCount! > 99)
+    throw new Error("Limit Reached! Upgrade your plan to add more members.")
+
+  const { firstName, familyId, gender, kunya, phone, birthDate, deathDate, fatherId, motherId } = data;
 
   let father;
   if (fatherId)
@@ -21,19 +36,28 @@ export const createPerson = async (data: {
   const theSonOf = gender === "MALE" ? " بن " : " بنت ";
   const fullName = father ? firstName + theSonOf + father.fullName : firstName + " " + family?.name
 
-  return prisma.person.create({
-    data: {
-      firstName: firstName,
-      fullName,
-      family: { connect: { id: familyId } },
-      gender: gender,
-      phone: phone,
-      birthDate: birthDate,
-      deathDate: deathDate,
-      father: fatherId ? { connect: { id: fatherId } } : undefined,
-      mother: motherId ? { connect: { id: motherId } } : undefined,
-    },
-  });
+  return prisma.$transaction([
+    prisma.person.create({
+      data: {
+        firstName: firstName,
+        fullName,
+        family: { connect: { id: familyId } },
+        gender: gender,
+        kunya,
+        phone: phone,
+        birthDate: birthDate,
+        deathDate: deathDate,
+        father: fatherId ? { connect: { id: fatherId } } : undefined,
+        mother: motherId ? { connect: { id: motherId } } : undefined,
+      }
+    }),
+    prisma.user.update({ 
+      where: { id: user.id }, 
+      data: { 
+        recordsCount: { increment : 1 } 
+      } 
+    })
+  ])
 };
 
 export const getPersonById = async (id: string) => {
@@ -166,6 +190,7 @@ export const updatePerson = async (id: string, data: {
   firstName?: string;
   familyId?: string;
   gender?: 'MALE' | 'FEMALE';
+  kunya?: string;
   phone?: string;
   isDead: boolean;
   fatherId?: string;
@@ -173,13 +198,14 @@ export const updatePerson = async (id: string, data: {
   birthDate?: Date;
   deathDate?: Date;
 }) => {
-  const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId, isDead } = data;
+  const { firstName, familyId, gender, kunya, phone, birthDate, deathDate, fatherId, motherId, isDead } = data;
   return prisma.person.update({
     where: { id },
     data: {
       firstName,
       family: familyId ? { connect: { id: familyId } } : undefined,
       gender,
+      kunya,
       phone,
       isDead,
       birthDate,

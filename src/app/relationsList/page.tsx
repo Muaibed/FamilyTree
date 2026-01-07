@@ -5,7 +5,7 @@ import { FamilyTableClient } from "./FamilyTableClient";
 
 export default function Page() {
   const fetcher = (url: string) => fetch(url).then(res => res.json());
-  const { data, mutate, isLoading, error } = useSWR(`${process.env.NEXT_PUBLIC_BASE_URL}/api/spouseRelationship`, fetcher)
+  const { data, mutate, isLoading, error } = useSWR(`${process.env.NEXT_PUBLIC_BASE_URL}/api/spouseRelationship/owner`, fetcher)
 
   
   if (isLoading) return <p>Loading...</p>;

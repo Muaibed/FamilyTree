@@ -169,6 +169,7 @@ export default function RadialCluster({
             <div>
               <h1 className="text-2xl font-bold">{selectedPerson.firstName}</h1>
               <p className="text-sm opacity-50 mt-1">{selectedPerson.fullName}</p>
+              <p className="text-sm opacity-50 mt-1">{selectedPerson.kunya}</p>
             </div>
             <div className="m-4">
                 {(selectedPerson.femaleSpouses.filter(

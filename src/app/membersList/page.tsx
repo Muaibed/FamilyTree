@@ -16,7 +16,7 @@ export default function Page() {
   
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data: members, isLoading, error, mutate } = useSWR<PersonWithRelations[]>(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${currentFamily}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/owner`,
       fetcher
   );
   

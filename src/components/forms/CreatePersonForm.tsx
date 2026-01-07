@@ -4,7 +4,6 @@ import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { Family } from "@/generated/prisma";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "../alerts/ErrorAlert";
 import DatePicker from "../ui/datePicker";
@@ -14,7 +13,6 @@ import { Input } from "../ui/input";
 import SearchSelectMember from "../preDefinedData/SearchSelectMember";
 import SelectFamily from "../preDefinedData/SelectFamily";
 import SelectGender from "../preDefinedData/SelectGender";
-import { useParams } from "next/navigation";
 
 const CreatePersonForm = ({
   FID,
@@ -30,6 +28,7 @@ const CreatePersonForm = ({
   const [firstName, setFirstName] = useState("");
   const [family, setFamily] = useState<FamilyWithRootPerson | undefined>(undefined);
   const [gender, setGender] = useState<"MALE" | "FEMALE" | undefined>(undefined);
+  const [kunya, setKunya] = useState<string | null>()
   const [selectedFather, setSelectedFather] = useState<PersonWithRelations | undefined>(
     FID ? members.find((m) => m.id === FID) : undefined
   );
@@ -39,15 +38,13 @@ const CreatePersonForm = ({
   const [birthDate, setBirthDate] = React.useState<Date>()
   const [deathDate, setDeathDate] = React.useState<Date>()
   
-  const viewedFamily = sessionStorage.getItem('selecedFamily');
-
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const {
     data: families,
     isLoading,
     error,
     mutate,
-  } = useSWR(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family/relatedFamilies/${viewedFamily}`, fetcher);
+  } = useSWR(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family/owner`, fetcher);
 
   useEffect(() => {
     setFamily(selectedFather?.family)
@@ -65,6 +62,7 @@ const CreatePersonForm = ({
         firstName,
         familyId: family?.id,
         gender,
+        kunya,
         fatherId: selectedFather?.id,
         motherId: selectedMother?.id,
         birthDate,
@@ -101,6 +99,8 @@ const CreatePersonForm = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input type="text" placeholder="الاسم الأول" onChange={(e) => setFirstName(e.target.value)} required dir="rtl"/>
         
+        <Input type="text" placeholder="الكنية" onChange={(e) => setKunya(e.target.value)} dir="rtl"/>
+
         <SelectGender selected={gender} onChange={setGender}/>
 
         <SearchSelectMember

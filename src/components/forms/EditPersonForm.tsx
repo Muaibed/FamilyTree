@@ -31,6 +31,7 @@ const EditPersonForm = ({
   const [firstName, setFirstName] = useState(person.firstName);
   const [family, setFamily] = useState<FamilyWithRootPerson | undefined>(person.family);
   const [gender, setGender] = useState<"MALE" | "FEMALE">(person.gender);
+  const [kunya, setKunya] = useState<string | null>(person.kunya)
   const [phone, setPhone] = useState<string | undefined>(person.phone ?? "");
   const [isDead, setIsDead] = useState<boolean>(false);
   const [birthDate, setBirthDate] = useState<Date | undefined>(
@@ -70,6 +71,7 @@ const EditPersonForm = ({
           firstName,
           family,
           gender,
+          kunya,
           phone,
           fatherId: selectedFather?.id,
           motherId: selectedMother?.id,
@@ -166,7 +168,9 @@ const EditPersonForm = ({
       <ScrollArea className="max-h-[100vh] md:max-h-[600px] overflow-auto">
       <form onSubmit={handleSubmit} className="space-y-4 m-1">
         <Input type="text" placeholder="الاسم الأول" onChange={(e) => setFirstName(e.target.value)} value={firstName} required dir="rtl"/>
-        
+
+        <Input type="text" placeholder="الكنية" onChange={(e) => setKunya(e.target.value)} dir="rtl"/>
+
         <SelectGender selected={gender} onChange={setGender}/>
         
          <SearchSelectMember
