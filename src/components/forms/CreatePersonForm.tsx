@@ -28,6 +28,7 @@ const CreatePersonForm = ({
   const [firstName, setFirstName] = useState("");
   const [family, setFamily] = useState<FamilyWithRootPerson | undefined>(undefined);
   const [gender, setGender] = useState<"MALE" | "FEMALE" | undefined>(undefined);
+  const [kunya, setKunya] = useState<string | null>()
   const [selectedFather, setSelectedFather] = useState<PersonWithRelations | undefined>(
     FID ? members.find((m) => m.id === FID) : undefined
   );
@@ -61,6 +62,7 @@ const CreatePersonForm = ({
         firstName,
         familyId: family?.id,
         gender,
+        kunya,
         fatherId: selectedFather?.id,
         motherId: selectedMother?.id,
         birthDate,
@@ -97,6 +99,8 @@ const CreatePersonForm = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input type="text" placeholder="الاسم الأول" onChange={(e) => setFirstName(e.target.value)} required dir="rtl"/>
         
+        <Input type="text" placeholder="الكنية" onChange={(e) => setKunya(e.target.value)} dir="rtl"/>
+
         <SelectGender selected={gender} onChange={setGender}/>
 
         <SearchSelectMember

@@ -6,6 +6,7 @@ export const createPerson = async (data: {
   firstName: string;
   familyId: string;
   gender: 'MALE' | 'FEMALE';
+  kunya?: string;
   phone?: string;
   birthDate?: Date;
   deathDate?: Date;
@@ -24,7 +25,7 @@ export const createPerson = async (data: {
   if (user.subscribtion != "PRO" && user.recordsCount! > 99)
     throw new Error("Limit Reached! Upgrade your plan to add more members.")
 
-  const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId } = data;
+  const { firstName, familyId, gender, kunya, phone, birthDate, deathDate, fatherId, motherId } = data;
 
   let father;
   if (fatherId)
@@ -42,6 +43,7 @@ export const createPerson = async (data: {
         fullName,
         family: { connect: { id: familyId } },
         gender: gender,
+        kunya,
         phone: phone,
         birthDate: birthDate,
         deathDate: deathDate,
@@ -188,6 +190,7 @@ export const updatePerson = async (id: string, data: {
   firstName?: string;
   familyId?: string;
   gender?: 'MALE' | 'FEMALE';
+  kunya?: string;
   phone?: string;
   isDead: boolean;
   fatherId?: string;
@@ -195,13 +198,14 @@ export const updatePerson = async (id: string, data: {
   birthDate?: Date;
   deathDate?: Date;
 }) => {
-  const { firstName, familyId, gender, phone, birthDate, deathDate, fatherId, motherId, isDead } = data;
+  const { firstName, familyId, gender, kunya, phone, birthDate, deathDate, fatherId, motherId, isDead } = data;
   return prisma.person.update({
     where: { id },
     data: {
       firstName,
       family: familyId ? { connect: { id: familyId } } : undefined,
       gender,
+      kunya,
       phone,
       isDead,
       birthDate,

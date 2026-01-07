@@ -8,6 +8,7 @@ import { BlurBackground } from "@/components/ui/BlurBackground";
 import { Amiri, Cairo } from 'next/font/google'
 import Head from "next/head";
 import { Suspense } from "react";
+import Menu from "@/components/client/Menu";
  
 const amiri = Amiri({
   weight: '400',
@@ -16,8 +17,10 @@ const amiri = Amiri({
 
 export default function RootLayout({
   children,
+  menuContent
 }: Readonly<{
   children: React.ReactNode;
+  menuContent: any;
 }>) {
   
   return (
@@ -35,7 +38,10 @@ export default function RootLayout({
           >
             <div className="absolute top-4 right-4 z-60">
               <ThemeToggle />
-            </div>            
+            </div>
+            {/* <div className="flex flex-row gap-2 p-4">
+              <Menu menuContent={menuContent} />    
+            </div>         */}
               <BlurBackground>
                 <div className="w-full">
                   <Suspense>

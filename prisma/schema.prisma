@@ -57,6 +57,7 @@ model Person {
   firstName  String
   fullName   String
   gender     Gender
+  kunya      String? 
   birthDate  DateTime?
   deathDate  DateTime?
   phone      String?

@@ -31,12 +31,13 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     
-    const { firstName, familyName, gender, fatherId, motherId, birthDate, deathDate, isDead } = await req.json();
+    const { firstName, familyName, gender, kunya, fatherId, motherId, birthDate, deathDate, isDead } = await req.json();
 
     const data = {
       firstName,
       familyName,
       gender,
+      kunya,
       birthDate,
       deathDate,
       fatherId,
@@ -48,7 +49,7 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
       return new Response("Person ID is required", { status: 400});
     }
 
-    const update = await updatePerson(id, data);
+    await updatePerson(id, data);
 
     const result = await qstash.publishJSON({
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName`,
@@ -62,8 +63,8 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
     
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
-    console.error(error);
-    return new Response("Failed to update person", { status: 500 });
+    console.log(error);
+    return new Response("Failed to update person: " + error, { status: 500 });
   }
 }
 
