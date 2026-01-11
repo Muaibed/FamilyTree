@@ -1,4 +1,4 @@
-import { createFamily } from '@/lib/family';
+import { createFamily } from '@/lib/db/family';
 import { isAdmin } from '@/lib/session';
 import { NextResponse } from 'next/server';
 

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAddRequest, createDeleteRequest, createUpdateRequest, getAllChangeRequests } from '@/lib/changeRequest';
+import { createAddRequest, createDeleteRequest, createUpdateRequest, getAllChangeRequests } from '@/lib/db/changeRequest';
 import { isAdmin } from '@/lib/session';
 
 export async function POST(req: Request) {

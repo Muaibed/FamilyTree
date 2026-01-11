@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createPerson, getAllPersons } from '@/lib/person';
+import { createPerson, getAllPersons } from '@/lib/db/person';
 import { isAdmin } from '@/lib/session';
 
 export async function POST(req: Request) {

@@ -1,5 +1,5 @@
 import { ChangeRequestStatus, ChangeRequestTargetModel, Prisma } from '@/generated/prisma';
-import { prisma } from './prisma';
+import { prisma } from '../prisma';
 
 export const createAddRequest = async (data: {
   targetModel: ChangeRequestTargetModel

@@ -1,4 +1,4 @@
-import { getAllFamiliesFromOwnerId } from '@/lib/family';
+import { getAllFamiliesFromOwnerId } from '@/lib/db/family';
 import { getUserId } from '@/lib/session';
 import { FamilyWithRootPerson } from '@/types/family';
 import { NextResponse } from 'next/server';

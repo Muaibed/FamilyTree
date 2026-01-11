@@ -1,6 +1,6 @@
-import { prisma } from './prisma';
+import { prisma } from '../prisma';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from './auth';
+import { authOptions } from '../auth';
 
 export const createPerson = async (data: {
   firstName: string;

@@ -1,4 +1,4 @@
-import { deleteFamily, getFamilyById, updateFamily } from '@/lib/family';
+import { deleteFamily, getFamilyById, updateFamily } from '@/lib/db/family';
 import { isAdmin } from '@/lib/session';
 import { NextResponse } from 'next/server';
 

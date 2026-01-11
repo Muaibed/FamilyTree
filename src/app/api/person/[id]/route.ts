@@ -1,4 +1,4 @@
-import { deletePerson, getPersonById, updatePerson } from '@/lib/person';
+import { deletePerson, getPersonById, updatePerson } from '@/lib/db/person';
 import { qstash } from '@/lib/qstash';
 import { isAdmin } from '@/lib/session';
 import { NextResponse } from 'next/server';

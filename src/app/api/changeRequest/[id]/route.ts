@@ -1,4 +1,4 @@
-import { deleteChangeRequest, getChangeRequestById, updateChangeRequest } from '@/lib/changeRequest';
+import { deleteChangeRequest, getChangeRequestById, updateChangeRequest } from '@/lib/db/changeRequest';
 import { isAdmin } from '@/lib/session';
 import { NextResponse } from 'next/server';
 

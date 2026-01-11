@@ -1,5 +1,5 @@
 import { isAdmin } from '@/lib/session';
-import { deleteUser, getUserById, updateUser } from '@/lib/user';
+import { deleteUser, getUserById, updateUser } from '@/lib/db/user';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request, { params } : { params: Promise<{ id: string }> }) {

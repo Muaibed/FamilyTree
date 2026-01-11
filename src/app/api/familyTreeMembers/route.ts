@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PersonWithRelations } from '@/types/family';
-import { getAllPersons, getAllPersonsWithSameOwner } from '@/lib/person';
+import { getAllPersons, getAllPersonsWithSameOwner } from '@/lib/db/person';
 import { getUserId } from '@/lib/session';
 
 export async function GET() {

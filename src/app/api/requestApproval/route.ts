@@ -1,5 +1,5 @@
-import { updateChangeRequest } from "@/lib/changeRequest";
-import { createPerson, deletePerson, updatePerson } from "@/lib/person";
+import { updateChangeRequest } from "@/lib/db/changeRequest";
+import { createPerson, deletePerson, updatePerson } from "@/lib/db/person";
 import { isAdmin } from "@/lib/session";
 import { createSpouseRelationship } from "@/lib/spouseRelationship";
 import { NextResponse } from "next/server";

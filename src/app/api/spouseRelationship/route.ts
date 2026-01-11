@@ -1,5 +1,5 @@
 import { isAdmin } from '@/lib/session';
-import {createSpouseRelationship, deleteRelation, getAllRelations, getAllRelationsForPerson, updateRelationStatus} from '@/lib/spouseRelationship';
+import {createSpouseRelationship, deleteRelation, getAllRelations, getAllRelationsForPerson, updateRelationStatus} from '@/lib/db/spouseRelationship';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
