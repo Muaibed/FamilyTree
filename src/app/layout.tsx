@@ -2,13 +2,11 @@ import ThemeProvider from "@/theme/theme-provider";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import SessionProviderWrapper from "@/components/client/SessionProviderWrapper";
-import MembersContextProvider from "@/components/client/MembersContextProvider";
 import ThemeToggle from "@/theme/theme-toggle";
 import { BlurBackground } from "@/components/ui/BlurBackground";
 import { Amiri, Cairo } from 'next/font/google'
 import Head from "next/head";
 import { Suspense } from "react";
-import Menu from "@/components/client/Menu";
  
 const amiri = Amiri({
   weight: '400',
@@ -17,10 +15,10 @@ const amiri = Amiri({
 
 export default function RootLayout({
   children,
-  menuContent
+  // menuContent
 }: Readonly<{
   children: React.ReactNode;
-  menuContent: any;
+  // menuContent: any;
 }>) {
   
   return (
