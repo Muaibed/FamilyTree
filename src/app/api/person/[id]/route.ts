@@ -31,11 +31,11 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     
-    const { firstName, familyName, gender, kunya, fatherId, motherId, birthDate, deathDate, isDead } = await req.json();
+    const { firstName, familyId, gender, kunya, fatherId, motherId, birthDate, deathDate, isDead } = await req.json();
 
     const data = {
       firstName,
-      familyName,
+      familyId,
       gender,
       kunya,
       birthDate,

@@ -69,7 +69,7 @@ const EditPersonForm = ({
         },
         body: JSON.stringify({
           firstName,
-          family,
+          familyId: family?.id,
           gender,
           kunya,
           phone,
