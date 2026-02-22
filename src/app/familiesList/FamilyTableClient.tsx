@@ -4,7 +4,7 @@ import { useState } from "react";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { Modal } from "../../components/client/Modal";
-import EditFamilyForm from "@/components/forms/EditFamilyForm";
+import EditFamily from "../pages/EditFamily";
 import { FamilyWithRootPerson } from "@/types/family";
 
 export function FamilyTableClient({ data, onChange }: { data: FamilyWithRootPerson[], onChange: any }) {
@@ -18,7 +18,10 @@ export function FamilyTableClient({ data, onChange }: { data: FamilyWithRootPers
       <DataTable columns={tableColumns} data={Object.values(data)} />
       {selectedFamily && (
         <Modal isOpen={true} onClose={() => setSelectedFamily(undefined)}>
-          <EditFamilyForm family={selectedFamily} onEdit={onChange} />
+          <EditFamily id={selectedFamily.id} onSubmit={() => {
+            onChange();
+            setSelectedFamily(undefined);
+          }} onDelete={() => setSelectedFamily(undefined)} />
         </Modal>
       )}
     </>

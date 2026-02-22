@@ -1,51 +1,57 @@
 "use client"
 
+import CreatePerson from "@/app/pages/CreatePerson";
 import ErrorAlert from "@/components/alerts/ErrorAlert";
 import BurgerMenu from "@/components/client/BurgerMenu";
 import { downloadSVG, downloadPDF } from "@/components/client/ExportTreeButton";
 import { Modal } from "@/components/client/Modal";
 import RadialCluster from "@/components/client/RadialClsuter";
-import AddFamilyForm from "@/components/forms/AddFamilyForm";
-import CreatePersonForm from "@/components/forms/CreatePersonForm";
-import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
+import CreateFamily from "@/app/pages/CreateFamily";
+import { getMembers } from "@/lib/queries/familyTreeMembers";
+import { FamilyWithRootPerson } from "@/types/family";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { Suspense, use, useEffect, useState } from "react";
-import useSWR from "swr";
+import { getRelatedFamilies } from "@/lib/queries/families";
 
 export default function Tree({ params }: {params: Promise<{id: string}>}) {
     const { id } = use(params);
 
     const [isAddingFamily, setIsAddingFamily] = useState<boolean>(false);
     const [isCreatingPerson, setIsCreatingPerson] = useState<boolean>(false);
-    const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-    const { data: members, isLoading: membersLoading, error: membersError, mutate: mutateMembers } = useSWR<PersonWithRelations[]>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${id}`,
-        fetcher
-    );
-    
+    const { data: members = [], isLoading: membersLoading, isError: membersError } = useQuery({
+      queryKey: ["members"],
+      queryFn: getMembers,
+    });
+
+    const { data: families = [], isLoading: familiesLoading, isError: familiesError } = useQuery({
+      queryKey: ["related-families", id],
+      queryFn: () => getRelatedFamilies(id),
+    });
+
     const { data: session, status } = useSession();
     const isAdmin = session?.user?.role === "ADMIN";
-    
-    const { data: families, isLoading: familiesLoading, error: familiesError, mutate: mutateFamilies } = useSWR<FamilyWithRootPerson[]>(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/relatedFamilies/${id}`,
-      fetcher
-    );
-    
+
     useEffect(() => {
-      sessionStorage.setItem("selectedFamily", id)
-    }, []);
-    
-    if (membersError || familiesError) return <ErrorAlert title="حدث خطأ!"/>
-  
-    
-    if (familiesLoading || membersLoading) return <div className="flex flex-col items-center justify-center h-screen"><Loader2 /></div>
-    
+      sessionStorage.setItem("selectedFamily", id);
+    }, [id]);
+
+    if (membersError || familiesError) return <ErrorAlert title="حدث خطأ!" />;
+
+    if (familiesLoading || membersLoading) return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <Loader2 />
+      </div>
+    );
+
     if (!members || !families) {
-        return <div className="flex flex-col items-center justify-center h-screen text-4xl">
-            No Data Found!
-            </div>
+      return (
+        <div className="flex flex-col items-center justify-center h-screen text-4xl">
+          No Data Found!
+        </div>
+      );
     }
     
     const createMember = (
@@ -54,7 +60,7 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
         isOpen={!!isCreatingPerson}
         onClose={() => setIsCreatingPerson(false)}
       >
-        <CreatePersonForm members={members} onCreate={() => {mutateMembers(); setIsCreatingPerson(false)}} />
+        <CreatePerson onSuccess={() => setIsCreatingPerson(false)} />
       </Modal>
     </>
   );
@@ -80,9 +86,9 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
             isOpen={!!isAddingFamily}
             onClose={() => setIsAddingFamily(false)}
           >
-            <AddFamilyForm
-              onAdd={() => setIsAddingFamily(false)}
-            ></AddFamilyForm>
+            <CreateFamily
+              onSuccess={() => setIsAddingFamily(false)}
+            />
           </Modal>
         </>
       )}
@@ -93,7 +99,7 @@ export default function Tree({ params }: {params: Promise<{id: string}>}) {
         <RadialCluster
           members={members}
           families={families}
-          onChange={mutateMembers}
+          onChange={() => "mutate members"}
           family={families?.find(f => f.id === id)}
         />
       </Suspense>

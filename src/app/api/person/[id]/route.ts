@@ -1,12 +1,11 @@
-import { deletePerson, getPersonById, updatePerson } from '@/lib/person';
+import { deletePerson, getPersonById, updatePerson } from '@/lib/db/person';
 import { qstash } from '@/lib/qstash';
 import { isAdmin } from '@/lib/session';
 import { NextResponse } from 'next/server';
 
-export async function GET(req:Request) {
+export async function GET(req:Request, { params } : { params: Promise<{ id: string }> }) {
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
+    const { id } = await params;
 
     if (!id) {
         return new Response("Person ID is required", { status: 400 });
@@ -31,12 +30,13 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     
-    const { firstName, familyName, gender, fatherId, motherId, birthDate, deathDate, isDead } = await req.json();
+    const { firstName, familyId, gender, kunya, fatherId, motherId, birthDate, deathDate, isDead } = await req.json();
 
     const data = {
       firstName,
-      familyName,
+      familyId,
       gender,
+      kunya,
       birthDate,
       deathDate,
       fatherId,
@@ -48,7 +48,7 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
       return new Response("Person ID is required", { status: 400});
     }
 
-    const update = await updatePerson(id, data);
+    await updatePerson(id, data);
 
     const result = await qstash.publishJSON({
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName`,
@@ -62,8 +62,8 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
     
     return NextResponse.json("Updated successfully", { status: 201 });
   } catch (error) {
-    console.error(error);
-    return new Response("Failed to update person", { status: 500 });
+    console.log(error);
+    return new Response("Failed to update person: " + error, { status: 500 });
   }
 }
 
@@ -85,6 +85,6 @@ export async function DELETE(req: Request, { params } : { params: Promise<{ id: 
       return new Response("Person deleted successfully", { status: 200 });
     } catch (error) {
       console.error(error);
-      return new Response("Failed to delete person", { status: 500 });
+      return new Response("Failed to delete person " + error, { status: 500 });
     }
   }

@@ -1,5 +1,5 @@
 import { isAdmin } from '@/lib/session';
-import { deleteRelationById, getRelationById, updateRelationStatusById } from '@/lib/spouseRelationship';
+import { deleteRelationById, getRelationById, updateRelationStatusById } from '@/lib/db/spouseRelationship';
 import { NextResponse } from 'next/server';
 
 export async function GET(req:Request) {

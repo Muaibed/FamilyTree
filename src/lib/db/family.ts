@@ -1,0 +1,113 @@
+import { prisma } from '../prisma';
+
+export const createFamily = async (data: {
+  name: string,
+  rootPersonId?: string,
+  ownerId?: string
+}) => {
+  
+  const { name, rootPersonId, ownerId } = data;
+
+  return prisma.family.create({
+    data: {
+      name,
+      ...(rootPersonId && {
+        rootPerson: { connect: { id: rootPersonId } }
+      }),
+      ...(ownerId && {
+        owner: { connect: { id: ownerId } }
+      }),
+    }
+  });
+};
+
+export const getFamilyById = async (id: string) => {
+  return prisma.family.findUnique({
+    where: { id },
+    include: {
+      rootPerson: true,
+    }
+  });
+};
+
+export const getFamilyByName = async (name: string) => {
+  return prisma.family.findFirst({
+    where: { name },
+    include: {
+      rootPerson: true,
+    }
+  });
+};
+
+export const getAllFamilies = async () => {
+  return prisma.family.findMany({
+    include: {
+      rootPerson: true,
+    }
+  });
+};
+
+export const getAllFamiliesWithSameOwner = async (familyId: string) => {
+  return await prisma.$transaction(async (tx) => {
+    const family = await tx.family.findUnique({
+      where: { id: familyId },
+      select: { ownerId: true },
+    });
+
+      console.log(family?.ownerId)
+      return tx.family.findMany({
+        where: { ownerId: family?.ownerId },
+        include: {
+          rootPerson: true
+        }
+      });
+  });
+}
+
+export const getAllFamiliesFromOwnerId = async (ownerId: string) => {
+  return await prisma.family.findMany({
+    where: {
+      ownerId
+    },
+    include: {
+      rootPerson: true
+    }
+  })
+}
+
+export const getDisplayedFamilies = async () => {
+  return prisma.family.findMany({
+    where: {
+      isDisplayed: true,
+    },
+    include: {
+      rootPerson: true,
+    }
+  });
+};
+
+export const updateFamily = async (id: string, data: {
+  name?: string,
+  rootPersonId?: string
+  isDisplayed?: boolean
+}) => {
+  
+  const { name, rootPersonId, isDisplayed } = data;
+
+  return prisma.family.update({
+    where: { id },
+    data: {
+      name,
+      ...(rootPersonId
+      ? { rootPerson: { connect: { id: rootPersonId } } }
+      : { rootPerson: { disconnect: true } }),
+      isDisplayed
+    },
+  });
+};
+
+export const deleteFamily = async (id: string) => {
+  return prisma.family.delete({
+    where: { id },
+  });
+};

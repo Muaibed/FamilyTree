@@ -1,4 +1,4 @@
-import { getAllPersonsWithSameOwner } from '@/lib/person';
+import { getAllPersonsWithSameOwner } from '@/lib/db/person';
 import { getUserId } from '@/lib/session';
 import { PersonWithRelations } from '@/types/family';
 import { NextResponse } from 'next/server';

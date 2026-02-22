@@ -1,5 +1,5 @@
-import { getFamilyById } from '@/lib/family';
-import { getAllPersonsWithSameOwner } from '@/lib/person';
+import { getFamilyById } from '@/lib/db/family';
+import { getAllPersonsWithSameOwner } from '@/lib/db/person';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request, { params } : { params: Promise<{ id: string }> }) {

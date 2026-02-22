@@ -1,13 +1,14 @@
-"use client" 
+"use client"
 
 import { Option } from "@/types/ui";
 import { useEffect, useState } from "react";
-import { Family, Person } from "@/generated/prisma";
+import { Person } from "@/generated/prisma";
 import { PersonWithRelations } from "@/types/family";
 import SearchSelect from "../ui/SearchSelect";
-import useSWR from "swr";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "../alerts/ErrorAlert";
+import { useQuery } from "@tanstack/react-query";
+import { getFamilyMembers } from "@/lib/queries/familyTreeMembers";
 
 type SpouseSelectProps = {
   placeholder?: string;
@@ -27,23 +28,27 @@ export default function SearchSelectSpouse({
   );
   const [spouseOptions, setSpouseOptions] = useState<Option[]>([]);
 
-  const familyId = sessionStorage.getItem('selectedFamily')
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const familyId = sessionStorage.getItem('selectedFamily');
 
-    const { data: members, isLoading, error, mutate } = useSWR<PersonWithRelations[]>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${familyId}`,
-        fetcher
-    );
+  const { data: members = [], isLoading, isError } = useQuery({
+    queryKey: ["family-members", familyId],
+    queryFn: () => getFamilyMembers(familyId!),
+    enabled: !!familyId,
+  });
 
-  if (isLoading) return <div className="flex items-center justify-center w-full h-screen">
-        <Loader2 />
+  if (isLoading) return (
+    <div className="flex items-center justify-center w-full h-screen">
+      <Loader2 />
     </div>
+  );
 
-    if (error || !members) {
-        return <div>
-            <ErrorAlert title="حدث خطأ!" message="خطأ في الحصول على البيانات"/>
-        </div>
-    }
+  if (isError || !members) {
+    return (
+      <div>
+        <ErrorAlert title="حدث خطأ!" message="خطأ في الحصول على البيانات" />
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (person.gender === "MALE") {

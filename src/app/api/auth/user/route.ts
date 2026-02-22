@@ -1,4 +1,4 @@
-import { getAdminNumber } from '@/lib/user';
+import { getAdminNumber } from '@/lib/db/user';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {

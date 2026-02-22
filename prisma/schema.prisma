@@ -14,6 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
   id             String          @id @default(uuid()) @db.Uuid
   email          String?         @unique
@@ -24,6 +25,8 @@ model User {
   verified       Boolean         @default(false)
   changeRequests ChangeRequest[] @relation("ChangeRequester")
   familiesOwner  Family[]
+  subscribtion   Subscribtion    @default(TRIAL)
+  recordsCount   Int             @default(0)
 }
 
 model VerificationToken {
@@ -32,6 +35,7 @@ model VerificationToken {
   token      String   @unique
   expires    DateTime
 }
+
 
 enum Role {
   ADMIN
@@ -43,11 +47,17 @@ enum Gender {
   FEMALE
 }
 
+enum Subscribtion {
+  TRIAL
+  PRO
+}
+
 model Person {
   id         String          @id @default(uuid()) @db.Uuid
   firstName  String
   fullName   String
   gender     Gender
+  kunya      String? 
   birthDate  DateTime?
   deathDate  DateTime?
   phone      String?
@@ -74,9 +84,9 @@ model Person {
 
 model SpouseRelationship {
   id       String @id @default(uuid()) @db.Uuid
-  male    Person @relation("Males", fields: [maleId], references: [id])
-  maleId String @db.Uuid
-  female   Person @relation("Females", fields: [femaleId], references: [id])
+  male     Person @relation("Males", fields: [maleId], references: [id], onDelete: Cascade)
+  maleId   String @db.Uuid
+  female   Person @relation("Females", fields: [femaleId], references: [id], onDelete: Cascade)
   femaleId String @db.Uuid
 
   startDate DateTime?
@@ -127,4 +137,5 @@ model Family {
   rootPersonId String?    @db.Uuid       @unique
   members      Person[]   @relation("FamilyMembers")
   isDisplayed  Boolean    @default(false)
+  membersCount Int        @default(0)
 }

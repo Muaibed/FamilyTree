@@ -1,18 +1,17 @@
 "use client"; 
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { TreeNode } from "@/types/tree";
 import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
 import { prepareTreeData } from "@/lib/tree";
-import { Modal, PersonModal } from "./Modal";
+import { PersonModal } from "./Modal";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
-import { ScrollArea } from "../ui/scroll-area";
-import AddChildForm from "../forms/AddChildForm";
-import AddSpouseForm from "../forms/AddSpouseForm";
-import DeletePerson from "./DeletePerson";
+import CreatePerson from "@/app/pages/CreatePerson";
+import EditPerson from "@/app/pages/EditPerson";
+import CreateSpouseRelationship from "@/app/pages/CreateSpouseRelationship";
 
 export default function RadialCluster({
   members,
@@ -34,23 +33,60 @@ export default function RadialCluster({
   const [selectedPerson, setSelectedPerson] = useState<
     PersonWithRelations | undefined
   >(undefined);
-  const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const [isEditingFamily, setIsEditingFamily] = useState(false);
+  const [isEditingPerson, setIsEditingPerson] = useState(false);
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [modalPos, setModalPos] = useState<[number, number]>([0,0])
-    
+  const [modalPos, setModalPos] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   const { data: session, status } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
-  
+
+  // Detect mobile screen
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   function handleClick(event: MouseEvent, d: d3.HierarchyPointNode<TreeNode>) {
     const personId = d.data.attributes?.id;
     setSelectedPerson(members.find((p) => p.id === personId));
-    setDetailModalOpen(true);
-    setModalPos([d.x, d.y])
+
+    // Get the actual screen coordinates of the click
+    let clickX = event.clientX;
+    let clickY = event.clientY;
+
+    // Get modal dimensions based on screen size
+    const isMobileView = window.innerWidth < 768;
+    const modalWidth = isMobileView ? 150 : Math.min(window.innerWidth * 0.9, 350);
+    const modalMaxHeight = isMobileView ? window.innerHeight * 0.45 : window.innerHeight * 0.7;
+
+    // Constrain to viewport bounds (with some padding)
+    const padding = 10;
+    const halfWidth = modalWidth / 2;
+    const halfHeight = modalMaxHeight / 2;
+
+    // Constrain X position
+    if (clickX - halfWidth < padding) {
+      clickX = halfWidth + padding;
+    } else if (clickX + halfWidth > window.innerWidth - padding) {
+      clickX = window.innerWidth - halfWidth - padding;
+    }
+
+    // Constrain Y position
+    if (clickY - halfHeight < padding) {
+      clickY = halfHeight + padding;
+    } else if (clickY + halfHeight > window.innerHeight - padding) {
+      clickY = window.innerHeight - halfHeight - padding;
+    }
+
+    setModalPos({ x: clickX, y: clickY });
   }
 
     useEffect(() => {
@@ -71,7 +107,6 @@ export default function RadialCluster({
                 selectedFamily.id,
             );
         }
-
 
     // Create tree layout
     const tree = d3.tree<TreeNode>()
@@ -153,38 +188,72 @@ export default function RadialCluster({
   return (
     <div>
       <svg ref={svgRef} width={width} height={height} style={{ overflow: 'visible'}} className="rd3t-svg"/>
-      <div className={`flex left-${modalPos[0]} top-${modalPos[1]}`}>
+      {selectedPerson && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={() => {
+              setSelectedPerson(undefined);
+              setIsAddingChild(false);
+              setIsAddingSpouse(false);
+              setIsEditingPerson(false);
+            }}
+          />
+          {/* Modal - different positioning for mobile vs desktop */}
+          <div
+            className={isMobile ? "fixed z-50 text-xs overflow-hidden" : "fixed z-50 overflow-hidden"}
+            style={
+              isMobile
+                ? {
+                    left: `${modalPos.x}px`,
+                    top: `${modalPos.y}px`,
+                    transform: 'translate(-50%, -50%)',
+                    width: '150px',
+                    maxHeight: '45vh',
+                  }
+                : {
+                    left: '50%',
+                    top: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '90vw',
+                    maxWidth: '350px',
+                    maxHeight: '70vh',
+                  }
+            }
+          >
         <PersonModal
           isOpen={!!selectedPerson}
           onClose={() => {
             setSelectedPerson(undefined);
-            setDetailModalOpen(false);
             setIsAddingChild(false);
             setIsAddingSpouse(false);
+            setIsEditingPerson(false)
           }}
           gender={selectedPerson?.gender}
         >
         {selectedPerson && (
-          <div className="text-center">
-            <div>
-              <h1 className="text-2xl font-bold">{selectedPerson.firstName}</h1>
-              <p className="text-sm opacity-50 mt-1">{selectedPerson.fullName}</p>
+          <div className="text-center overflow-hidden">
+            <div className="break-words">
+              <h1 className="text-sm sm:text-lg font-bold break-words">{selectedPerson.firstName}</h1>
+              <p className="text-[10px] sm:text-xs opacity-50 mt-0.5 break-words">{selectedPerson.fullName}</p>
+              <p className="text-[10px] sm:text-xs opacity-50 mt-0.5 break-words">{selectedPerson.kunya}</p>
             </div>
-            <div className="m-4">
+            <div className="m-1 sm:m-3">
                 {(selectedPerson.femaleSpouses.filter(
                   (s) => s.isActive === true
                 ).length > 0 ||
                   selectedPerson.maleSpouses.filter((s) => s.isActive === true)
                     .length > 0) && (
-              <div className="bg-accent dark:bg-secondary rounded m-1 h-auto p-2">
-                  <div className="flex flex-row items-center justify-between py-2 relative min-h-[2.5rem]">
+              <div className="bg-accent dark:bg-secondary rounded m-0.5 sm:m-1 h-auto p-0.5 sm:p-2">
+                  <div className="flex flex-row items-center justify-between py-0.5 sm:py-2 relative min-h-[1.2rem] sm:min-h-[2.5rem]">
                     <div className="relative left-1/2 transform -translate-x-1/2 w-2/3">
-                      <div className="flex flex-col">
+                      <div className="flex flex-col text-[10px] sm:text-sm">
                         {selectedPerson.gender === "FEMALE"
                           ? selectedPerson.femaleSpouses
                               .filter((s) => s.isActive === true)
                               .map((s) => (<>
-                                <div key={s.id} className="py-1 flex items-center-safe justify-center-safe w-full h-full">
+                                <div key={s.id} className="py-0.5 flex items-center-safe justify-center-safe w-full h-full break-words">
                                   {s.male.fullName}
                                 </div>
                               <div className="w-full bg-primary-foreground h-0.5 opacity-50 dark:opacity-10 rounded-4xl"></div>
@@ -193,7 +262,7 @@ export default function RadialCluster({
                               : selectedPerson.maleSpouses
                               .filter((s) => s.isActive === true)
                               .map((s) => (<>
-                                <div key={s.id} className="py-1 flex items-center-safe justify-center-safe w-full h-full">
+                                <div key={s.id} className="py-0.5 flex items-center-safe justify-center-safe w-full h-full break-words">
                                   {s.female.fullName}
                                 </div>
                               <div className="w-full bg-primary-foreground h-0.5 opacity-50 dark:opacity-10 rounded-4xl"></div>
@@ -201,49 +270,49 @@ export default function RadialCluster({
                               ))}
                       </div>
                     </div>
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                    <div className="absolute right-1 sm:right-4 top-1/2 transform -translate-y-1/2">
                       <Image
                         src="/icons/wedding-rings.png"
                         alt="Star"
                         width={512}
                         height={512}
-                        className="w-7 block dark:hidden"
+                        className="w-3 sm:w-6 block dark:hidden"
                       />
                       <Image
                         src="/icons/white-wedding-rings.png"
                         alt="Star"
                         width={512}
                         height={512}
-                        className="w-7 hidden dark:block"
+                        className="w-3 sm:w-6 hidden dark:block"
                       />
                     </div>
                   </div>
               </div>
                 )}
               {selectedPerson.deathDate && (
-                <div className="bg-accent dark:bg-secondary rounded m-1">
-                  <div className="relative py-2 min-h-[2.5rem]">
+                <div className="bg-accent dark:bg-secondary rounded m-0.5 sm:m-1">
+                  <div className="relative py-0.5 sm:py-2 min-h-[1.2rem] sm:min-h-[2.5rem]">
                     <div className="absolute left-1/2 transform -translate-x-1/2">
-                      <p>
+                      <p className="text-[10px] sm:text-sm">
                         {new Date(selectedPerson.deathDate)
                           .toISOString()
                           .slice(0, 10)}
                       </p>
                     </div>
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                    <div className="absolute right-1 sm:right-4 top-1/2 transform -translate-y-1/2">
                       <Image
                         src="/icons/tombstone.png"
                         alt="Star"
                         width={512}
                         height={512}
-                        className="w-6 block dark:hidden"
+                        className="w-3 sm:w-5 block dark:hidden"
                       />
                       <Image
                         src="/icons/white-tombstone.png"
                         alt="Star"
                         width={512}
                         height={512}
-                        className="w-6 hidden dark:block"
+                        className="w-3 sm:w-5 hidden dark:block"
                       />
                     </div>
                   </div>
@@ -253,12 +322,14 @@ export default function RadialCluster({
 
             {isAdmin && (
               <div>
-                <div className="flex flex-col gap-2 mt-4 px-4">
+                <div className="flex flex-col gap-0.5 sm:gap-2 mt-1 sm:mt-3 px-1 sm:px-4">
                   <Button
                     onClick={() => {
                       setIsAddingChild(!isAddingChild);
                       setIsAddingSpouse(false);
+                      setIsEditingPerson(false);
                     }}
+                    className="text-[10px] sm:text-sm py-0.5 sm:py-2 h-auto px-2"
                   >
                     إضافة ابن
                   </Button>
@@ -266,86 +337,56 @@ export default function RadialCluster({
                     onClick={() => {
                       setIsAddingSpouse(!isAddingSpouse);
                       setIsAddingChild(false);
+                      setIsEditingPerson(false);
                     }}
+                    className="text-[10px] sm:text-sm py-0.5 sm:py-2 h-auto px-2"
                   >
                     إضافة زوج
                   </Button>
                   <Button
-                    variant="destructive"
-                    className="w-full py-2 px-4 font-semibold"
-                    onClick={() => setIsDeleting(!isDeleting)}
+                    variant="outline"
+                    className="w-full text-[10px] sm:text-sm py-0.5 sm:py-2 h-auto px-2"
+                    onClick={() => {
+                      setIsEditingPerson(!isEditingPerson);
+                      setIsAddingChild(false);
+                      setIsAddingSpouse(false);
+                    }}
                   >
-                    حذف
+                    تعديل
                   </Button>
                 </div>
+                <div className="max-h-[15vh] sm:max-h-[25vh] overflow-auto overflow-x-hidden mt-0.5 sm:mt-2">
                 {isAddingChild && (
-                  <div>
-                  <ScrollArea className="max-h-[50vh] md:max-h-[300px] overflow-auto">
-                    <AddChildForm
-                      parent={selectedPerson}
-                      onAdd={() => {
-                        onChange();
-                        setDetailModalOpen(false);
-                        setIsAddingChild(false);
-                        setSelectedPerson(undefined);
-                      }}
-                    />
-                    </ScrollArea>
+                  <div className="overflow-hidden">
+                      <CreatePerson onSuccess={() => setIsAddingChild(false)} defaultValues={selectedPerson.gender === "MALE" ? { father: selectedPerson } : { mother: selectedPerson }} />
                   </div>
                 )}
                 {isAddingSpouse && (
-                  <div>
-                    <ScrollArea className="max-h-[50vh] md:max-h-[300px] overflow-auto">
-                    <AddSpouseForm
-                      person={selectedPerson}
-                      onAdd={() => {
+                  <div className="overflow-hidden">
+                    <CreateSpouseRelationship
+                      defaultValues={selectedPerson.gender === "MALE" ? { maleId: selectedPerson.id } : { femaleId: selectedPerson.id }}
+                      onSuccess={() => {
                         onChange();
-                        setDetailModalOpen(false);
                         setIsAddingSpouse(false);
                         setSelectedPerson(undefined);
                       }}
                       />
-                    </ScrollArea>
                   </div>
                 )}
+                {selectedPerson && isEditingPerson && (
+                  <div className="overflow-hidden">
+                      <EditPerson id={selectedPerson.id} onSubmit={() => setIsEditingPerson(false)} onDelete={() => setSelectedPerson(undefined)} />
+                  </div>
+                )}
+                </div>
               </div>
             )}
-
-            {/* {!isAdmin && (
-              <div className="flex flex-col gap-2 mt-3 px-4">
-                <Button
-                  className="w-full py-2 px-4 font-semibold"
-                  onClick={() =>
-                    (window.location.href = `/changeRequestForm?personId=${selectedPerson.id}`)
-                  }
-                >
-                  طلب تعديل
-                </Button>
-              </div>
-            )} */}
           </div>
         )}
-      </PersonModal>
-        </div>
-
-      <Modal
-        isOpen={!!isDeleting}
-        onClose={() => {
-          setIsDeleting(false);
-          setDetailModalOpen(false);
-        }}
-      >
-        {selectedPerson && isDeleting && (
-          <DeletePerson
-            person={selectedPerson}
-            onSubmit={() => {
-              onChange();
-              setDetailModalOpen(false);
-              setIsDeleting(false);
-            }}
-          />
-        )}
-      </Modal>
+          </PersonModal>
+          </div>
+        </>
+      )}
     </div>
   )
 }

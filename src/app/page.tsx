@@ -19,8 +19,8 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode, delay?: nu
 
 export default function Homepage() {
     return (
-        <div dir="rtl" className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans">
-          
+      
+      <div dir="rtl" className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans">          
           <section className="relative pt-20 pb-32 px-6 overflow-hidden">
             <div className="max-w-7xl mx-auto text-center">
               <FadeIn>

@@ -6,7 +6,7 @@ import { SpouseRelationshipWithPartners } from "@/types/family";
 import { SpouseRelationship } from "@/generated/prisma";
 import { useState } from "react";
 import { Modal } from "@/components/client/Modal";
-import EditSpouseRelationshipForm from "@/components/forms/EditSpouseRelationshipForm";
+import EditSpouseRelationship from "../pages/EditSpouseRelationship";
 
 export function FamilyTableClient({ data, onChange }: { data: SpouseRelationshipWithPartners[], onChange: any }) {
   const [selectedRelation, setSelectedRelation] = useState<SpouseRelationship | undefined>(undefined);
@@ -19,7 +19,10 @@ export function FamilyTableClient({ data, onChange }: { data: SpouseRelationship
     <DataTable columns={tableColumns} data={Object.values(data)} />;
     {selectedRelation && (
     <Modal isOpen={!!selectedRelation} onClose={() => setSelectedRelation(undefined)}>
-        <EditSpouseRelationshipForm relation={selectedRelation} onEdit={onChange}/>
+        <EditSpouseRelationship id={selectedRelation.id} onSubmit={() => {
+          onChange();
+          setSelectedRelation(undefined);
+        }} onDelete={() => setSelectedRelation(undefined)} />
     </Modal>
     )}
   </>

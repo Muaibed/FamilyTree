@@ -1,28 +1,33 @@
 'use client'
 
-import useSWR from "swr";
 import { FamilyTableClient } from "./FamilyTableClient";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "@/components/alerts/ErrorAlert";
-import { FamilyWithRootPerson } from "@/types/family";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getOwnerFamilies } from "@/lib/queries/families";
 
 export default function Page() {
+  const queryClient = useQueryClient();
 
-  const fetcher = (url: string) => fetch(url).then(res => res.json());
-  const { data, isLoading, error, mutate } = useSWR<FamilyWithRootPerson[]>(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/family/owner`,
-    fetcher
+  const { data = [], isLoading, isError } = useQuery({
+    queryKey: ["owner-families"],
+    queryFn: getOwnerFamilies,
+  });
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center w-full h-screen">
+      <Loader2 />
+    </div>
   );
 
-  if (isLoading) return <div className="flex items-center justify-center w-full h-screen">
-    <Loader2 />
-  </div>
-
-  if (error || !data) return <ErrorAlert title="حدث خطأ!" message="خطأ في الحصول على البيانات" />
+  if (isError || !data) return <ErrorAlert title="حدث خطأ!" message="خطأ في الحصول على البيانات" />;
 
   return (
     <div className="container mx-auto py-10">
-      <FamilyTableClient data={data} onChange={mutate} />
+      <FamilyTableClient
+        data={data}
+        onChange={() => queryClient.invalidateQueries({ queryKey: ["owner-families"] })}
+      />
     </div>
   );
 }
