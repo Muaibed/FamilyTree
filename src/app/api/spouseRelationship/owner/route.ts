@@ -1,5 +1,5 @@
 import { getUserId } from '@/lib/session';
-import { getAllRelationsWithSameOwner } from '@/lib/spouseRelationship';
+import { getAllRelationsWithSameOwner } from '@/lib/db/spouseRelationship';
 import { SpouseRelationshipWithPartners } from '@/types/family';
 import { NextResponse } from 'next/server';
 

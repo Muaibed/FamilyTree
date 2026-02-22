@@ -68,8 +68,12 @@ export const getPersonById = async (id: string) => {
       mother: true,
       fatherChildren: true,
       motherChildren: true,
-      maleSpouses: true,
-      femaleSpouses: true,
+      maleSpouses: {
+        include: { male: true, female: true }
+      },
+      femaleSpouses: {
+        include: { male: true, female: true }
+      },
       family: true,
     },
   });

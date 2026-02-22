@@ -75,7 +75,7 @@ export const getAllFamiliesFromOwnerId = async (ownerId: string) => {
   })
 }
 
-export const getAllDisplayedFamilies = async () => {
+export const getDisplayedFamilies = async () => {
   return prisma.family.findMany({
     where: {
       isDisplayed: true,

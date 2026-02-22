@@ -1,6 +1,7 @@
-import { isAdmin } from '@/lib/session';
-import {createSpouseRelationship, deleteRelation, getAllRelations, getAllRelationsForPerson, updateRelationStatus} from '@/lib/db/spouseRelationship';
+import { getUserId, isAdmin } from '@/lib/session';
+import { createSpouseRelationship, deleteRelation, getAllRelationsForPerson, updateRelationStatus, getAllRelationsWithSameOwner } from '@/lib/db/spouseRelationship';
 import { NextResponse } from 'next/server';
+import { SpouseRelationshipWithPartners } from '@/types/family';
 
 export async function POST(req: Request) {
   try {
@@ -29,10 +30,16 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request) {
-  try {
-    const relations = await getAllRelations();
-    
+export async function GET(req:Request) {
+  try { 
+    const userId = await getUserId()
+    let relations:SpouseRelationshipWithPartners[];
+
+    if (!userId)
+      return NextResponse.json("Not Found", {status: 404})
+
+    relations = await getAllRelationsWithSameOwner(userId)
+
     return NextResponse.json(relations);
   } catch (error: unknown) {
     if (error instanceof Error) {

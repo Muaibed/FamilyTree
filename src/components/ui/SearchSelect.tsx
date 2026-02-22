@@ -15,17 +15,19 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { SearchSelectProps } from '@/types/ui'
+import { SearchSelectProps } from "@/types/ui";
 import { ScrollArea } from "./scroll-area";
 
 export default function SearchSelect({
   options,
   placeholder = "اختر",
   onSelect,
-  selected = null,
+  selected,
   className,
 }: SearchSelectProps) {
   const [open, setOpen] = useState(false);
+
+  console.log("SearchSelect (selected): ", selected);
 
   return (
     <div>
@@ -34,7 +36,7 @@ export default function SearchSelect({
           <button
             className={`w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center justify-between ${className ?? ""}`}
             aria-expanded={open}
-            >
+          >
             <ChevronsUpDown className="mr-2 h-4 w-4 text-muted-foreground justify-end" />
             {selected ? selected.value : placeholder}
           </button>
@@ -58,22 +60,22 @@ export default function SearchSelect({
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        selected?.id === option.id ? "opacity-100" : "opacity-0"
+                        selected?.id === option.id
+                          ? "opacity-100"
+                          : "opacity-0",
                       )}
                     />
                     <div className="flex flex-col items-end justify-end">
-                      <div>
-                        {option.label}  
-                      </div>
+                      <div>{option.label}</div>
                       <div className="text-xs opacity-35">{option.value}</div>
                     </div>
                   </CommandItem>
                 ))}
               </CommandGroup>
-          </ScrollArea>
+            </ScrollArea>
           </Command>
         </PopoverContent>
       </Popover>
-      </div>
+    </div>
   );
 }

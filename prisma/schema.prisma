@@ -84,9 +84,9 @@ model Person {
 
 model SpouseRelationship {
   id       String @id @default(uuid()) @db.Uuid
-  male    Person @relation("Males", fields: [maleId], references: [id])
-  maleId String @db.Uuid
-  female   Person @relation("Females", fields: [femaleId], references: [id])
+  male     Person @relation("Males", fields: [maleId], references: [id], onDelete: Cascade)
+  maleId   String @db.Uuid
+  female   Person @relation("Females", fields: [femaleId], references: [id], onDelete: Cascade)
   femaleId String @db.Uuid
 
   startDate DateTime?

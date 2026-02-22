@@ -3,10 +3,9 @@ import { qstash } from '@/lib/qstash';
 import { isAdmin } from '@/lib/session';
 import { NextResponse } from 'next/server';
 
-export async function GET(req:Request) {
+export async function GET(req:Request, { params } : { params: Promise<{ id: string }> }) {
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
+    const { id } = await params;
 
     if (!id) {
         return new Response("Person ID is required", { status: 400 });
@@ -86,6 +85,6 @@ export async function DELETE(req: Request, { params } : { params: Promise<{ id: 
       return new Response("Person deleted successfully", { status: 200 });
     } catch (error) {
       console.error(error);
-      return new Response("Failed to delete person", { status: 500 });
+      return new Response("Failed to delete person " + error, { status: 500 });
     }
   }

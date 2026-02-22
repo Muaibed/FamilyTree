@@ -1,3 +1,5 @@
+'use client'
+
 import ThemeProvider from "@/theme/theme-provider";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
@@ -7,11 +9,14 @@ import { BlurBackground } from "@/components/ui/BlurBackground";
 import { Amiri, Cairo } from 'next/font/google'
 import Head from "next/head";
 import { Suspense } from "react";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
  
 const amiri = Amiri({
   weight: '400',
   subsets: ['arabic'],
 })
+
+const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,
@@ -27,6 +32,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       <body className="w-full overflow-y-auto">
+        <QueryClientProvider client={queryClient}>
         <SessionProviderWrapper>
           <ThemeProvider
             attribute="class"
@@ -50,6 +56,7 @@ export default function RootLayout({
             <Toaster />
           </ThemeProvider>
         </SessionProviderWrapper>
+        </QueryClientProvider>
       </body>
     </html>
   );

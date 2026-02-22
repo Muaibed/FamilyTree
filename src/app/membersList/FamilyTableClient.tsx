@@ -6,14 +6,12 @@ import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { Modal } from "../../components/client/Modal";
 import { PersonWithRelations } from "../../types/family";
-import EditPersonForm from "../../components/forms/EditPersonForm";
+import EditPerson from "../pages/EditPerson";
 
 export function FamilyTableClient({
   data,
-  onChange,
 }: {
   data: PersonWithRelations[];
-  onChange: any;
 }) {
   const [selectedPerson, setSelectedPerson] = useState<PersonWithRelations | undefined>(undefined);
   const tableColumns = columns({
@@ -25,7 +23,7 @@ export function FamilyTableClient({
       <DataTable columns={tableColumns} data={Object.values(data)} />
       {selectedPerson && (
         <Modal isOpen={true} onClose={() => setSelectedPerson(undefined)}>
-          <EditPersonForm person={selectedPerson} onEdit={onChange()} />
+          <EditPerson id={selectedPerson.id} onSubmit={() => setSelectedPerson(undefined)} onDelete={() => setSelectedPerson(undefined)} />
         </Modal>
       )}
     </>

@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from '../prisma';
 
 export const getAllRelations = async () => {
   return await prisma.spouseRelationship.findMany({
