@@ -21,15 +21,15 @@ export function PersonModal({ isOpen, onClose, gender, children }: PersonModalPr
   if (!isOpen) return null;
 
   return (
-    <div className={`bg-card text-card-foreground border-t-5 p-1.5 sm:p-3 rounded-lg w-full h-full max-h-full relative shadow-xl overflow-y-auto overflow-x-hidden ${gender === "MALE" ? "border-t-male" : (gender === "FEMALE" ? "border-t-female" : "border-t-card")} `}>
+    <div className={`bg-card text-card-foreground border-t-[0.3em] p-[0.5em] rounded-lg w-full h-full max-h-full relative shadow-xl overflow-y-auto overflow-x-hidden ${gender === "MALE" ? "border-t-male" : (gender === "FEMALE" ? "border-t-female" : "border-t-card")} `}>
       <Button
         onClick={onClose}
-        className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 bg-transparent text-card-foreground hover:bg-secondary rounded-full w-4 h-4 sm:w-6 sm:h-6 p-0 z-10"
+        className="absolute top-[0.3em] right-[0.3em] bg-transparent text-card-foreground hover:bg-secondary rounded-full w-[1.4em] h-[1.4em] p-0 z-10"
       >
-        <Image src="/icons/close.png" alt="X" width={512} height={512} className="w-2.5 sm:w-4 block dark:hidden" />
-        <Image src="/icons/white-close.png" alt="X" width={512} height={512} className="w-2.5 sm:w-4 hidden dark:block" />
+        <Image src="/icons/close.png" alt="X" width={512} height={512} className="w-[0.9em] h-[0.9em] block dark:hidden" />
+        <Image src="/icons/white-close.png" alt="X" width={512} height={512} className="w-[0.9em] h-[0.9em] hidden dark:block" />
       </Button>
-      <div className="pr-3 sm:pr-6 pb-1 sm:pb-2">
+      <div className="pr-[1.5em] pb-[0.5em]">
         {children}
       </div>
     </div>
