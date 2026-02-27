@@ -200,17 +200,28 @@ export default function RadialCluster({
               setIsEditingPerson(false);
             }}
           />
-          {/* Modal - different positioning for mobile vs desktop */}
+          {/* Modal - compact beside node, expands to center when a form is open */}
           <div
-            className={isMobile ? "fixed z-50 text-xs overflow-hidden" : "fixed z-50 overflow-hidden"}
+            className="fixed z-50 overflow-hidden"
             style={
-              isMobile
+              (isAddingChild || isAddingSpouse || isEditingPerson)
+                ? {
+                    left: '50%',
+                    top: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '90vw',
+                    maxWidth: '450px',
+                    maxHeight: '85vh',
+                    fontSize: '14px',
+                  }
+                : isMobile
                 ? {
                     left: `${modalPos.x}px`,
                     top: `${modalPos.y}px`,
                     transform: 'translate(-50%, -50%)',
                     width: '150px',
                     maxHeight: '45vh',
+                    fontSize: '9px',
                   }
                 : {
                     left: '50%',
@@ -219,6 +230,7 @@ export default function RadialCluster({
                     width: '90vw',
                     maxWidth: '350px',
                     maxHeight: '70vh',
+                    fontSize: '14px',
                   }
             }
           >
@@ -235,84 +247,84 @@ export default function RadialCluster({
         {selectedPerson && (
           <div className="text-center overflow-hidden">
             <div className="break-words">
-              <h1 className="text-sm sm:text-lg font-bold break-words">{selectedPerson.firstName}</h1>
-              <p className="text-[10px] sm:text-xs opacity-50 mt-0.5 break-words">{selectedPerson.fullName}</p>
-              <p className="text-[10px] sm:text-xs opacity-50 mt-0.5 break-words">{selectedPerson.kunya}</p>
+              <h1 className="text-[1.3em] font-bold break-words">{selectedPerson.firstName}</h1>
+              <p className="text-[1em] opacity-50 mt-[0.3em] break-words">{selectedPerson.fullName}</p>
+              <p className="text-[1em] opacity-50 mt-[0.2em] break-words">{selectedPerson.kunya}</p>
             </div>
-            <div className="m-1 sm:m-3">
+            <div className="m-[0.5em]">
                 {(selectedPerson.femaleSpouses.filter(
                   (s) => s.isActive === true
                 ).length > 0 ||
                   selectedPerson.maleSpouses.filter((s) => s.isActive === true)
                     .length > 0) && (
-              <div className="bg-accent dark:bg-secondary rounded m-0.5 sm:m-1 h-auto p-0.5 sm:p-2">
-                  <div className="flex flex-row items-center justify-between py-0.5 sm:py-2 relative min-h-[1.2rem] sm:min-h-[2.5rem]">
+              <div className="bg-accent dark:bg-secondary rounded m-[0.3em] h-auto p-[0.3em]">
+                  <div className="flex flex-row items-center justify-between py-[0.3em] relative min-h-[2em]">
                     <div className="relative left-1/2 transform -translate-x-1/2 w-2/3">
-                      <div className="flex flex-col text-[10px] sm:text-sm">
+                      <div className="flex flex-col text-[1em]">
                         {selectedPerson.gender === "FEMALE"
                           ? selectedPerson.femaleSpouses
                               .filter((s) => s.isActive === true)
                               .map((s) => (<>
-                                <div key={s.id} className="py-0.5 flex items-center-safe justify-center-safe w-full h-full break-words">
+                                <div key={s.id} className="py-[0.2em] flex items-center-safe justify-center-safe w-full h-full break-words">
                                   {s.male.fullName}
                                 </div>
-                              <div className="w-full bg-primary-foreground h-0.5 opacity-50 dark:opacity-10 rounded-4xl"></div>
+                              <div className="w-full bg-primary-foreground h-px opacity-50 dark:opacity-10 rounded-4xl"></div>
                               </>
                               ))
                               : selectedPerson.maleSpouses
                               .filter((s) => s.isActive === true)
                               .map((s) => (<>
-                                <div key={s.id} className="py-0.5 flex items-center-safe justify-center-safe w-full h-full break-words">
+                                <div key={s.id} className="py-[0.2em] flex items-center-safe justify-center-safe w-full h-full break-words">
                                   {s.female.fullName}
                                 </div>
-                              <div className="w-full bg-primary-foreground h-0.5 opacity-50 dark:opacity-10 rounded-4xl"></div>
+                              <div className="w-full bg-primary-foreground h-px opacity-50 dark:opacity-10 rounded-4xl"></div>
                               </>
                               ))}
                       </div>
                     </div>
-                    <div className="absolute right-1 sm:right-4 top-1/2 transform -translate-y-1/2">
+                    <div className="absolute right-[0.4em] top-1/2 transform -translate-y-1/2">
                       <Image
                         src="/icons/wedding-rings.png"
                         alt="Star"
                         width={512}
                         height={512}
-                        className="w-3 sm:w-6 block dark:hidden"
+                        className="w-[1.4em] h-[1.4em] block dark:hidden"
                       />
                       <Image
                         src="/icons/white-wedding-rings.png"
                         alt="Star"
                         width={512}
                         height={512}
-                        className="w-3 sm:w-6 hidden dark:block"
+                        className="w-[1.4em] h-[1.4em] hidden dark:block"
                       />
                     </div>
                   </div>
               </div>
                 )}
               {selectedPerson.deathDate && (
-                <div className="bg-accent dark:bg-secondary rounded m-0.5 sm:m-1">
-                  <div className="relative py-0.5 sm:py-2 min-h-[1.2rem] sm:min-h-[2.5rem]">
+                <div className="bg-accent dark:bg-secondary rounded m-[0.3em]">
+                  <div className="relative py-[0.3em] min-h-[2em]">
                     <div className="absolute left-1/2 transform -translate-x-1/2">
-                      <p className="text-[10px] sm:text-sm">
+                      <p className="text-[1em]">
                         {new Date(selectedPerson.deathDate)
                           .toISOString()
                           .slice(0, 10)}
                       </p>
                     </div>
-                    <div className="absolute right-1 sm:right-4 top-1/2 transform -translate-y-1/2">
+                    <div className="absolute right-[0.4em] top-1/2 transform -translate-y-1/2">
                       <Image
                         src="/icons/tombstone.png"
                         alt="Star"
                         width={512}
                         height={512}
-                        className="w-3 sm:w-5 block dark:hidden"
+                        className="w-[1.2em] h-[1.2em] block dark:hidden"
                       />
                       <Image
                         src="/icons/white-tombstone.png"
                         alt="Star"
                         width={512}
                         height={512}
-                        className="w-3 sm:w-5 hidden dark:block"
+                        className="w-[1.2em] h-[1.2em] hidden dark:block"
                       />
                     </div>
                   </div>
@@ -322,14 +334,14 @@ export default function RadialCluster({
 
             {isAdmin && (
               <div>
-                <div className="flex flex-col gap-0.5 sm:gap-2 mt-1 sm:mt-3 px-1 sm:px-4">
+                <div className="flex flex-col gap-[0.4em] mt-[0.5em] px-[0.5em]">
                   <Button
                     onClick={() => {
                       setIsAddingChild(!isAddingChild);
                       setIsAddingSpouse(false);
                       setIsEditingPerson(false);
                     }}
-                    className="text-[10px] sm:text-sm py-0.5 sm:py-2 h-auto px-2"
+                    className="text-[1em] py-[0.3em] h-auto px-[0.5em]"
                   >
                     إضافة ابن
                   </Button>
@@ -339,13 +351,13 @@ export default function RadialCluster({
                       setIsAddingChild(false);
                       setIsEditingPerson(false);
                     }}
-                    className="text-[10px] sm:text-sm py-0.5 sm:py-2 h-auto px-2"
+                    className="text-[1em] py-[0.3em] h-auto px-[0.5em]"
                   >
                     إضافة زوج
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full text-[10px] sm:text-sm py-0.5 sm:py-2 h-auto px-2"
+                    className="w-full text-[1em] py-[0.3em] h-auto px-[0.5em]"
                     onClick={() => {
                       setIsEditingPerson(!isEditingPerson);
                       setIsAddingChild(false);
@@ -355,7 +367,7 @@ export default function RadialCluster({
                     تعديل
                   </Button>
                 </div>
-                <div className="max-h-[15vh] sm:max-h-[25vh] overflow-auto overflow-x-hidden mt-0.5 sm:mt-2">
+                <div className="max-h-[20em] overflow-auto overflow-x-hidden mt-[0.5em]">
                 {isAddingChild && (
                   <div className="overflow-hidden">
                       <CreatePerson onSuccess={() => setIsAddingChild(false)} defaultValues={selectedPerson.gender === "MALE" ? { father: selectedPerson } : { mother: selectedPerson }} />
