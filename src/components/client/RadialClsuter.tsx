@@ -200,21 +200,11 @@ export default function RadialCluster({
               setIsEditingPerson(false);
             }}
           />
-          {/* Modal - compact beside node, expands to center when a form is open */}
+          {/* Modal - compact beside node on mobile, centered on desktop */}
           <div
             className="fixed z-50 overflow-hidden"
             style={
-              (isAddingChild || isAddingSpouse || isEditingPerson)
-                ? {
-                    left: '50%',
-                    top: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: '90vw',
-                    maxWidth: '450px',
-                    maxHeight: '85vh',
-                    fontSize: '14px',
-                  }
-                : isMobile
+              isMobile
                 ? {
                     left: `${modalPos.x}px`,
                     top: `${modalPos.y}px`,
@@ -367,14 +357,14 @@ export default function RadialCluster({
                     تعديل
                   </Button>
                 </div>
-                <div className="max-h-[20em] overflow-auto overflow-x-hidden mt-[0.5em]">
+                <div className="overflow-auto mt-[0.5em] flex justify-center">
                 {isAddingChild && (
-                  <div className="overflow-hidden">
+                  <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
                       <CreatePerson onSuccess={() => setIsAddingChild(false)} defaultValues={selectedPerson.gender === "MALE" ? { father: selectedPerson } : { mother: selectedPerson }} />
                   </div>
                 )}
                 {isAddingSpouse && (
-                  <div className="overflow-hidden">
+                  <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
                     <CreateSpouseRelationship
                       defaultValues={selectedPerson.gender === "MALE" ? { maleId: selectedPerson.id } : { femaleId: selectedPerson.id }}
                       onSuccess={() => {
@@ -386,7 +376,7 @@ export default function RadialCluster({
                   </div>
                 )}
                 {selectedPerson && isEditingPerson && (
-                  <div className="overflow-hidden">
+                  <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
                       <EditPerson id={selectedPerson.id} onSubmit={() => setIsEditingPerson(false)} onDelete={() => setSelectedPerson(undefined)} />
                   </div>
                 )}
