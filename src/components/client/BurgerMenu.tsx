@@ -13,16 +13,17 @@ import { useRouter } from "next/navigation";
 type BurgerMenuProps = {
   onCreatePerson?: () => void;
   onAddFamily?: () => void;
+  onCreateTree?: () => void;
   onExportSVG?: () => void;
   onExportPDF?: () => void;
 };
 
-export default function BurgerMenu({ onCreatePerson, onAddFamily, onExportSVG, onExportPDF }: BurgerMenuProps) {
-    const { data: session, status } = useSession();
+export default function BurgerMenu({ onCreatePerson, onAddFamily, onCreateTree, onExportSVG, onExportPDF }: BurgerMenuProps) {
+    const { data: session } = useSession();
     const isAdmin = session?.user?.role === "ADMIN";
 
     const router = useRouter();
-    
+
   return (
     <NavigationMenu viewport={false} className="list-none">
         <NavigationMenuItem>
@@ -48,6 +49,14 @@ export default function BurgerMenu({ onCreatePerson, onAddFamily, onExportSVG, o
                             إضافة عائلة
                         </li>
                       )}
+                      {onCreateTree && (
+                        <li
+                            key={'CreateTree'}
+                            onClick={() => onCreateTree()}
+                        >
+                            إضافة شجرة عائلية
+                        </li>
+                      )}
                       <li
                         key={'MembersList'}
                         onClick={() => {router.push('/membersList')}}
@@ -59,6 +68,12 @@ export default function BurgerMenu({ onCreatePerson, onAddFamily, onExportSVG, o
                         onClick={() => {router.push('/familiesList')}}
                       >
                         قائمة العائلات
+                      </li>
+                      <li
+                        key={'FamilyTreeList'}
+                        onClick={() => {router.push('/familyTreeList')}}
+                      >
+                        قائمة أشجار العائلة
                       </li>
                       <li
                         key={'RelationsList'}
@@ -74,7 +89,7 @@ export default function BurgerMenu({ onCreatePerson, onAddFamily, onExportSVG, o
                   key={'ExportPDF'}
                   onClick={() => onExportPDF()}
                 >
-                    PDF استيراد الشجرة 
+                    PDF استيراد الشجرة
                 </li>
                 )}
               {session && (
@@ -97,7 +112,7 @@ export default function BurgerMenu({ onCreatePerson, onAddFamily, onExportSVG, o
               )}
               {!session && (
                 <>
-                  <li 
+                  <li
                     key={'Signin'}
                     onClick={() => {router.push(`/auth/signin`)}}
                   >

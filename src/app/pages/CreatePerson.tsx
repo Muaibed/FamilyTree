@@ -18,6 +18,7 @@ export default function CreatePerson({
     onSuccess: (newPerson) => {
       queryClient.setQueryData(["members", newPerson.id], newPerson);
       queryClient.invalidateQueries({ queryKey: ["members"] });
+      queryClient.invalidateQueries({ queryKey: ["family-tree"] });
       onSuccess();
     },
   });

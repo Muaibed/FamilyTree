@@ -1,22 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { FamilyWithRootPerson } from "@/types/family";
 import { Family } from "@/generated/prisma";
 import { Input } from "../ui/input";
-import SearchSelectMember from "../preDefinedData/SearchSelectMember";
-import { Loader2 } from "lucide-react";
-import ErrorAlert from "../alerts/ErrorAlert";
 import { ScrollArea } from "../ui/scroll-area";
-import TrueFalseSelect from "../preDefinedData/BooleanSelect";
 import { Controller, useForm } from "react-hook-form";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Modal } from "../client/Modal";
 import DeletePage from "../client/DeletePage";
 import { deleteFamily } from "@/lib/queries/families";
-import { getMembers } from "@/lib/queries/familyTreeMembers";
-import { Option } from "@/types/ui";
 
 export default function FamilyForm({
   onSubmit,
@@ -34,31 +28,11 @@ export default function FamilyForm({
   const {
     control,
     handleSubmit,
-    setValue,
   } = useForm({
     defaultValues,
   });
 
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const {
-    data: members = [],
-    isLoading: membersLoading,
-    isError: membersError,
-  } = useQuery({
-    queryKey: ["members"],
-    queryFn: getMembers,
-  });
-
-  const membersOptions = useMemo<Option[]>(
-    () =>
-      members.map((item) => ({
-        id: item.id,
-        label: item.firstName,
-        value: item.fullName,
-      })),
-    [members],
-  );
 
   const deleteFamilyMutation = useMutation({
     mutationFn: deleteFamily,
@@ -73,15 +47,6 @@ export default function FamilyForm({
     deleteFamilyMutation.mutate(defaultValues.id);
     onDelete();
   };
-
-  if (membersLoading)
-    return (
-      <div className="flex items-center justify-center w-full h-screen">
-        <Loader2 />
-      </div>
-    );
-
-  if (membersError) return <ErrorAlert />;
 
   return (
     <div className="max-w-md mx-auto mt-8 p-6 rounded-lg">
@@ -101,35 +66,6 @@ export default function FamilyForm({
                   placeholder="اسم العائلة"
                   required
                   dir="rtl"
-                />
-              </div>
-            )}
-          />
-
-          <Controller
-            name="rootPersonId"
-            control={control}
-            render={({ field }) => (
-              <div>
-                <SearchSelectMember
-                  {...field}
-                  options={membersOptions}
-                  placeholder="اختر الجد الأكبر (اختياري)"
-                  selectedMemberId={field.value ?? undefined}
-                />
-              </div>
-            )}
-          />
-
-          <Controller
-            name="isDisplayed"
-            control={control}
-            render={({ field }) => (
-              <div>
-                <TrueFalseSelect
-                  placeholder="عرض في القائمة"
-                  selected={field.value}
-                  onChange={(value) => setValue("isDisplayed", value === "true")}
                 />
               </div>
             )}

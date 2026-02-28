@@ -25,6 +25,7 @@ model User {
   verified       Boolean         @default(false)
   changeRequests ChangeRequest[] @relation("ChangeRequester")
   familiesOwner  Family[]
+  familyTrees    FamilyTree[]
   subscribtion   Subscribtion    @default(TRIAL)
   recordsCount   Int             @default(0)
 }
@@ -77,9 +78,10 @@ model Person {
   motherChildren Person[] @relation("MotherRelation")
 
   maleSpouses    SpouseRelationship[] @relation("Males")
-  femaleSpouses      SpouseRelationship[] @relation("Females")
+  femaleSpouses  SpouseRelationship[] @relation("Females")
 
-  rootOfFamily Family? @relation("RootPersonRelation")
+  rootOfTree        FamilyTree[]                @relation("RootOfTree")
+  collapsedInTrees  FamilyTreeCollapsedBranch[]
 }
 
 model SpouseRelationship {
@@ -133,9 +135,29 @@ model Family {
   name         String
   owner        User?       @relation(fields: [ownerId], references: [id])
   ownerId      String?     @db.Uuid
-  rootPerson   Person?    @relation("RootPersonRelation", fields: [rootPersonId], references: [id])
-  rootPersonId String?    @db.Uuid       @unique
   members      Person[]   @relation("FamilyMembers")
-  isDisplayed  Boolean    @default(false)
   membersCount Int        @default(0)
+}
+
+model FamilyTree {
+  id                String                      @id @default(uuid()) @db.Uuid
+  name              String
+  description       String?
+  rootPerson        Person                      @relation("RootOfTree", fields: [rootPersonId], references: [id])
+  rootPersonId      String                      @db.Uuid
+  owner             User                        @relation(fields: [ownerId], references: [id])
+  ownerId           String                      @db.Uuid
+  treeJson          Json?
+  collapsedBranches FamilyTreeCollapsedBranch[]
+  createdAt         DateTime                    @default(now())
+}
+
+// Person whose children/subtree are hidden in this tree.
+// The person node itself stays visible; only their descendants are hidden.
+model FamilyTreeCollapsedBranch {
+  tree      FamilyTree @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  treeId    String     @db.Uuid
+  person    Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId  String     @db.Uuid
+  @@id([treeId, personId])
 }

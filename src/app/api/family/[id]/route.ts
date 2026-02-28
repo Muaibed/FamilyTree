@@ -30,12 +30,10 @@ export async function PUT(req: Request, { params } : { params: Promise<{ id: str
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
     
-    const { name, rootPersonId, isDisplayed } = await req.json();
+    const { name } = await req.json();
 
     const data = {
       name,
-      rootPersonId,
-      isDisplayed
     }
 
     if (!id) {

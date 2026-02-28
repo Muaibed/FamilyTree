@@ -1,50 +1,29 @@
 import { prisma } from '../prisma';
 
 export const createFamily = async (data: {
-  name: string,
-  rootPersonId?: string,
-  ownerId?: string
+  name: string;
+  ownerId?: string;
 }) => {
-  
-  const { name, rootPersonId, ownerId } = data;
-
   return prisma.family.create({
     data: {
-      name,
-      ...(rootPersonId && {
-        rootPerson: { connect: { id: rootPersonId } }
-      }),
-      ...(ownerId && {
-        owner: { connect: { id: ownerId } }
+      name: data.name,
+      ...(data.ownerId && {
+        owner: { connect: { id: data.ownerId } }
       }),
     }
   });
 };
 
 export const getFamilyById = async (id: string) => {
-  return prisma.family.findUnique({
-    where: { id },
-    include: {
-      rootPerson: true,
-    }
-  });
+  return prisma.family.findUnique({ where: { id } });
 };
 
 export const getFamilyByName = async (name: string) => {
-  return prisma.family.findFirst({
-    where: { name },
-    include: {
-      rootPerson: true,
-    }
-  });
+  return prisma.family.findFirst({ where: { name } });
 };
 
 export const getAllFamilies = async () => {
-  return prisma.family.findMany({
-    include: {
-      rootPerson: true,
-    }
-  });
+  return prisma.family.findMany();
 };
 
 export const getAllFamiliesWithSameOwner = async (familyId: string) => {
@@ -53,61 +32,18 @@ export const getAllFamiliesWithSameOwner = async (familyId: string) => {
       where: { id: familyId },
       select: { ownerId: true },
     });
-
-      console.log(family?.ownerId)
-      return tx.family.findMany({
-        where: { ownerId: family?.ownerId },
-        include: {
-          rootPerson: true
-        }
-      });
-  });
-}
-
-export const getAllFamiliesFromOwnerId = async (ownerId: string) => {
-  return await prisma.family.findMany({
-    where: {
-      ownerId
-    },
-    include: {
-      rootPerson: true
-    }
-  })
-}
-
-export const getDisplayedFamilies = async () => {
-  return prisma.family.findMany({
-    where: {
-      isDisplayed: true,
-    },
-    include: {
-      rootPerson: true,
-    }
+    return tx.family.findMany({ where: { ownerId: family?.ownerId } });
   });
 };
 
-export const updateFamily = async (id: string, data: {
-  name?: string,
-  rootPersonId?: string
-  isDisplayed?: boolean
-}) => {
-  
-  const { name, rootPersonId, isDisplayed } = data;
+export const getAllFamiliesFromOwnerId = async (ownerId: string) => {
+  return prisma.family.findMany({ where: { ownerId } });
+};
 
-  return prisma.family.update({
-    where: { id },
-    data: {
-      name,
-      ...(rootPersonId
-      ? { rootPerson: { connect: { id: rootPersonId } } }
-      : { rootPerson: { disconnect: true } }),
-      isDisplayed
-    },
-  });
+export const updateFamily = async (id: string, data: { name?: string }) => {
+  return prisma.family.update({ where: { id }, data: { name: data.name } });
 };
 
 export const deleteFamily = async (id: string) => {
-  return prisma.family.delete({
-    where: { id },
-  });
+  return prisma.family.delete({ where: { id } });
 };

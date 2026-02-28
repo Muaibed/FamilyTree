@@ -18,6 +18,7 @@ export default function EditPerson({ id, onSubmit, onDelete }: {id: string, onSu
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["person", id] });
       queryClient.invalidateQueries({ queryKey: ["members"] });
+      queryClient.invalidateQueries({ queryKey: ["family-tree"] });
     },
   });
 

@@ -7,11 +7,6 @@ export async function getFamilies(): Promise<FamilyWithRootPerson[]> {
     return res.json()
 }
 
-export async function getDisplayedFamilies(): Promise<FamilyWithRootPerson[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family/isDisplayed`)
-  if (!res.ok) throw new Error('Failed to fetch families')
-  return res.json()
-}
 
 export async function getFamily(id: string): Promise<FamilyWithRootPerson> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family/${id}`)
@@ -51,11 +46,5 @@ export async function deleteFamily(id: string): Promise<void> {
 export async function getOwnerFamilies(): Promise<FamilyWithRootPerson[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family/owner`)
   if (!res.ok) throw new Error('Failed to fetch owner families')
-  return res.json()
-}
-
-export async function getRelatedFamilies(familyId: string): Promise<FamilyWithRootPerson[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family/relatedFamilies/${familyId}`)
-  if (!res.ok) throw new Error('Failed to fetch related families')
   return res.json()
 }

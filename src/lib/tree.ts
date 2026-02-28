@@ -1,57 +1,90 @@
-import { PersonWithRelations } from "@/types/family";
 import { TreeNode } from "@/types/tree";
 
-let addedMembers: any[] = [];
+export type PersonForTree = {
+  id: string;
+  firstName: string;
+  fullName: string;
+  gender: 'MALE' | 'FEMALE';
+  isDead: boolean;
+  familyId: string;
+  kunya: string | null;
+  deathDate: Date | null;
+  father: { motherId: string | null; familyId: string } | null;
+  fatherChildren: { id: string }[];
+  motherChildren: { id: string }[];
+  maleSpouses: { female: { fullName: string } }[];
+  femaleSpouses: { male: { fullName: string } }[];
+};
+
 export const prepareTreeData = (
-  members: PersonWithRelations[],
+  members: PersonForTree[],
   startId: string,
   familyId: string,
-  prevNodeGender?: string,
+  collapsedPersonIds: string[] = [],
 ): TreeNode | undefined => {
-  const person = members.find(p => p.id === startId);
-;
-  if (!person) return undefined;
+  const addedMembers: string[] = [];
 
-  let node: TreeNode | null = null;
-  if (!addedMembers.find(id => id === person.id)) {
-    let grandmother;
-    if (prevNodeGender === "FEMALE")
-      grandmother = members.find(p => p.id === person.father?.motherId)
+  const build = (id: string, prevNodeGender?: string): TreeNode | undefined => {
+    const person = members.find(p => p.id === id);
+    if (!person) return undefined;
 
-    if (!prevNodeGender || (prevNodeGender === "FEMALE" && person.father?.familyId !== familyId && grandmother?.familyId !== familyId) || prevNodeGender === "MALE") {
-      node = {
-        name: person.firstName,
-        attributes: {
-          id: person.id,
-          gender: person.gender,
-          isDead: person.isDead,
-        },
-        children: [],
-      };
-    }
-    
-    addedMembers.push({"id" : person.id})
-  }
+    let node: TreeNode | null = null;
+    if (!addedMembers.includes(person.id)) {
+      let grandmother: PersonForTree | undefined;
+      if (prevNodeGender === "FEMALE")
+        grandmother = members.find(p => p.id === person.father?.motherId);
 
-  
-  if (person.gender === "MALE" && person.fatherChildren.length > 0) {
-    person.fatherChildren.forEach((childId) => {
-      const childNode = prepareTreeData(members, childId.id, familyId, person.gender);
-      if (node && childNode) {
-        node.children.push(childNode);
+      if (
+        !prevNodeGender ||
+        (prevNodeGender === "FEMALE" &&
+          person.father?.familyId !== familyId &&
+          grandmother?.familyId !== familyId) ||
+        prevNodeGender === "MALE"
+      ) {
+        const spouses = person.gender === 'MALE'
+          ? person.maleSpouses.map(s => s.female.fullName)
+          : person.femaleSpouses.map(s => s.male.fullName);
+
+        node = {
+          name: person.firstName,
+          attributes: {
+            id: person.id,
+            gender: person.gender,
+            isDead: person.isDead,
+            fullName: person.fullName,
+            kunya: person.kunya,
+            deathDate: person.deathDate
+              ? person.deathDate.toISOString().slice(0, 10)
+              : null,
+            spouses,
+          },
+          children: [],
+        };
       }
-    });
-  }
 
-  if (person.gender === "FEMALE" && person.motherChildren.length > 0) {
-      person.motherChildren.forEach((childId) => {
-        const childNode = prepareTreeData(members, childId.id, familyId, person.gender);
-        if (node && childNode) {
-          node.children.push(childNode);
-        }
+      addedMembers.push(person.id);
+    }
+
+    if (node && collapsedPersonIds.includes(person.id)) {
+      return node;
+    }
+
+    if (person.gender === "MALE" && person.fatherChildren.length > 0) {
+      person.fatherChildren.forEach((child) => {
+        const childNode = build(child.id, person.gender);
+        if (node && childNode) node.children.push(childNode);
       });
-  }
+    }
 
-  if (node)
-    return node;
+    if (person.gender === "FEMALE" && person.motherChildren.length > 0) {
+      person.motherChildren.forEach((child) => {
+        const childNode = build(child.id, person.gender);
+        if (node && childNode) node.children.push(childNode);
+      });
+    }
+
+    return node ?? undefined;
+  };
+
+  return build(startId);
 };

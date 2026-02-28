@@ -1,10 +1,9 @@
-"use client"; 
+"use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import { TreeNode } from "@/types/tree";
-import { FamilyWithRootPerson, PersonWithRelations } from "@/types/family";
-import { prepareTreeData } from "@/lib/tree";
+import { TreeNode, TreeNodeAttributes } from "@/types/tree";
+import { PersonWithRelations } from "@/types/family";
 import { PersonModal } from "./Modal";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
@@ -12,27 +11,27 @@ import { Button } from "../ui/button";
 import CreatePerson from "@/app/pages/CreatePerson";
 import EditPerson from "@/app/pages/EditPerson";
 import CreateSpouseRelationship from "@/app/pages/CreateSpouseRelationship";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addCollapsedBranch, removeCollapsedBranch } from "@/lib/queries/familyTrees";
 
 export default function RadialCluster({
   members,
-  families,
-  family,
+  treeId,
+  treeData,
+  collapsedPersonIds,
   onChange,
 }: {
   members: PersonWithRelations[];
-  families: FamilyWithRootPerson[] | undefined;
-  family?: FamilyWithRootPerson;
+  treeId: string;
+  treeData: TreeNode | null;
+  collapsedPersonIds: string[];
   onChange: any;
 }) {
-  const [selectedFamily, setSelectedFamily] = useState<
-  FamilyWithRootPerson | undefined
-  >(family);
-  const [width, setWidth] = useState(2000);
-  const [height, setHeight] = useState(2000);
+  const [width] = useState(2000);
+  const [height] = useState(2000);
 
-  const [selectedPerson, setSelectedPerson] = useState<
-    PersonWithRelations | undefined
-  >(undefined);
+  // Store the clicked tree node — attributes hold all display data
+  const [selectedNode, setSelectedNode] = useState<TreeNode | undefined>(undefined);
   const [isEditingPerson, setIsEditingPerson] = useState(false);
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
@@ -41,8 +40,44 @@ export default function RadialCluster({
 
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
+
+  // Admins resolve the full person object from the pre-loaded members list
+  const selectedPerson: PersonWithRelations | undefined = isAdmin && selectedNode
+    ? members.find((p) => p.id === selectedNode.attributes?.id)
+    : undefined;
+
+  const attrs: TreeNodeAttributes | undefined = selectedNode?.attributes;
+
+  // Display values — admins use the full PersonWithRelations, others use node attributes
+  const displayGender = (isAdmin ? selectedPerson?.gender : attrs?.gender) as 'MALE' | 'FEMALE' | undefined;
+  const displaySpouses: string[] = isAdmin
+    ? (displayGender === 'FEMALE'
+        ? selectedPerson?.femaleSpouses.filter(s => s.isActive).map(s => s.male.fullName) ?? []
+        : selectedPerson?.maleSpouses.filter(s => s.isActive).map(s => s.female.fullName) ?? [])
+    : (attrs?.spouses ?? []);
+  const displayDeathDate: Date | null = isAdmin
+    ? (selectedPerson?.deathDate ?? null)
+    : (attrs?.deathDate ? new Date(attrs.deathDate) : null);
+
+  const queryClient = useQueryClient();
+
+  const collapseMutation = useMutation({
+    mutationFn: ({ personId }: { personId: string }) =>
+      addCollapsedBranch(treeId, personId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["family-tree", treeId] });
+    },
+  });
+
+  const expandMutation = useMutation({
+    mutationFn: ({ personId }: { personId: string }) =>
+      removeCollapsedBranch(treeId, personId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["family-tree", treeId] });
+    },
+  });
 
   // Detect mobile screen
   useEffect(() => {
@@ -55,31 +90,28 @@ export default function RadialCluster({
   }, []);
 
   function handleClick(event: MouseEvent, d: d3.HierarchyPointNode<TreeNode>) {
-    const personId = d.data.attributes?.id;
-    setSelectedPerson(members.find((p) => p.id === personId));
+    setSelectedNode(d.data);
+    setIsAddingChild(false);
+    setIsAddingSpouse(false);
+    setIsEditingPerson(false);
 
-    // Get the actual screen coordinates of the click
     let clickX = event.clientX;
     let clickY = event.clientY;
 
-    // Get modal dimensions based on screen size
     const isMobileView = window.innerWidth < 768;
     const modalWidth = isMobileView ? 150 : Math.min(window.innerWidth * 0.9, 350);
     const modalMaxHeight = isMobileView ? window.innerHeight * 0.45 : window.innerHeight * 0.7;
 
-    // Constrain to viewport bounds (with some padding)
     const padding = 10;
     const halfWidth = modalWidth / 2;
     const halfHeight = modalMaxHeight / 2;
 
-    // Constrain X position
     if (clickX - halfWidth < padding) {
       clickX = halfWidth + padding;
     } else if (clickX + halfWidth > window.innerWidth - padding) {
       clickX = window.innerWidth - halfWidth - padding;
     }
 
-    // Constrain Y position
     if (clickY - halfHeight < padding) {
       clickY = halfHeight + padding;
     } else if (clickY + halfHeight > window.innerHeight - padding) {
@@ -89,35 +121,25 @@ export default function RadialCluster({
     setModalPos({ x: clickX, y: clickY });
   }
 
-    useEffect(() => {
-        if (!svgRef.current) return;
-        
-        // Clear old renders
-        d3.select(svgRef.current).selectAll("*").remove();
-        
-        const cx = width * 0.5; // adjust as needed to fit
-        const cy = height * 0.5; // adjust as needed to fit
-        const radius = Math.min(width, height) / 2 - 60;
-        
-        let formattedData;
-        if (members && selectedFamily && selectedFamily.rootPersonId) {
-            formattedData = prepareTreeData(
-                members,
-                selectedFamily.rootPersonId.toString(),
-                selectedFamily.id,
-            );
-        }
+  useEffect(() => {
+    if (!svgRef.current) return;
 
-    // Create tree layout
+    // Clear old renders
+    d3.select(svgRef.current).selectAll("*").remove();
+
+    const cx = width * 0.5;
+    const cy = height * 0.5;
+    const radius = Math.min(width, height) / 2 - 60;
+
+    const formattedData = treeData ?? undefined;
+
     const tree = d3.tree<TreeNode>()
       .size([2 * Math.PI, radius])
       .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
 
-    // Build hierarchy
-    const holder = { name: '', children: []}
+    const holder = { name: '', children: [] }
     const root = tree(d3.hierarchy<TreeNode>(formattedData ? formattedData : holder)
       .sort((a, b) => d3.ascending(a.data.name, b.data.name)));
-      
 
     const svg = d3
       .select(svgRef.current)
@@ -126,7 +148,6 @@ export default function RadialCluster({
       .attr("viewBox", [-cx, -cy, width, height])
       .attr("style", "width: 100%; height: auto; font: 10px sans-serif;");
 
-   // Links
     svg.append("g")
       .attr("fill", "none")
       .attr("stroke", "#555")
@@ -139,8 +160,6 @@ export default function RadialCluster({
           .angle(d => d.x)
           .radius(d => d.y));
 
-
-    // Nodes
     svg.append("g")
       .selectAll("circle")
       .data(root.descendants())
@@ -154,8 +173,6 @@ export default function RadialCluster({
       .attr("name", d => `${d.data.name}`)
       .on("click", handleClick)
 
-
-    // Labels
     svg.append("g")
       .selectAll("text")
       .data(root.descendants())
@@ -167,9 +184,9 @@ export default function RadialCluster({
       .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0) rotate(${d.x >= Math.PI ? 180 : 0})`)
       .attr("dy", "0.31em")
       .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
-      .style("cursor", "pointer")           
-      .style("pointer-events", "all")  
-      .style("user-select", "none") 
+      .style("cursor", "pointer")
+      .style("pointer-events", "all")
+      .style("user-select", "none")
       .style("font-size", d => `${23 - d.depth * 2}px`)
       .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
       .attr("paint-order", "stroke")
@@ -183,28 +200,35 @@ export default function RadialCluster({
       .on("click", handleClick)
       .raise();
 
-  }, [members, families, selectedFamily]);
-  
+  }, [treeData]);
+
+  const selectedPersonHasChildren =
+    selectedPerson &&
+    (selectedPerson.fatherChildren.length > 0 ||
+      selectedPerson.motherChildren.length > 0);
+
+  const closeModal = () => {
+    setSelectedNode(undefined);
+    setIsAddingChild(false);
+    setIsAddingSpouse(false);
+    setIsEditingPerson(false);
+  };
+
   return (
     <div>
-      <svg ref={svgRef} width={width} height={height} style={{ overflow: 'visible'}} className="rd3t-svg"/>
-      {selectedPerson && (
+      <svg ref={svgRef} width={width} height={height} style={{ overflow: 'visible' }} className="rd3t-svg" />
+      {selectedNode && (
         <>
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/50 z-40"
-            onClick={() => {
-              setSelectedPerson(undefined);
-              setIsAddingChild(false);
-              setIsAddingSpouse(false);
-              setIsEditingPerson(false);
-            }}
+            onClick={closeModal}
           />
-          {/* Modal - compact beside node on mobile, centered on desktop */}
+          {/* Modal */}
           <div
-            className="fixed z-50 overflow-hidden"
-            style={
-              isMobile
+            className="fixed z-50 overflow-y-auto [&::-webkit-scrollbar]:hidden"
+            style={{
+              ...(isMobile
                 ? {
                     left: `${modalPos.x}px`,
                     top: `${modalPos.y}px`,
@@ -221,174 +245,185 @@ export default function RadialCluster({
                     maxWidth: '350px',
                     maxHeight: '70vh',
                     fontSize: '14px',
-                  }
-            }
+                  }),
+              msOverflowStyle: 'none',
+              scrollbarWidth: 'none',
+            }}
           >
-        <PersonModal
-          isOpen={!!selectedPerson}
-          onClose={() => {
-            setSelectedPerson(undefined);
-            setIsAddingChild(false);
-            setIsAddingSpouse(false);
-            setIsEditingPerson(false)
-          }}
-          gender={selectedPerson?.gender}
-        >
-        {selectedPerson && (
-          <div className="text-center overflow-hidden">
-            <div className="break-words">
-              <h1 className="text-[1.3em] font-bold break-words">{selectedPerson.firstName}</h1>
-              <p className="text-[1em] opacity-50 mt-[0.3em] break-words">{selectedPerson.fullName}</p>
-              <p className="text-[1em] opacity-50 mt-[0.2em] break-words">{selectedPerson.kunya}</p>
-            </div>
-            <div className="m-[0.5em]">
-                {(selectedPerson.femaleSpouses.filter(
-                  (s) => s.isActive === true
-                ).length > 0 ||
-                  selectedPerson.maleSpouses.filter((s) => s.isActive === true)
-                    .length > 0) && (
-              <div className="bg-accent dark:bg-secondary rounded m-[0.3em] h-auto p-[0.3em]">
-                  <div className="flex flex-row items-center justify-between py-[0.3em] relative min-h-[2em]">
-                    <div className="relative left-1/2 transform -translate-x-1/2 w-2/3">
-                      <div className="flex flex-col text-[1em]">
-                        {selectedPerson.gender === "FEMALE"
-                          ? selectedPerson.femaleSpouses
-                              .filter((s) => s.isActive === true)
-                              .map((s) => (<>
-                                <div key={s.id} className="py-[0.2em] flex items-center-safe justify-center-safe w-full h-full break-words">
-                                  {s.male.fullName}
+            <PersonModal
+              isOpen={true}
+              onClose={closeModal}
+              gender={displayGender}
+            >
+              <div className="text-center overflow-x-hidden">
+                <div className="break-words">
+                  <h1 className="text-[1.3em] font-bold break-words">
+                    {isAdmin ? selectedPerson?.firstName : selectedNode.name}
+                  </h1>
+                  <p className="text-[1em] opacity-50 mt-[0.3em] break-words">
+                    {isAdmin ? selectedPerson?.fullName : attrs?.fullName}
+                  </p>
+                  <p className="text-[1em] opacity-50 mt-[0.2em] break-words">
+                    {isAdmin ? selectedPerson?.kunya : attrs?.kunya}
+                  </p>
+                </div>
+                <div className="m-[0.5em]">
+                  {displaySpouses.length > 0 && (
+                    <div className="bg-accent dark:bg-secondary rounded m-[0.3em] h-auto p-[0.3em]">
+                      <div className="flex flex-row items-center justify-between py-[0.3em] relative min-h-[2em]">
+                        <div className="relative left-1/2 transform -translate-x-1/2 w-2/3">
+                          <div className="flex flex-col text-[1em]">
+                            {displaySpouses.map((name, i) => (
+                              <>
+                                <div key={i} className="py-[0.2em] flex items-center-safe justify-center-safe w-full h-full break-words">
+                                  {name}
                                 </div>
-                              <div className="w-full bg-primary-foreground h-px opacity-50 dark:opacity-10 rounded-4xl"></div>
+                                <div className="w-full bg-primary-foreground h-px opacity-50 dark:opacity-10 rounded-4xl"></div>
                               </>
-                              ))
-                              : selectedPerson.maleSpouses
-                              .filter((s) => s.isActive === true)
-                              .map((s) => (<>
-                                <div key={s.id} className="py-[0.2em] flex items-center-safe justify-center-safe w-full h-full break-words">
-                                  {s.female.fullName}
-                                </div>
-                              <div className="w-full bg-primary-foreground h-px opacity-50 dark:opacity-10 rounded-4xl"></div>
-                              </>
-                              ))}
+                            ))}
+                          </div>
+                        </div>
+                        <div className="absolute right-[0.4em] top-1/2 transform -translate-y-1/2">
+                          <Image
+                            src="/icons/wedding-rings.png"
+                            alt="Star"
+                            width={512}
+                            height={512}
+                            className="w-[1.4em] h-[1.4em] block dark:hidden"
+                          />
+                          <Image
+                            src="/icons/white-wedding-rings.png"
+                            alt="Star"
+                            width={512}
+                            height={512}
+                            className="w-[1.4em] h-[1.4em] hidden dark:block"
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="absolute right-[0.4em] top-1/2 transform -translate-y-1/2">
-                      <Image
-                        src="/icons/wedding-rings.png"
-                        alt="Star"
-                        width={512}
-                        height={512}
-                        className="w-[1.4em] h-[1.4em] block dark:hidden"
-                      />
-                      <Image
-                        src="/icons/white-wedding-rings.png"
-                        alt="Star"
-                        width={512}
-                        height={512}
-                        className="w-[1.4em] h-[1.4em] hidden dark:block"
-                      />
+                  )}
+                  {displayDeathDate && (
+                    <div className="bg-accent dark:bg-secondary rounded m-[0.3em]">
+                      <div className="relative py-[0.3em] min-h-[2em]">
+                        <div className="absolute left-1/2 transform -translate-x-1/2">
+                          <p className="text-[1em]">
+                            {displayDeathDate.toISOString().slice(0, 10)}
+                          </p>
+                        </div>
+                        <div className="absolute right-[0.4em] top-1/2 transform -translate-y-1/2">
+                          <Image
+                            src="/icons/tombstone.png"
+                            alt="Star"
+                            width={512}
+                            height={512}
+                            className="w-[1.2em] h-[1.2em] block dark:hidden"
+                          />
+                          <Image
+                            src="/icons/white-tombstone.png"
+                            alt="Star"
+                            width={512}
+                            height={512}
+                            className="w-[1.2em] h-[1.2em] hidden dark:block"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-              </div>
-                )}
-              {selectedPerson.deathDate && (
-                <div className="bg-accent dark:bg-secondary rounded m-[0.3em]">
-                  <div className="relative py-[0.3em] min-h-[2em]">
-                    <div className="absolute left-1/2 transform -translate-x-1/2">
-                      <p className="text-[1em]">
-                        {new Date(selectedPerson.deathDate)
-                          .toISOString()
-                          .slice(0, 10)}
-                      </p>
-                    </div>
-                    <div className="absolute right-[0.4em] top-1/2 transform -translate-y-1/2">
-                      <Image
-                        src="/icons/tombstone.png"
-                        alt="Star"
-                        width={512}
-                        height={512}
-                        className="w-[1.2em] h-[1.2em] block dark:hidden"
-                      />
-                      <Image
-                        src="/icons/white-tombstone.png"
-                        alt="Star"
-                        width={512}
-                        height={512}
-                        className="w-[1.2em] h-[1.2em] hidden dark:block"
-                      />
-                    </div>
-                  </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {isAdmin && (
-              <div>
-                <div className="flex flex-col gap-[0.4em] mt-[0.5em] px-[0.5em]">
-                  <Button
-                    onClick={() => {
-                      setIsAddingChild(!isAddingChild);
-                      setIsAddingSpouse(false);
-                      setIsEditingPerson(false);
-                    }}
-                    className="text-[1em] py-[0.3em] h-auto px-[0.5em]"
-                  >
-                    إضافة ابن
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setIsAddingSpouse(!isAddingSpouse);
-                      setIsAddingChild(false);
-                      setIsEditingPerson(false);
-                    }}
-                    className="text-[1em] py-[0.3em] h-auto px-[0.5em]"
-                  >
-                    إضافة زوج
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full text-[1em] py-[0.3em] h-auto px-[0.5em]"
-                    onClick={() => {
-                      setIsEditingPerson(!isEditingPerson);
-                      setIsAddingChild(false);
-                      setIsAddingSpouse(false);
-                    }}
-                  >
-                    تعديل
-                  </Button>
-                </div>
-                <div className="overflow-auto mt-[0.5em] flex justify-center">
-                {isAddingChild && (
-                  <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
-                      <CreatePerson onSuccess={() => setIsAddingChild(false)} defaultValues={selectedPerson.gender === "MALE" ? { father: selectedPerson } : { mother: selectedPerson }} />
+                {isAdmin && selectedPerson && (
+                  <div>
+                    <div className="flex flex-col gap-[0.4em] mt-[0.5em] px-[0.5em]">
+                      <Button
+                        onClick={() => {
+                          setIsAddingChild(!isAddingChild);
+                          setIsAddingSpouse(false);
+                          setIsEditingPerson(false);
+                        }}
+                        className="text-[1em] py-[0.3em] h-auto px-[0.5em]"
+                      >
+                        إضافة ابن
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setIsAddingSpouse(!isAddingSpouse);
+                          setIsAddingChild(false);
+                          setIsEditingPerson(false);
+                        }}
+                        className="text-[1em] py-[0.3em] h-auto px-[0.5em]"
+                      >
+                        إضافة زوج
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full text-[1em] py-[0.3em] h-auto px-[0.5em]"
+                        onClick={() => {
+                          setIsEditingPerson(!isEditingPerson);
+                          setIsAddingChild(false);
+                          setIsAddingSpouse(false);
+                        }}
+                      >
+                        تعديل
+                      </Button>
+                      {selectedPersonHasChildren && (
+                        collapsedPersonIds.includes(selectedPerson.id)
+                          ? (
+                            <Button
+                              variant="outline"
+                              className="w-full text-[1em] py-[0.3em] h-auto px-[0.5em]"
+                              onClick={() => expandMutation.mutate({ personId: selectedPerson.id })}
+                            >
+                              إظهار الفروع
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              className="w-full text-[1em] py-[0.3em] h-auto px-[0.5em]"
+                              onClick={() => collapseMutation.mutate({ personId: selectedPerson.id })}
+                            >
+                              إخفاء الفروع
+                            </Button>
+                          )
+                      )}
+                    </div>
+                    <div className="overflow-auto mt-[0.5em] flex justify-center">
+                      {isAddingChild && (
+                        <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
+                          <CreatePerson
+                            onSuccess={() => setIsAddingChild(false)}
+                            defaultValues={selectedPerson.gender === "MALE" ? { father: selectedPerson } : { mother: selectedPerson }}
+                          />
+                        </div>
+                      )}
+                      {isAddingSpouse && (
+                        <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
+                          <CreateSpouseRelationship
+                            defaultValues={selectedPerson.gender === "MALE" ? { maleId: selectedPerson.id } : { femaleId: selectedPerson.id }}
+                            onSuccess={() => {
+                              onChange();
+                              setIsAddingSpouse(false);
+                              setSelectedNode(undefined);
+                            }}
+                          />
+                        </div>
+                      )}
+                      {isEditingPerson && (
+                        <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
+                          <EditPerson
+                            id={selectedPerson.id}
+                            onSubmit={() => setIsEditingPerson(false)}
+                            onDelete={() => setSelectedNode(undefined)}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
-                {isAddingSpouse && (
-                  <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
-                    <CreateSpouseRelationship
-                      defaultValues={selectedPerson.gender === "MALE" ? { maleId: selectedPerson.id } : { femaleId: selectedPerson.id }}
-                      onSuccess={() => {
-                        onChange();
-                        setIsAddingSpouse(false);
-                        setSelectedPerson(undefined);
-                      }}
-                      />
-                  </div>
-                )}
-                {selectedPerson && isEditingPerson && (
-                  <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
-                      <EditPerson id={selectedPerson.id} onSubmit={() => setIsEditingPerson(false)} onDelete={() => setSelectedPerson(undefined)} />
-                  </div>
-                )}
-                </div>
               </div>
-            )}
-          </div>
-        )}
-          </PersonModal>
+            </PersonModal>
           </div>
         </>
       )}
     </div>
-  )
+  );
 }

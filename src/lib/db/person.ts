@@ -1,4 +1,5 @@
 import { prisma } from '../prisma';
+import { Prisma } from '@/generated/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth';
 
@@ -30,13 +31,13 @@ export const createPerson = async (data: {
   let father;
   if (fatherId)
    father = await prisma.person.findUnique({ where: { id: fatherId }});
-  
+
   const family = await prisma.family.findUnique({ where: { id: familyId }});
 
   const theSonOf = gender === "MALE" ? " بن " : " بنت ";
   const fullName = father ? firstName + theSonOf + father.fullName : firstName + " " + family?.name
 
-  return prisma.$transaction([
+  const [newPerson, updatedUser] = await prisma.$transaction([
     prisma.person.create({
       data: {
         firstName: firstName,
@@ -51,13 +52,20 @@ export const createPerson = async (data: {
         mother: motherId ? { connect: { id: motherId } } : undefined,
       }
     }),
-    prisma.user.update({ 
-      where: { id: user.id }, 
-      data: { 
-        recordsCount: { increment : 1 } 
-      } 
+    prisma.user.update({
+      where: { id: user.id },
+      data: {
+        recordsCount: { increment : 1 }
+      }
     })
-  ])
+  ]);
+
+  await prisma.familyTree.updateMany({
+    where: { ownerId: user.id },
+    data: { treeJson: Prisma.DbNull },
+  });
+
+  return [newPerson, updatedUser];
 };
 
 export const getPersonById = async (id: string) => {
@@ -98,11 +106,7 @@ export const getAllPersons = async () => {
               female: true,
             }
            },
-           family: {
-            include: {
-              rootPerson: true,
-            }
-           },
+           family: true,
          },
   });
 };
@@ -131,11 +135,7 @@ export const getAllPersonsWithSameOwner = async (userId: string) => {
               female: true,
             }
            },
-           family: {
-            include: {
-              rootPerson: true,
-            }
-           },
+           family: true,
          },
   });
 };
@@ -158,8 +158,8 @@ export const getAllFemales = async () => {
 
 export const getAllSpouses = async (personId: string) => {
   const person = await prisma.person.findUnique({
-    where: { 
-      id: personId 
+    where: {
+      id: personId
     },
     include: {
       maleSpouses: {
@@ -186,7 +186,7 @@ export const getAllSpouses = async (personId: string) => {
     spouses = person.maleSpouses.map(s => s.female);
   if (person.gender === "FEMALE")
     spouses = person.femaleSpouses.map(s => s.male);
-  
+
   return spouses;
 };
 
@@ -203,7 +203,8 @@ export const updatePerson = async (id: string, data: {
   deathDate?: Date;
 }) => {
   const { firstName, familyId, gender, kunya, phone, birthDate, deathDate, fatherId, motherId, isDead } = data;
-  return prisma.person.update({
+
+  const result = await prisma.person.update({
     where: { id },
     data: {
       firstName,
@@ -217,11 +218,33 @@ export const updatePerson = async (id: string, data: {
       father: fatherId ? { connect: { id: fatherId } } : undefined,
       mother: motherId ? { connect: { id: motherId } } : undefined,
     },
+    include: { family: { select: { ownerId: true } } },
   });
+
+  if (result.family.ownerId) {
+    await prisma.familyTree.updateMany({
+      where: { ownerId: result.family.ownerId },
+      data: { treeJson: Prisma.DbNull },
+    });
+  }
+
+  return result;
 };
 
 export const deletePerson = async (id: string) => {
-  return prisma.person.delete({
+  const existing = await prisma.person.findUnique({
     where: { id },
+    select: { family: { select: { ownerId: true } } },
   });
+
+  const result = await prisma.person.delete({ where: { id } });
+
+  if (existing?.family.ownerId) {
+    await prisma.familyTree.updateMany({
+      where: { ownerId: existing.family.ownerId },
+      data: { treeJson: Prisma.DbNull },
+    });
+  }
+
+  return result;
 };

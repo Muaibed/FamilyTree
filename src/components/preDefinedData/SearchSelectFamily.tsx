@@ -10,7 +10,6 @@ type FamilySelectProps = {
   options: Option[];
   selectedFamilyId?: string;
   onChange: (value: string | null) => void;
-  isDisplayed?: boolean;
   placeholder?: string;
 };
 
@@ -18,7 +17,6 @@ export default function SearchSelectFamily({
   options,
   selectedFamilyId,
   onChange,
-  isDisplayed,
   placeholder,
 }: FamilySelectProps) {
   const [selectedFamily, setSelectedFamily] = useState<Option | undefined>(

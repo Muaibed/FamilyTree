@@ -11,11 +11,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const { name, rootPersonId, ownerId } = await req.json();
+    const { name, ownerId } = await req.json();
 
     const newFamily = await createFamily({
       name,
-      rootPersonId,
       ownerId,
     });
 

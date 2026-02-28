@@ -1,11 +1,9 @@
-import { getDisplayedFamilies } from '@/lib/db/family';
-import { isAdmin } from '@/lib/session';
+import { getAllFamilies } from '@/lib/db/family';
 import { NextResponse } from 'next/server';
 
-export async function GET(req:Request) {
+export async function GET(req: Request) {
   try {
-    const families = await getDisplayedFamilies();
-
+    const families = await getAllFamilies();
     return NextResponse.json(families);
   } catch (error: unknown) {
     if (error instanceof Error) {

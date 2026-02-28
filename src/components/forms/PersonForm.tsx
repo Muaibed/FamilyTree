@@ -8,7 +8,6 @@ import SelectGender from "../preDefinedData/SelectGender";
 import SearchSelectMember from "../preDefinedData/SearchSelectMember";
 import { Loader2 } from "lucide-react";
 import ErrorAlert from "../alerts/ErrorAlert";
-import { ScrollArea } from "../ui/scroll-area";
 import TrueFalseSelect from "../preDefinedData/BooleanSelect";
 import { Controller, useForm } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -136,6 +135,7 @@ export default function PersonForm({
     mutationFn: deletePerson,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["members"] });
+      queryClient.invalidateQueries({ queryKey: ["family-tree"] });
     },
   });
 
@@ -171,7 +171,7 @@ export default function PersonForm({
       <div className="flex items-center justify-center w-full">
         <h2 className="text-2xl font-semibold mb-4">{title}</h2>
       </div>
-      <ScrollArea className="max-h-[100vh] md:max-h-[600px] overflow-auto">
+      <div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 m-1">
           <Controller
             name="firstName"
@@ -358,7 +358,7 @@ export default function PersonForm({
             />
           )}
         </Modal>
-      </ScrollArea>
+      </div>
     </div>
   );
 }

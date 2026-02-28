@@ -11,21 +11,15 @@ const personWithRelations = Prisma.validator<Prisma.PersonInclude>()({
   femaleSpouses: {
     include: { male: true, female: true }
   },
-  family: {
-    include: { rootPerson: true }
-  },
+  family: true,
 });
 
 export type PersonWithRelations = Prisma.PersonGetPayload<{
   include: typeof personWithRelations;
 }>;
 
-const familyWithRootPerson = Prisma.validator<Prisma.FamilyInclude>()({
-  rootPerson: true,
-})
-
 export type FamilyWithRootPerson = Prisma.FamilyGetPayload<{
-  include: typeof familyWithRootPerson;
+  include: Record<string, never>;
 }>;
 
 const spouseRelationshipWithPartners = Prisma.validator<Prisma.SpouseRelationshipInclude>()({
@@ -37,3 +31,13 @@ export type SpouseRelationshipWithPartners = Prisma.SpouseRelationshipGetPayload
   include: typeof spouseRelationshipWithPartners
 }>
 
+const familyTreeWithDetails = Prisma.validator<Prisma.FamilyTreeInclude>()({
+  rootPerson: true,
+  collapsedBranches: {
+    include: { person: true }
+  },
+});
+
+export type FamilyTreeWithDetails = Prisma.FamilyTreeGetPayload<{
+  include: typeof familyTreeWithDetails;
+}>;
