@@ -70,6 +70,11 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <div className="font-arabic">
+      {tree.membersCount > 0 && (
+        <div className="absolute top-4 right-4 z-55 text-sm bg-white/80 dark:bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 select-none">
+          {tree.membersCount} فرد
+        </div>
+      )}
       <div className="absolute z-55">
         <div className="flex flex-row gap-2 p-4">
           <BurgerMenu

@@ -73,7 +73,10 @@ export const getFamilyTreeById = async (id: string) => {
 
   return prisma.familyTree.update({
     where: { id },
-    data: { treeJson: computed as unknown as Prisma.InputJsonValue },
+    data: {
+      treeJson: computed as unknown as Prisma.InputJsonValue,
+      membersCount: persons.length,
+    },
     include: familyTreeInclude,
   });
 };

@@ -131,12 +131,11 @@ model ChangeRequest {
 }
 
 model Family {
-  id           String     @id @default(uuid()) @db.Uuid
-  name         String
-  owner        User?       @relation(fields: [ownerId], references: [id])
-  ownerId      String?     @db.Uuid
-  members      Person[]   @relation("FamilyMembers")
-  membersCount Int        @default(0)
+  id      String   @id @default(uuid()) @db.Uuid
+  name    String
+  owner   User?    @relation(fields: [ownerId], references: [id])
+  ownerId String?  @db.Uuid
+  members Person[] @relation("FamilyMembers")
 }
 
 model FamilyTree {
@@ -148,6 +147,7 @@ model FamilyTree {
   owner             User                        @relation(fields: [ownerId], references: [id])
   ownerId           String                      @db.Uuid
   treeJson          Json?
+  membersCount      Int                         @default(0)
   collapsedBranches FamilyTreeCollapsedBranch[]
   createdAt         DateTime                    @default(now())
 }
