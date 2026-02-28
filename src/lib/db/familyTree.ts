@@ -1,6 +1,10 @@
 import { prisma } from '../prisma';
 import { Prisma } from '@/generated/prisma';
 import { prepareTreeData } from '../tree';
+import type { TreeNode } from '@/types/tree';
+
+const countNodes = (node: TreeNode): number =>
+  1 + node.children.reduce((sum, c) => sum + countNodes(c), 0);
 
 const familyTreeInclude = {
   rootPerson: true,
@@ -75,7 +79,7 @@ export const getFamilyTreeById = async (id: string) => {
     where: { id },
     data: {
       treeJson: computed as unknown as Prisma.InputJsonValue,
-      membersCount: persons.length,
+      membersCount: countNodes(computed),
     },
     include: familyTreeInclude,
   });

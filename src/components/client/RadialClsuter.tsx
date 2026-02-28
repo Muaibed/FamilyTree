@@ -57,9 +57,9 @@ export default function RadialCluster({
         ? selectedPerson?.femaleSpouses.filter(s => s.isActive).map(s => s.male.fullName) ?? []
         : selectedPerson?.maleSpouses.filter(s => s.isActive).map(s => s.female.fullName) ?? [])
     : (attrs?.spouses ?? []);
-  const displayDeathDate: Date | null = isAdmin
-    ? (selectedPerson?.deathDate ?? null)
-    : (attrs?.deathDate ? new Date(attrs.deathDate) : null);
+  const displayDeathDate: string | null = isAdmin
+    ? (selectedPerson?.deathDate ? String(selectedPerson.deathDate).slice(0, 10) : null)
+    : (attrs?.deathDate ?? null);
 
   const queryClient = useQueryClient();
 
@@ -307,7 +307,7 @@ export default function RadialCluster({
                       <div className="relative py-[0.3em] min-h-[2em]">
                         <div className="absolute left-1/2 transform -translate-x-1/2">
                           <p className="text-[1em]">
-                            {displayDeathDate.toISOString().slice(0, 10)}
+                            {displayDeathDate}
                           </p>
                         </div>
                         <div className="absolute right-[0.4em] top-1/2 transform -translate-y-1/2">
