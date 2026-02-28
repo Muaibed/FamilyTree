@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import CreatePerson from "@/app/pages/CreatePerson";
 import ErrorAlert from "@/components/alerts/ErrorAlert";
@@ -23,13 +23,21 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
   const { data: session, status: sessionStatus } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
 
-  const { data: members = [], isLoading: membersLoading, isError: membersError } = useQuery({
+  const {
+    data: members = [],
+    isLoading: membersLoading,
+    isError: membersError,
+  } = useQuery({
     queryKey: ["owner-members"],
     queryFn: getOwnerMembers,
     enabled: isAdmin,
   });
 
-  const { data: tree, isPending: treeLoading, isError: treeError } = useQuery({
+  const {
+    data: tree,
+    isPending: treeLoading,
+    isError: treeError,
+  } = useQuery({
     queryKey: ["family-tree", id],
     queryFn: () => getFamilyTree(id),
   });
@@ -40,11 +48,12 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
 
   if (membersError || treeError) return <ErrorAlert title="حدث خطأ!" />;
 
-  if (treeLoading || sessionStatus === "loading" || (isAdmin && membersLoading)) return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <Loader2 />
-    </div>
-  );
+  if (treeLoading || sessionStatus === "loading" || (isAdmin && membersLoading))
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <Loader2 />
+      </div>
+    );
 
   if (!tree || !members) {
     return (
@@ -71,30 +80,34 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
   return (
     <div className="font-arabic">
       {tree.membersCount > 0 && (
-        <div className="absolute top-4 right-4 z-55 text-sm bg-white/80 dark:bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 select-none">
-          {tree.membersCount} فرد
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-55 text-sm bg-card  backdrop-blur-sm rounded-full px-3 py-1 select-none">
+         {tree.membersCount} : عدد أفراد العائلة
         </div>
       )}
       <div className="absolute z-55">
         <div className="flex flex-row gap-2 p-4">
           <BurgerMenu
-            onCreatePerson={() => { setIsCreatingPerson(true) }}
-            onAddFamily={() => { setIsAddingFamily(true) }}
-            onExportSVG={() => { downloadSVG() }}
-            onExportPDF={() => { downloadPDF() }}
+            onCreatePerson={() => {
+              setIsCreatingPerson(true);
+            }}
+            onAddFamily={() => {
+              setIsAddingFamily(true);
+            }}
+            onExportSVG={() => {
+              downloadSVG();
+            }}
+            onExportPDF={() => {
+              downloadPDF();
+            }}
           />
           {session && isAdmin && (
             <>
-              <div>
-                {createMember}
-              </div>
+              <div>{createMember}</div>
               <Modal
                 isOpen={!!isAddingFamily}
                 onClose={() => setIsAddingFamily(false)}
               >
-                <CreateFamily
-                  onSuccess={() => setIsAddingFamily(false)}
-                />
+                <CreateFamily onSuccess={() => setIsAddingFamily(false)} />
               </Modal>
             </>
           )}
