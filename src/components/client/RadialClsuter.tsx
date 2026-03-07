@@ -13,6 +13,7 @@ import EditPerson from "@/app/pages/EditPerson";
 import CreateSpouseRelationship from "@/app/pages/CreateSpouseRelationship";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addCollapsedBranch, removeCollapsedBranch } from "@/lib/queries/familyTrees";
+import { PopoverZoomContext } from "@/contexts/popoverZoom";
 
 export default function RadialCluster({
   members,
@@ -57,10 +58,10 @@ export default function RadialCluster({
         ? selectedPerson?.femaleSpouses.filter(s => s.isActive).map(s => s.male.fullName) ?? []
         : selectedPerson?.maleSpouses.filter(s => s.isActive).map(s => s.female.fullName) ?? [])
     : (attrs?.spouses ?? []);
-  const displayDeathDate: string | null = isAdmin
-    ? (selectedPerson?.deathDate ? String(selectedPerson.deathDate).slice(0, 10) : null)
-    : (attrs?.deathDate ?? null);
+  const displayDeathStatus: string | null = attrs?.isDead ? (attrs.deathDate ?? "متوفى") : null;
 
+  const mobileModalZoom = 0.23; 
+  
   const queryClient = useQueryClient();
 
   const collapseMutation = useMutation({
@@ -233,9 +234,9 @@ export default function RadialCluster({
                     left: `${modalPos.x}px`,
                     top: `${modalPos.y}px`,
                     transform: 'translate(-50%, -50%)',
-                    width: '150px',
-                    maxHeight: '45vh',
-                    fontSize: '9px',
+                    width: '60px',
+                    maxHeight: '25vh',
+                    fontSize: '3px',
                   }
                 : {
                     left: '50%',
@@ -302,12 +303,12 @@ export default function RadialCluster({
                       </div>
                     </div>
                   )}
-                  {displayDeathDate && (
-                    <div className="bg-accent dark:bg-secondary rounded m-[0.3em]">
+                  {displayDeathStatus && (
+                    <div className="bg-rose-100 dark:bg-secondary rounded m-[0.3em]">
                       <div className="relative py-[0.3em] min-h-[2em]">
                         <div className="absolute left-1/2 transform -translate-x-1/2">
-                          <p className="text-[1em]">
-                            {displayDeathDate}
+                          <p className="text-[1em] text-rose-800">
+                            {displayDeathStatus}
                           </p>
                         </div>
                         <div className="absolute right-[0.4em] top-1/2 transform -translate-y-1/2">
@@ -387,8 +388,9 @@ export default function RadialCluster({
                       )}
                     </div>
                     <div className="overflow-auto mt-[0.5em] flex justify-center">
+                      <PopoverZoomContext.Provider value={isMobile ? mobileModalZoom : undefined}>
                       {isAddingChild && (
-                        <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
+                        <div style={isMobile ? { zoom: mobileModalZoom, width: '100%', flexShrink: 0 } : { width: '100%' }}>
                           <CreatePerson
                             onSuccess={() => setIsAddingChild(false)}
                             defaultValues={selectedPerson.gender === "MALE" ? { father: selectedPerson } : { mother: selectedPerson }}
@@ -396,7 +398,7 @@ export default function RadialCluster({
                         </div>
                       )}
                       {isAddingSpouse && (
-                        <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
+                        <div style={isMobile ? { zoom: mobileModalZoom, width: '100%', flexShrink: 0 } : { width: '100%' }}>
                           <CreateSpouseRelationship
                             defaultValues={selectedPerson.gender === "MALE" ? { maleId: selectedPerson.id } : { femaleId: selectedPerson.id }}
                             onSuccess={() => {
@@ -408,7 +410,7 @@ export default function RadialCluster({
                         </div>
                       )}
                       {isEditingPerson && (
-                        <div style={isMobile ? { zoom: 0.43, width: '320px', flexShrink: 0 } : { width: '100%' }}>
+                        <div style={isMobile ? { zoom: mobileModalZoom, width: '100%', flexShrink: 0 } : { width: '100%' }}>
                           <EditPerson
                             id={selectedPerson.id}
                             onSubmit={() => setIsEditingPerson(false)}
@@ -416,6 +418,7 @@ export default function RadialCluster({
                           />
                         </div>
                       )}
+                      </PopoverZoomContext.Provider>
                     </div>
                   </div>
                 )}

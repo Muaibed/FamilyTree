@@ -6,12 +6,14 @@ type BooleanSelectProps = {
   placeholder: string;
   selected: boolean | undefined;
   onChange: (value: "true" | "false") => void;
+  disabled?: boolean;
 };
 
 export default function SelectBoolean({
   placeholder,
   selected,
   onChange,
+  disabled,
 }: BooleanSelectProps) {
   const options: Option[] = [
     { id: "true", value: "نعم" },
@@ -39,6 +41,7 @@ export default function SelectBoolean({
           onChange(option.id as "true" | "false");
         }}
         placeholder={placeholder}
+        disabled={disabled}
       />
     </div>
   );

@@ -17,6 +17,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SearchSelectProps } from "@/types/ui";
 import { ScrollArea } from "./scroll-area";
+import { usePopoverZoom } from "@/contexts/popoverZoom";
 
 export default function SearchSelect({
   options,
@@ -24,10 +25,10 @@ export default function SearchSelect({
   onSelect,
   selected,
   className,
+  emptyFallBack = "لا توجد نتائج"
 }: SearchSelectProps) {
   const [open, setOpen] = useState(false);
-
-  console.log("SearchSelect (selected): ", selected);
+  const zoom = usePopoverZoom();
 
   return (
     <div>
@@ -35,16 +36,17 @@ export default function SearchSelect({
         <PopoverTrigger asChild>
           <button
             className={`w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center justify-between ${className ?? ""}`}
+            style={zoom ? { fontSize: `${1 / zoom}em` } : undefined}
             aria-expanded={open}
           >
             <ChevronsUpDown className="mr-2 h-4 w-4 text-muted-foreground justify-end" />
             {selected ? selected.value : placeholder}
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0 z-55" avoidCollisions={false}>
+        <PopoverContent className="w-[200px] p-0 z-55" style={zoom ? { zoom } : undefined} avoidCollisions={false}>
           <Command>
             <CommandInput placeholder={`بحث`} />
-            <CommandEmpty>لا توجد نتائج</CommandEmpty>
+            <CommandEmpty>{emptyFallBack}</CommandEmpty>
             <ScrollArea className="max-h-[50vh] md:max-h-[300px] overflow-auto">
               <CommandGroup>
                 {options.map((option) => (

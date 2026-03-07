@@ -96,6 +96,7 @@ const SpouseForm = ({
               control={control}
               render={({ field }) => (
                 <div>
+                  <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الزوج <span className="text-red-500">*</span></label>
                   <SearchSelectMember
                     {...field}
                     options={maleMembersOptions}
@@ -113,6 +114,7 @@ const SpouseForm = ({
               control={control}
               render={({ field }) => (
                 <div>
+                  <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الزوجة <span className="text-red-500">*</span></label>
                   <SearchSelectMember
                     {...field}
                     options={femaleMembersOptions}

@@ -13,11 +13,13 @@ export default function SearchSelectMember({
   placeholder,
   selectedMemberId,
   onChange,
+  emptyFallBack,
 }: {
   options: Option[];
   placeholder: string;
   selectedMemberId?: string;
   onChange: (value: string | null) => void;
+  emptyFallBack?: string;
 }) {
   const { data: member, isLoading: memberLoading } = useQuery({
     queryKey: ["members", selectedMemberId],
@@ -32,37 +34,6 @@ export default function SearchSelectMember({
     if (member)
       setSelectedMember({ id: member.id, value: member.fullName, label: member.firstName })
   }, [member])
-  // const { data: members = [], isLoading: membersLoading, isError: membersError } = useQuery({
-  //   queryKey: ["members"],
-  //   queryFn: getMembers,
-  // });
-
-  // useEffect(() => {
-  //   if (members) {
-  //     const options = members
-  //       .filter((m) => {
-  //         return !gender || m.gender === gender
-  //       })
-  //       .map((m) => {
-  //         return {
-  //           id: m.id,
-  //           value: m.fullName,
-  //           label: m.firstName,
-  //         };
-  //       });
-  //     setOptions(options);
-  //   }
-  // }, [members]);
-
-  // if (membersLoading || memberLoading) return <div className="flex items-center justify-center w-full h-screen">
-  //     <Loader2 />
-  // </div>
-
-  // if (membersError || !members) {
-  //     return <div>
-  //         <ErrorAlert title="حدث خطأ!" message="خطأ في الحصول على البيانات"/>
-  //     </div>
-  // }
 
   return (
     <div>
@@ -70,18 +41,14 @@ export default function SearchSelectMember({
         options={options}
         selected={selectedMember}
         onSelect={(option: Option) => {
-          // const member = members.find((m: Person) => m.id === option.id);
-          // if (member) {
-          //   setSelectedMember(option);
-          //   onChange(member.id);
-          // }
-          // const memberOption = options.find((o: Option) => o.id === option.id);
+
           if (option) {
             onChange(option.id);
             setSelectedMember(option);
           }
         }}
         placeholder={placeholder || "اختر"}
+        emptyFallBack={emptyFallBack}
       />
     </div>
   );

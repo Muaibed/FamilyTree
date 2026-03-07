@@ -6,6 +6,10 @@ import type { TreeNode } from '@/types/tree';
 const countNodes = (node: TreeNode): number =>
   1 + node.children.reduce((sum, c) => sum + countNodes(c), 0);
 
+const countDead = (node: TreeNode): number =>
+  (node.attributes?.isDead ? 1 : 0) +
+  node.children.reduce((sum, c) => sum + countDead(c), 0);
+
 const familyTreeInclude = {
   rootPerson: true,
   collapsedBranches: {
@@ -80,6 +84,8 @@ export const getFamilyTreeById = async (id: string) => {
     data: {
       treeJson: computed as unknown as Prisma.InputJsonValue,
       membersCount: countNodes(computed),
+      deadCount: countDead(computed),
+      aliveCount: countNodes(computed) - countDead(computed),
     },
     include: familyTreeInclude,
   });

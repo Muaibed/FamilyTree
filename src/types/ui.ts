@@ -9,5 +9,7 @@ export interface SearchSelectProps {
   placeholder?: string;
   onSelect: (option: Option) => void;
   selected?: Option | null;
-  className?: string
+  className?: string;
+  emptyFallBack?: string;
+  disabled?: boolean;
 };

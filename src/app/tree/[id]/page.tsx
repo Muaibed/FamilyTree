@@ -80,8 +80,13 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
   return (
     <div className="font-arabic">
       {tree.membersCount > 0 && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-55 text-sm bg-card  backdrop-blur-sm rounded-full px-3 py-1 select-none">
-         {tree.membersCount} : عدد أفراد العائلة
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-55 text-sm bg-card backdrop-blur-sm rounded-xl px-3 py-1 select-none text-center">
+          <div>{tree.membersCount} : عدد أفراد العائلة</div>
+          <div className="flex gap-3 justify-center text-xs opacity-60 mt-0.5">
+            <span>{tree.aliveCount} أحياء</span>
+            <span>·</span>
+            <span>{tree.deadCount} متوفون</span>
+          </div>
         </div>
       )}
       <div className="absolute z-55">

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
+import { Calendar as CalendarIcon, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -20,6 +20,7 @@ type DatePickerProps = {
 
 export default function DatePicker({ selectedDate, onSubmit, className, placeholder }: DatePickerProps) {
   return (
+    <div className="flex gap-1">
     <Popover>
       <PopoverTrigger asChild>
         <Button
@@ -32,8 +33,19 @@ export default function DatePicker({ selectedDate, onSubmit, className, placehol
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0 z-60">
-        <Calendar mode="single" selected={selectedDate} onSelect={(date) => {onSubmit(date)}} />
+        <Calendar mode="single" selected={selectedDate} onSelect={(date) => {onSubmit(date)}}             captionLayout="dropdown"/>
       </PopoverContent>
     </Popover>
+    {selectedDate && (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="shrink-0"
+        onClick={() => onSubmit(undefined)}
+      >
+        <X className="h-4 w-4" />
+      </Button>
+    )}
+    </div>
   )
 }

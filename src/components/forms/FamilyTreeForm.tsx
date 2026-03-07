@@ -88,38 +88,47 @@ export default function FamilyTreeForm({
             name="name"
             control={control}
             render={({ field }) => (
-              <Input
-                {...field}
-                type="text"
-                placeholder="اسم الشجرة"
-                required
-                dir="rtl"
-              />
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">اسم الشجرة <span className="text-red-500">*</span></label>
+                <Input
+                  {...field}
+                  type="text"
+                  placeholder="اسم الشجرة"
+                  required
+                  dir="rtl"
+                />
+              </div>
             )}
           />
           <Controller
             name="description"
             control={control}
             render={({ field }) => (
-              <Input
-                {...field}
-                value={field.value ?? ""}
-                type="text"
-                placeholder="وصف الشجرة (اختياري)"
-                dir="rtl"
-              />
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">وصف الشجرة</label>
+                <Input
+                  {...field}
+                  value={field.value ?? ""}
+                  type="text"
+                  placeholder="وصف الشجرة (اختياري)"
+                  dir="rtl"
+                />
+              </div>
             )}
           />
           <Controller
             name="rootPersonId"
             control={control}
             render={({ field }) => (
-              <SearchSelectMember
-                {...field}
-                options={membersOptions}
-                placeholder="اختر الجد الأكبر"
-                selectedMemberId={field.value ?? undefined}
-              />
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الجد الأكبر <span className="text-red-500">*</span></label>
+                <SearchSelectMember
+                  {...field}
+                  options={membersOptions}
+                  placeholder="اختر الجد الأكبر"
+                  selectedMemberId={field.value ?? undefined}
+                />
+              </div>
             )}
           />
           <div className="flex flex-col gap-2 mt-3">

@@ -60,6 +60,7 @@ export default function FamilyForm({
             control={control}
             render={({ field }) => (
               <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">اسم العائلة <span className="text-red-500">*</span></label>
                 <Input
                   {...field}
                   type="text"

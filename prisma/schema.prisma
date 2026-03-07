@@ -148,6 +148,8 @@ model FamilyTree {
   ownerId           String                      @db.Uuid
   treeJson          Json?
   membersCount      Int                         @default(0)
+  aliveCount        Int                         @default(0)
+  deadCount         Int                         @default(0)
   collapsedBranches FamilyTreeCollapsedBranch[]
   createdAt         DateTime                    @default(now())
 }

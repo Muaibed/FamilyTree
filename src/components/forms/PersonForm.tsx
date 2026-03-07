@@ -6,7 +6,7 @@ import DatePicker from "../ui/datePicker";
 import { Input } from "../ui/input";
 import SelectGender from "../preDefinedData/SelectGender";
 import SearchSelectMember from "../preDefinedData/SearchSelectMember";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2, User } from "lucide-react";
 import ErrorAlert from "../alerts/ErrorAlert";
 import TrueFalseSelect from "../preDefinedData/BooleanSelect";
 import { Controller, useForm } from "react-hook-form";
@@ -94,6 +94,32 @@ export default function PersonForm({
     [members],
   );
 
+  // When a parent is pre-set, restrict the other parent's options to that parent's active spouses
+  const presetFatherId = defaultValues?.father?.id;
+  const presetMotherId = defaultValues?.mother?.id;
+
+  const fatherOptions = useMemo<Option[]>(() => {
+    if (presetMotherId) {
+      const mother = members.find((m) => m.id === presetMotherId);
+      if (mother) {
+        return mother.femaleSpouses
+          .map((s) => ({ id: s.male.id, label: s.male.firstName, value: s.male.fullName }));
+      }
+    }
+    return maleMembersOptions;
+  }, [presetMotherId, members, maleMembersOptions]);
+
+  const motherOptions = useMemo<Option[]>(() => {
+    if (presetFatherId) {
+      const fatherMember = members.find((m) => m.id === presetFatherId);
+      if (fatherMember) {
+        return fatherMember.maleSpouses
+          .map((s) => ({ id: s.female.id, label: s.female.firstName, value: s.female.fullName }));
+      }
+    }
+    return femaleMembersOptions;
+  }, [presetFatherId, members, femaleMembersOptions]);
+
   const familiesOptions = useMemo<Option[]>(
     () =>
       families.map((item) => ({
@@ -130,6 +156,8 @@ export default function PersonForm({
     if (femaleMembersOptions && defaultValues?.mother)
       setValue("motherId", defaultValues.mother.id);
   }, [defaultValues, maleMembersOptions, femaleMembersOptions, setValue]);
+
+  const selectedDeathDate = watch("deathDate")
 
   const deletePersonMutation = useMutation({
     mutationFn: deletePerson,
@@ -178,6 +206,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الاسم الأول <span className="text-red-500">*</span></label>
                 <Input
                   {...field}
                   type="text"
@@ -194,6 +223,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الكنية</label>
                 <Input
                   {...field}
                   type="text"
@@ -210,6 +240,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الجنس <span className="text-red-500">*</span></label>
                 <SelectGender {...field} selected={field.value} />
               </div>
             )}
@@ -220,26 +251,30 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الأب</label>
                 <SearchSelectMember
                   {...field}
-                  options={maleMembersOptions}
+                  options={fatherOptions}
                   placeholder="اختر الأب (اختياري)"
                   selectedMemberId={field.value ?? undefined}
+                  emptyFallBack={`لم تتم إضافة زوج لـ ${defaultValues?.mother?.firstName}`}
                 />
               </div>
             )}
-          />          
+          />
 
           <Controller
             name="motherId"
             control={control}
             render={({ field }) => (
               <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الأم</label>
                 <SearchSelectMember
                   {...field}
-                  options={femaleMembersOptions}
+                  options={motherOptions}
                   placeholder="اختر الأم (اختياري)"
                   selectedMemberId={field.value ?? undefined}
+                  emptyFallBack={`لم تتم إضافة زوجة لـ ${defaultValues?.father?.firstName}`}
                 />
               </div>
             )}
@@ -250,6 +285,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">العائلة <span className="text-red-500">*</span></label>
                 <SearchSelectFamily
                   {...field}
                   options={familiesOptions}
@@ -264,10 +300,14 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">متوفى</label>
                 <TrueFalseSelect
                   placeholder="متوفى"
                   selected={field.value}
-                  onChange={() => setValue("isDead", field.value)}
+                  onChange={(bool) => {
+                    setValue("isDead", bool === "true" ? true : false)
+                  }}
+                  disabled={!!selectedDeathDate}
                 />
               </div>
             )}
@@ -278,10 +318,11 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">تاريخ الميلاد</label>
                 <DatePicker
                   placeholder="تاريخ الميلاد (اختياري)"
                   selectedDate={field.value ?? undefined}
-                  onSubmit={() => setValue("birthDate", field.value)}
+                  onSubmit={(date) => setValue("birthDate", date)}
                 />
               </div>
             )}
@@ -292,25 +333,30 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">تاريخ الوفاة</label>
                 <DatePicker
                   placeholder="تاريخ الوفاة (اختياري)"
                   selectedDate={field.value ?? undefined}
-                  onSubmit={() => setValue("deathDate", field.value)}
+                  onSubmit={(date) => {
+                    setValue("deathDate", date);
+                    setValue("isDead", !!date);
+                  }}
                 />
               </div>
             )}
           />
 
           {spouses && spouses.length > 0 && (
-            <div className="mb-4">
-              <h3 className="text-sm font-medium mb-2 text-right">الأزواج</h3>
-              {spouses.map((spouse) => (
-                <div className="mb-2" key={spouse.id}>
-                  <div className="flex items-center justify-between p-2 border rounded">
+            <div>
+              <label className="text-xs text-muted-foreground mb-2 block text-right" dir="rtl">الأزواج</label>
+              <div className="space-y-2">
+                {spouses.map((spouse) => (
+                  <div key={spouse.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-md border bg-muted/30">
                     <Button
                       type="button"
-                      size="sm"
-                      variant="destructive"
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
                       onClick={() => {
                         if (defaultValues?.gender === "MALE") {
                           deleteRelation(defaultValues.id!, spouse.id);
@@ -320,12 +366,15 @@ export default function PersonForm({
                         setSpouses((prev) => prev.filter((s) => s.id !== spouse.id));
                       }}
                     >
-                      حذف
+                      <Trash2 className="h-3.5 w-3.5" />
                     </Button>
-                    <p className="text-sm" dir="rtl">{spouse.fullName}</p>
+                    <div className="flex items-center gap-2" dir="rtl">
+                      <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <span className="text-sm">{spouse.fullName}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
           <div>

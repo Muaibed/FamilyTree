@@ -17,6 +17,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SearchSelectProps } from '@/types/ui'
 import { ScrollArea } from "./scroll-area";
+import { usePopoverZoom } from "@/contexts/popoverZoom";
 
 export default function Select({
   options,
@@ -24,22 +25,26 @@ export default function Select({
   onSelect,
   selected = null,
   className,
+  disabled,
 }: SearchSelectProps) {
   const [open, setOpen] = useState(false);
+  const zoom = usePopoverZoom();
 
   return (
     <div>
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className={`w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center justify-between ${className ?? ""}`}
+          className={`w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center justify-between ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className ?? ""}`}
+          style={zoom ? { fontSize: `${1 / zoom}em` } : undefined}
           aria-expanded={open}
+          disabled={disabled}
         >
           <ChevronsUpDown className="mr-2 h-4 w-4 text-muted-foreground justify-end" />
           {selected ? selected.value : placeholder}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0 z-55" side="bottom" avoidCollisions={false}>
+      <PopoverContent className="w-[200px] p-0 z-55" style={zoom ? { zoom } : undefined} side="bottom" avoidCollisions={false}>
         <Command>
           <CommandEmpty>لا توجد نتائج.</CommandEmpty>
             <ScrollArea className="max-h-[50vh] md:max-h-[300px] overflow-auto">
