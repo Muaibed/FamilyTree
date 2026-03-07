@@ -1,8 +1,17 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { usePopoverZoom } from "@/contexts/popoverZoom"
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+function Input({ className, type, style, ...props }: React.ComponentProps<"input">) {
+  const zoom = usePopoverZoom();
+  // Counteract parent CSS zoom (same pattern as Select trigger) so the input
+  // renders at a consistent size on all platforms including iOS Safari,
+  // where CSS zoom does not reliably cascade to native <input> elements.
+  const zoomStyle: React.CSSProperties = zoom
+    ? { fontSize: `${1 / zoom}em`, height: `${1 / zoom}em` }
+    : {};
+
   return (
     <input
       type={type}
@@ -13,6 +22,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
         className
       )}
+      style={{ ...zoomStyle, ...style }}
       {...props}
     />
   )

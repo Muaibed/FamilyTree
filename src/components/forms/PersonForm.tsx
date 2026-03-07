@@ -19,6 +19,7 @@ import { deletePerson, getPerson } from "@/lib/queries/persons";
 import { getMembers } from "@/lib/queries/familyTreeMembers";
 import { Option } from "@/types/ui";
 import SearchSelectFamily from "../preDefinedData/SearchSelectFamily";
+import { usePopoverZoom } from "@/contexts/popoverZoom";
 
 export default function PersonForm({
   onSubmit,
@@ -31,6 +32,11 @@ export default function PersonForm({
   defaultValues?: Partial<PersonWithRelations>;
   title: string;
 }) {
+  const zoom = usePopoverZoom();
+  const labelStyle = zoom ? { fontSize: `${1 / zoom}em`, height: `${0.7 / zoom}em` } : undefined;
+
+  const spousesStyle = zoom ? { fontSize: `${1 / zoom}em` } : undefined;
+
   const queryClient = useQueryClient();
 
   const {
@@ -197,7 +203,7 @@ export default function PersonForm({
   return (
     <div className="max-w-md mx-auto p-6 rounded-lg">
       <div className="flex items-center justify-center w-full">
-        <h2 className="text-2xl font-semibold mb-4">{title}</h2>
+        <h2 className="text-2xl font-semibold mb-4" style={labelStyle}>{title}</h2>
       </div>
       <div className="max-h-[60vh] overflow-y-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 m-1">
@@ -206,7 +212,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الاسم الأول <span className="text-red-500">*</span></label>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl" style={labelStyle}>الاسم الأول <span className="text-red-500">*</span></label>
                 <Input
                   {...field}
                   type="text"
@@ -223,7 +229,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الكنية</label>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl" style={labelStyle}>الكنية</label>
                 <Input
                   {...field}
                   type="text"
@@ -240,7 +246,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الجنس <span className="text-red-500">*</span></label>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl" style={labelStyle}>الجنس <span className="text-red-500">*</span></label>
                 <SelectGender {...field} selected={field.value} />
               </div>
             )}
@@ -251,7 +257,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الأب</label>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl" style={labelStyle}>الأب</label>
                 <SearchSelectMember
                   {...field}
                   options={fatherOptions}
@@ -268,7 +274,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">الأم</label>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl" style={labelStyle}>الأم</label>
                 <SearchSelectMember
                   {...field}
                   options={motherOptions}
@@ -285,7 +291,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">العائلة <span className="text-red-500">*</span></label>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl" style={labelStyle}>العائلة <span className="text-red-500">*</span></label>
                 <SearchSelectFamily
                   {...field}
                   options={familiesOptions}
@@ -300,7 +306,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">متوفى</label>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl" style={labelStyle}>متوفى</label>
                 <TrueFalseSelect
                   placeholder="متوفى"
                   selected={field.value}
@@ -318,7 +324,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">تاريخ الميلاد</label>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl" style={labelStyle}>تاريخ الميلاد</label>
                 <DatePicker
                   placeholder="تاريخ الميلاد (اختياري)"
                   selectedDate={field.value ?? undefined}
@@ -333,7 +339,7 @@ export default function PersonForm({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">تاريخ الوفاة</label>
+                <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl" style={labelStyle}>تاريخ الوفاة</label>
                 <DatePicker
                   placeholder="تاريخ الوفاة (اختياري)"
                   selectedDate={field.value ?? undefined}
@@ -348,7 +354,7 @@ export default function PersonForm({
 
           {spouses && spouses.length > 0 && (
             <div>
-              <label className="text-xs text-muted-foreground mb-2 block text-right" dir="rtl">الأزواج</label>
+              <label className="text-xs text-muted-foreground mb-2 block text-right" dir="rtl" style={labelStyle}>الأزواج</label>
               <div className="space-y-2">
                 {spouses.map((spouse) => (
                   <div key={spouse.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-md border bg-muted/30">
@@ -356,7 +362,7 @@ export default function PersonForm({
                       type="button"
                       size="icon"
                       variant="ghost"
-                      className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
+                      className="w-7 text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
                       onClick={() => {
                         if (defaultValues?.gender === "MALE") {
                           deleteRelation(defaultValues.id!, spouse.id);
@@ -370,7 +376,7 @@ export default function PersonForm({
                     </Button>
                     <div className="flex items-center gap-2" dir="rtl">
                       <User className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <span className="text-sm">{spouse.fullName}</span>
+                      <span style={spousesStyle}>{spouse.fullName}</span>
                     </div>
                   </div>
                 ))}
@@ -383,10 +389,11 @@ export default function PersonForm({
                 type="button"
                 variant="destructive"
                 onClick={() => setIsDeleting(true)}
+                style={labelStyle}
               >
                 حذف
               </Button>
-              <Button type="submit">تأكيد</Button>
+              <Button type="submit" style={labelStyle}>تأكيد</Button>
             </div>
           </div>
         </form>

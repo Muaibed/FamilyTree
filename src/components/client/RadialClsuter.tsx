@@ -66,7 +66,7 @@ export default function RadialCluster({
     : (attrs?.spouses ?? []);
   const displayDeathStatus: string | null = attrs?.isDead ? (attrs.deathDate ?? "متوفى") : null;
 
-  const mobileModalZoom = 0.23; 
+  const mobileModalZoom = 0.43; 
   
   const queryClient = useQueryClient();
 
@@ -379,9 +379,9 @@ export default function RadialCluster({
                     left: `${modalPos.x}px`,
                     top: `${modalPos.y}px`,
                     transform: 'translate(-50%, -50%)',
-                    width: '60px',
-                    maxHeight: '25vh',
-                    fontSize: '3px',
+                    width: '300px',
+                    maxHeight: '55vh',
+                    fontSize: '15px',
                   }
                 : {
                     left: '50%',
@@ -390,7 +390,7 @@ export default function RadialCluster({
                     width: '90vw',
                     maxWidth: '350px',
                     maxHeight: '70vh',
-                    fontSize: '14px',
+                    fontSize: '18px',
                   }),
               msOverflowStyle: 'none',
               scrollbarWidth: 'none',
