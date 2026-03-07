@@ -155,7 +155,7 @@ export default function RadialCluster({
       .attr("width", width)
       .attr("height", height)
       .attr("viewBox", [-cx, -cy, width, height])
-      .attr("style", "width: 100%; height: auto; font: 10px sans-serif;");
+      .attr("style", "width: 100%; height: 100vh; font: 10px sans-serif;");
 
     // Single container group — zoom transforms are applied here
     const container = svg.append("g");

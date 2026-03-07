@@ -118,7 +118,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
           )}
         </div>
       </div>
-      <div className="flex items-center-safe justify-center-safe w-full h-screen overflow-auto">
+      <div className="w-full h-screen overflow-hidden">
         <Suspense>
           <RadialCluster
             members={members}
