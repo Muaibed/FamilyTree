@@ -3,6 +3,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface ModalProps {
   isOpen: boolean;

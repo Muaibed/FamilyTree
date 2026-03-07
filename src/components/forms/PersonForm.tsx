@@ -195,11 +195,11 @@ export default function PersonForm({
   if (familiesError || fatherError || membersError) return <ErrorAlert />;
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 rounded-lg">
+    <div className="max-w-md mx-auto p-6 rounded-lg">
       <div className="flex items-center justify-center w-full">
         <h2 className="text-2xl font-semibold mb-4">{title}</h2>
       </div>
-      <div>
+      <div className="max-h-[60vh] overflow-y-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 m-1">
           <Controller
             name="firstName"
@@ -390,24 +390,24 @@ export default function PersonForm({
             </div>
           </div>
         </form>
-
-        <Modal
-          isOpen={!!isDeleting}
-          onClose={() => {
-            setIsDeleting(false);
-          }}
-        >
-          {isDeleting && defaultValues?.firstName && (
-            <DeletePage
-              name={defaultValues?.firstName}
-              onSubmit={() => {
-                handleDelete();
-                setIsDeleting(false);
-              }}
-            />
-          )}
-        </Modal>
       </div>
+
+      <Modal
+        isOpen={!!isDeleting}
+        onClose={() => {
+          setIsDeleting(false);
+        }}
+      >
+        {isDeleting && defaultValues?.firstName && (
+          <DeletePage
+            name={defaultValues?.firstName}
+            onSubmit={() => {
+              handleDelete();
+              setIsDeleting(false);
+            }}
+          />
+        )}
+      </Modal>
     </div>
   );
 }
