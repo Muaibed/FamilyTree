@@ -307,7 +307,7 @@ export default function RadialCluster({
                     <div className="bg-rose-100 dark:bg-secondary rounded m-[0.3em]">
                       <div className="relative py-[0.3em] min-h-[2em]">
                         <div className="absolute left-1/2 transform -translate-x-1/2">
-                          <p className="text-[1em] text-rose-800">
+                          <p className="text-[1em] text-rose-800 dark:text-rose-500">
                             {displayDeathStatus}
                           </p>
                         </div>
