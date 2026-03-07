@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { TreeNode, TreeNodeAttributes } from "@/types/tree";
 import { PersonWithRelations } from "@/types/family";
@@ -8,6 +8,8 @@ import { PersonModal } from "./Modal";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Search } from "lucide-react";
 import CreatePerson from "@/app/pages/CreatePerson";
 import EditPerson from "@/app/pages/EditPerson";
 import CreateSpouseRelationship from "@/app/pages/CreateSpouseRelationship";
@@ -40,6 +42,10 @@ export default function RadialCluster({
   const [isMobile, setIsMobile] = useState(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
+  const rootDescendantsRef = useRef<d3.HierarchyPointNode<TreeNode>[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<d3.HierarchyPointNode<TreeNode>[]>([]);
 
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
@@ -142,6 +148,8 @@ export default function RadialCluster({
     const root = tree(d3.hierarchy<TreeNode>(formattedData ? formattedData : holder)
       .sort((a, b) => d3.ascending(a.data.name, b.data.name)));
 
+    rootDescendantsRef.current = root.descendants();
+
     const svg = d3
       .select(svgRef.current)
       .attr("width", width)
@@ -149,7 +157,10 @@ export default function RadialCluster({
       .attr("viewBox", [-cx, -cy, width, height])
       .attr("style", "width: 100%; height: auto; font: 10px sans-serif;");
 
-    svg.append("g")
+    // Single container group — zoom transforms are applied here
+    const container = svg.append("g");
+
+    container.append("g")
       .attr("fill", "none")
       .attr("stroke", "#555")
       .attr("stroke-opacity", 0.4)
@@ -161,7 +172,7 @@ export default function RadialCluster({
           .angle(d => d.x)
           .radius(d => d.y));
 
-    svg.append("g")
+    container.append("g")
       .selectAll("circle")
       .data(root.descendants())
       .enter()
@@ -174,7 +185,7 @@ export default function RadialCluster({
       .attr("name", d => `${d.data.name}`)
       .on("click", handleClick)
 
-    svg.append("g")
+    container.append("g")
       .selectAll("text")
       .data(root.descendants())
       .enter()
@@ -201,6 +212,15 @@ export default function RadialCluster({
       .on("click", handleClick)
       .raise();
 
+    // Zoom behavior — panning + scroll-to-zoom
+    const zoom = d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.1, 4])
+      .on('zoom', (event) => {
+        container.attr('transform', event.transform);
+      });
+    d3.select(svgRef.current).call(zoom);
+    zoomRef.current = zoom;
+
   }, [treeData]);
 
   const selectedPersonHasChildren =
@@ -215,8 +235,133 @@ export default function RadialCluster({
     setIsEditingPerson(false);
   };
 
+  const getLineage = (node: d3.HierarchyPointNode<TreeNode>): string => {
+    const parts: string[] = [];
+    let current = node;
+    let depth = 0;
+    while (current.parent && current.parent.data.name && depth < 4) {
+      const connector = current.data.attributes?.gender === 'FEMALE' ? 'بنت' : 'بن';
+      parts.push(`${connector} ${current.parent.data.name}`);
+      current = current.parent;
+      depth++;
+    }
+    return parts.join(' ');
+  };
+
+  const focusNode = useCallback((query: string, exactId?: string) => {
+    if (!query.trim() || !svgRef.current || !zoomRef.current) return;
+
+    const q = query.toLowerCase();
+    const match = rootDescendantsRef.current.find(d =>
+      exactId
+        ? d.data.attributes?.id === exactId
+        : d.data.name.toLowerCase().includes(q) ||
+          (d.data.attributes?.fullName ?? '').toLowerCase().includes(q)
+    );
+    if (!match) return;
+
+    // Highlight matching node: amber fill, larger radius
+    const circles = d3.select(svgRef.current)
+      .selectAll<SVGCircleElement, d3.HierarchyPointNode<TreeNode>>('circle');
+
+    circles
+      .attr('fill', d =>
+        d.data.attributes?.id === match.data.attributes?.id
+          ? '#f59e0b'
+          : d.children ? '#555' : '#999'
+      )
+      .attr('r', d =>
+        d.data.attributes?.id === match.data.attributes?.id ? 7 : 2.5
+      );
+
+    // Fade highlight back to default after 3 seconds
+    setTimeout(() => {
+      if (!svgRef.current) return;
+      d3.select(svgRef.current)
+        .selectAll<SVGCircleElement, d3.HierarchyPointNode<TreeNode>>('circle')
+        .transition()
+        .duration(600)
+        .attr('fill', d => d.children ? '#555' : '#999')
+        .attr('r', 2.5);
+    }, 3000);
+
+    // Compute Cartesian SVG coords from radial layout
+    // Node at angle match.x (radians), radius match.y; SVG origin = center (viewBox 0,0)
+    const svgX = match.y * Math.cos(match.x - Math.PI / 2);
+    const svgY = match.y * Math.sin(match.x - Math.PI / 2);
+
+    // Pan + zoom: translate so the node lands at SVG origin (which is viewport center)
+    const k = 1.5;
+    const transform = d3.zoomIdentity.translate(-k * svgX, -k * svgY).scale(k);
+    d3.select(svgRef.current)
+      .transition()
+      .duration(750)
+      .call(zoomRef.current.transform, transform);
+  }, []);
+
   return (
-    <div>
+    <div className="relative">
+      <div className="fixed top-20 right-4 z-[45] flex flex-col items-end gap-1">
+        <div className="flex gap-2 items-center">
+          <Input
+            value={searchQuery}
+            onChange={e => {
+              const q = e.target.value;
+              setSearchQuery(q);
+              if (!q.trim()) { setSuggestions([]); return; }
+              // ignore بن\بنت when searching
+              const ancestorChain = (node: d3.HierarchyPointNode<TreeNode>): string => {
+                const parts: string[] = [];
+                let cur: d3.HierarchyPointNode<TreeNode> | null = node;
+                while (cur && cur.data.name) { parts.push(cur.data.name); cur = cur.parent; }
+                return parts.join(' ');
+              };
+              const normalizedQ = q.trim().toLowerCase();
+              const results = rootDescendantsRef.current
+                .filter(d => ancestorChain(d).toLowerCase().includes(normalizedQ))
+                .slice(0, 8);
+              setSuggestions(results);
+            }}
+            onKeyDown={e => { if (e.key === 'Escape') { setSuggestions([]); setSearchQuery(''); } }}
+            placeholder="ابحث عن شخص..."
+            dir="rtl"
+            className="w-44 bg-card/90 backdrop-blur-sm shadow-md border"
+          />
+          <Button
+            size="icon"
+            variant="secondary"
+            className="shadow-md shrink-0"
+            onClick={() => setSuggestions([])}
+          >
+            <Search className="h-4 w-4" />
+          </Button>
+        </div>
+        {suggestions.length > 0 && (
+          <ul className="w-56 bg-card border rounded-md shadow-lg overflow-hidden">
+            {suggestions.map((s) => {
+              const lineage = getLineage(s);
+              return (
+                <li
+                  key={s.data.attributes?.id ?? s.data.name}
+                  className="px-3 py-2 cursor-pointer hover:bg-accent text-right border-b last:border-b-0"
+                  dir="rtl"
+                  onClick={() => {
+                    const label = s.data.attributes?.fullName ?? s.data.name;
+                    focusNode(label, s.data.attributes?.id);
+                    setSearchQuery(label);
+                    setSuggestions([]);
+                  }}
+                >
+                  <p className="text-sm font-medium">{s.data.name}</p>
+                  {lineage && (
+                    <p className="text-xs text-muted-foreground mt-0.5">{lineage}</p>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
       <svg ref={svgRef} width={width} height={height} style={{ overflow: 'visible' }} className="rd3t-svg" />
       {selectedNode && (
         <>
