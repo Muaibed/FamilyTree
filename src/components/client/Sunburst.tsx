@@ -9,11 +9,6 @@ import { TreeLayoutProps } from "./TreeViewShell";
 const COLORS = d3.schemeTableau10;
 const color = (depth: number) => COLORS[depth % COLORS.length];
 
-/**
- * Sunburst — radial partition layout.
- * Each ring represents one generation. Arc width is equal for all siblings.
- * Root sits at the center, leaves at the outer edge.
- */
 export default function Sunburst({
   treeData,
   onNodeClick,
@@ -170,7 +165,7 @@ export default function Sunburst({
       .attr("dy", "0.35em")
       .style("text-anchor", "middle")
       .style("user-select", "none")
-      .style("font-size", (d) => `${Math.max(8, 14 - d.depth * 1.5)}px`)
+      .style("font-size", (d) => `${Math.max(8, 20 - d.depth)}px`)
       .attr("fill", "white")
       .text((d) => d.data.name);
 

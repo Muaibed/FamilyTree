@@ -18,15 +18,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addCollapsedBranch, removeCollapsedBranch } from "@/lib/queries/familyTrees";
 import { PopoverZoomContext } from "@/contexts/popoverZoom";
 
-// Props passed from TreeViewShell down to any layout component.
-// Uses HierarchyNode (base type) and Fuse<any> so that different layouts
-// (radial, partition-based, force) can assign their own specific node subtypes.
 export interface TreeLayoutProps {
   treeData: TreeNode | null;
   onNodeClick: (event: MouseEvent, d: d3.HierarchyNode<TreeNode>) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rootDescendantsRef: React.MutableRefObject<d3.HierarchyNode<TreeNode>[]>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fuseRef: React.MutableRefObject<Fuse<any> | null>;
   onFocusNodeReady: (fn: (query: string, exactId?: string) => void) => void;
 }
@@ -52,14 +47,11 @@ export default function TreeViewShell({
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Shared refs populated by the layout child
   const rootDescendantsRef = useRef<d3.HierarchyNode<TreeNode>[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fuseRef = useRef<Fuse<any> | null>(null);
   const focusNodeFnRef = useRef<((query: string, exactId?: string) => void) | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [countQuery, setCountQuery] = useState('');
   const [nameCount, setNameCount] = useState<number | null>(null);
@@ -289,7 +281,7 @@ export default function TreeViewShell({
         )}
       </div>
 
-      {/* Layout (rendered by caller via render prop) */}
+      {/* Layout */}
       {children({ treeData, onNodeClick: handleNodeClick, rootDescendantsRef, fuseRef, onFocusNodeReady })}
 
       {/* Person modal */}
