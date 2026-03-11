@@ -6,7 +6,14 @@ import Fuse from "fuse.js";
 import { TreeNode } from "@/types/tree";
 import { TreeLayoutProps } from "./TreeViewShell";
 
-export default function RadialCluster({
+const NODE_DX = 100; // horizontal space per node
+const NODE_DY = 110; // vertical space per level
+
+/**
+ * Vertical (top-down) tidy tree — root at the top, descendants spread downward.
+ * Uses d3.tree() with Cartesian layout and d3.linkVertical() for links.
+ */
+export default function VerticalTree({
   treeData,
   onNodeClick,
   rootDescendantsRef,
@@ -15,13 +22,14 @@ export default function RadialCluster({
 }: TreeLayoutProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
-  const width = 2000;
-  const height = 2000;
+  const W = 4000;
+  const H = 4000;
 
+  // Node SVG position: (match.x, match.y). viewBox centers at (0,0) so
+  // focusNode translates the node to screen center with translate(-k*x, -k*y).
   const focusNode = useCallback(
     (query: string, exactId?: string) => {
       if (!query.trim() || !svgRef.current || !zoomRef.current) return;
-
       const q = query.toLowerCase();
       const match = rootDescendantsRef.current.find((d) =>
         exactId
@@ -31,7 +39,6 @@ export default function RadialCluster({
       ) as d3.HierarchyPointNode<TreeNode> | undefined;
       if (!match) return;
 
-      // Highlight matching node: amber fill, larger radius
       d3.select(svgRef.current)
         .selectAll<SVGCircleElement, d3.HierarchyPointNode<TreeNode>>("circle")
         .attr("fill", (d) =>
@@ -45,7 +52,6 @@ export default function RadialCluster({
           d.data.attributes?.id === match.data.attributes?.id ? 7 : 2.5
         );
 
-      // Fade highlight back after 3 seconds
       setTimeout(() => {
         if (!svgRef.current) return;
         d3.select(svgRef.current)
@@ -56,11 +62,10 @@ export default function RadialCluster({
           .attr("r", 2.5);
       }, 3000);
 
-      // Pan + zoom to node
-      const svgX = match.y * Math.cos(match.x - Math.PI / 2);
-      const svgY = match.y * Math.sin(match.x - Math.PI / 2);
-      const k = 3;
-      const transform = d3.zoomIdentity.translate(-k * svgX, -k * svgY).scale(k);
+      const k = 2.5;
+      const transform = d3.zoomIdentity
+        .translate(-k * match.x, -k * match.y)
+        .scale(k);
       d3.select(svgRef.current)
         .transition()
         .duration(750)
@@ -69,36 +74,25 @@ export default function RadialCluster({
     [rootDescendantsRef]
   );
 
-  // Register the focus function so TreeViewShell can call it
   useEffect(() => {
     onFocusNodeReady(focusNode);
   }, [focusNode, onFocusNodeReady]);
 
   useEffect(() => {
     if (!svgRef.current) return;
-
     d3.select(svgRef.current).selectAll("*").remove();
 
-    const cx = width * 0.5;
-    const cy = height * 0.5;
-    const radius = Math.min(width, height) / 2 - 60;
     const formattedData = treeData ?? undefined;
-
-    const tree = d3
-      .tree<TreeNode>()
-      .size([2 * Math.PI, radius])
-      .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
-
-    const holder = { name: "", children: [] };
+    const tree = d3.tree<TreeNode>().nodeSize([NODE_DX, NODE_DY]);
+    const holder: TreeNode = { name: "", children: [] };
     const root = tree(
       d3
-        .hierarchy<TreeNode>(formattedData ? formattedData : holder)
+        .hierarchy<TreeNode>(formattedData ?? holder)
         .sort((a, b) => d3.ascending(a.data.name, b.data.name))
     );
 
     rootDescendantsRef.current = root.descendants();
 
-    // Build Fuse index for search (normalizing alef variants)
     const normalizeAlef = (s: string) => s.replace(/[أإآ]/g, "ا");
     fuseRef.current = new Fuse(root.descendants(), {
       keys: [
@@ -119,15 +113,17 @@ export default function RadialCluster({
       },
     });
 
+    // viewBox centered at origin so root (0,0) starts at screen center
     const svg = d3
       .select(svgRef.current)
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", [-cx, -cy, width, height])
+      .attr("width", W)
+      .attr("height", H)
+      .attr("viewBox", [-W / 2, -H / 2, W, H])
       .attr("style", "width: 100%; height: 100vh; font: 10px sans-serif;");
 
     const container = svg.append("g");
 
+    // Links
     container
       .append("g")
       .attr("fill", "none")
@@ -140,82 +136,70 @@ export default function RadialCluster({
       .attr(
         "d",
         d3
-          .linkRadial<
+          .linkVertical<
             d3.HierarchyPointLink<TreeNode>,
             d3.HierarchyPointNode<TreeNode>
           >()
-          .angle((d) => d.x)
-          .radius((d) => d.y)
+          .x((d) => d.x)
+          .y((d) => d.y)
       );
 
+    // Circles
     container
       .append("g")
       .selectAll("circle")
       .data(root.descendants())
       .enter()
       .append("circle")
-      .join("circle")
-      .attr(
-        "transform",
-        (d) => `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y},0)`
-      )
+      .attr("transform", (d) => `translate(${d.x},${d.y})`)
       .attr("fill", (d) => (d.children ? "#555" : "#999"))
       .attr("r", 2.5)
       .attr("id", (d) => `${d.data.attributes?.id}`)
       .attr("name", (d) => `${d.data.name}`)
       .on("click", onNodeClick);
 
+    // Labels — centered above each node, no rotation
     container
       .append("g")
       .selectAll("text")
       .data(root.descendants())
       .enter()
       .append("text")
-      .join("text")
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-width", 1)
-      .attr(
-        "transform",
-        (d) =>
-          `rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y},0) rotate(${
-            d.x >= Math.PI ? 180 : 0
-          })`
-      )
-      .attr("dy", "0.31em")
-      .attr("x", (d) => (d.x < Math.PI === !d.children ? 6 : -6))
+      .attr("x", (d) => d.x)
+      .attr("y", (d) => d.y - 8)
+      .attr("text-anchor", "middle")
+      .attr("dy", "0em")
       .style("cursor", "pointer")
       .style("pointer-events", "all")
       .style("user-select", "none")
-      .style("font-size", (d) => `${23 - d.depth * 2}px`)
-      .attr("text-anchor", (d) =>
-        d.x < Math.PI === !d.children ? "start" : "end"
-      )
+      .style("font-size", "13px")
       .attr("paint-order", "stroke")
       .attr("stroke", "white")
+      .attr("stroke-width", 1)
       .attr("fill", "currentColor")
-      .text((d) => d.data.name)
-      .clone(true)
-      .lower()
       .attr("id", (d) => `${d.data.attributes?.id}`)
       .attr("name", (d) => `${d.data.name}`)
-      .on("click", onNodeClick)
-      .raise();
+      .text((d) => d.data.name)
+      .on("click", onNodeClick);
 
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.1, 4])
+      .scaleExtent([0.02, 4])
       .on("zoom", (event) => {
         container.attr("transform", event.transform);
       });
     d3.select(svgRef.current).call(zoom);
     zoomRef.current = zoom;
+
+    const initialTransform = d3.zoomIdentity.translate(0, -H * 0.3).scale(2);
+    d3.select(svgRef.current).call(zoom.transform, initialTransform);
   }, [treeData, onNodeClick, rootDescendantsRef, fuseRef]);
 
   return (
     <svg
       ref={svgRef}
-      width={width}
-      height={height}
+      width={W}
+      height={H}
       style={{ overflow: "visible" }}
       className="rd3t-svg"
     />

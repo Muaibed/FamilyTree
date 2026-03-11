@@ -6,7 +6,11 @@ import Fuse from "fuse.js";
 import { TreeNode } from "@/types/tree";
 import { TreeLayoutProps } from "./TreeViewShell";
 
-export default function RadialCluster({
+/**
+ * Radial Dendrogram — uses d3.cluster() so all leaf nodes sit at the same radius,
+ * making generation depth immediately visible as concentric rings.
+ */
+export default function RadialDendrogram({
   treeData,
   onNodeClick,
   rootDescendantsRef,
@@ -21,17 +25,15 @@ export default function RadialCluster({
   const focusNode = useCallback(
     (query: string, exactId?: string) => {
       if (!query.trim() || !svgRef.current || !zoomRef.current) return;
-
       const q = query.toLowerCase();
       const match = rootDescendantsRef.current.find((d) =>
         exactId
           ? d.data.attributes?.id === exactId
           : d.data.name.toLowerCase().includes(q) ||
             (d.data.attributes?.fullName ?? "").toLowerCase().includes(q)
-      ) as d3.HierarchyPointNode<TreeNode> | undefined;
+      );
       if (!match) return;
 
-      // Highlight matching node: amber fill, larger radius
       d3.select(svgRef.current)
         .selectAll<SVGCircleElement, d3.HierarchyPointNode<TreeNode>>("circle")
         .attr("fill", (d) =>
@@ -45,7 +47,6 @@ export default function RadialCluster({
           d.data.attributes?.id === match.data.attributes?.id ? 7 : 2.5
         );
 
-      // Fade highlight back after 3 seconds
       setTimeout(() => {
         if (!svgRef.current) return;
         d3.select(svgRef.current)
@@ -56,7 +57,6 @@ export default function RadialCluster({
           .attr("r", 2.5);
       }, 3000);
 
-      // Pan + zoom to node
       const svgX = match.y * Math.cos(match.x - Math.PI / 2);
       const svgY = match.y * Math.sin(match.x - Math.PI / 2);
       const k = 3;
@@ -69,14 +69,12 @@ export default function RadialCluster({
     [rootDescendantsRef]
   );
 
-  // Register the focus function so TreeViewShell can call it
   useEffect(() => {
     onFocusNodeReady(focusNode);
   }, [focusNode, onFocusNodeReady]);
 
   useEffect(() => {
     if (!svgRef.current) return;
-
     d3.select(svgRef.current).selectAll("*").remove();
 
     const cx = width * 0.5;
@@ -84,21 +82,21 @@ export default function RadialCluster({
     const radius = Math.min(width, height) / 2 - 60;
     const formattedData = treeData ?? undefined;
 
-    const tree = d3
-      .tree<TreeNode>()
+    // d3.cluster places all leaves at the same radius
+    const cluster = d3
+      .cluster<TreeNode>()
       .size([2 * Math.PI, radius])
-      .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
+      .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
 
-    const holder = { name: "", children: [] };
-    const root = tree(
+    const holder: TreeNode = { name: "", children: [] };
+    const root = cluster(
       d3
-        .hierarchy<TreeNode>(formattedData ? formattedData : holder)
+        .hierarchy<TreeNode>(formattedData ?? holder)
         .sort((a, b) => d3.ascending(a.data.name, b.data.name))
     );
 
     rootDescendantsRef.current = root.descendants();
 
-    // Build Fuse index for search (normalizing alef variants)
     const normalizeAlef = (s: string) => s.replace(/[أإآ]/g, "ا");
     fuseRef.current = new Fuse(root.descendants(), {
       keys: [

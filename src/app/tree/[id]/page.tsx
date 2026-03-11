@@ -6,6 +6,11 @@ import BurgerMenu from "@/components/client/BurgerMenu";
 import { downloadSVG, downloadPDF } from "@/components/client/ExportTreeButton";
 import { Modal } from "@/components/client/Modal";
 import RadialCluster from "@/components/client/RadialClsuter";
+import RadialDendrogram from "@/components/client/RadialDendrogram";
+import VerticalTree from "@/components/client/VerticalTree";
+import HorizontalTree from "@/components/client/HorizontalTree";
+import Sunburst from "@/components/client/Sunburst";
+import TreeViewShell from "@/components/client/TreeViewShell";
 import CreateFamily from "@/app/pages/CreateFamily";
 import { getOwnerMembers } from "@/lib/queries/familyTreeMembers";
 import { getFamilyTree } from "@/lib/queries/familyTrees";
@@ -19,6 +24,15 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
 
   const [isAddingFamily, setIsAddingFamily] = useState<boolean>(false);
   const [isCreatingPerson, setIsCreatingPerson] = useState<boolean>(false);
+  const [layout, setLayout] = useState<"radial" | "dendrogram" | "vertical" | "horizontal" | "sunburst">("radial");
+
+  const LAYOUTS = [
+    { key: "radial",      label: "شجري دائري" },
+    { key: "dendrogram",  label: "تجميعي دائري" },
+    { key: "vertical",    label: "عمودي" },
+    { key: "horizontal",  label: "أفقي" },
+    { key: "sunburst",    label: "شمسي" },
+  ] as const;
 
   const { data: session, status: sessionStatus } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
@@ -118,15 +132,40 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
           )}
         </div>
       </div>
+      {/* Layout switcher */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[45] flex gap-1 bg-card/90 backdrop-blur-sm border rounded-xl shadow-md p-1">
+        {LAYOUTS.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setLayout(key)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              layout === key
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       <div className="w-full h-screen overflow-hidden">
         <Suspense>
-          <RadialCluster
+          <TreeViewShell
             members={members}
             treeId={id}
             treeData={treeData}
             collapsedPersonIds={collapsedPersonIds}
             onChange={() => "mutate members"}
-          />
+          >
+            {(props) => {
+              if (layout === "dendrogram") return <RadialDendrogram {...props} />;
+              if (layout === "vertical")   return <VerticalTree {...props} />;
+              if (layout === "horizontal") return <HorizontalTree {...props} />;
+              if (layout === "sunburst")   return <Sunburst {...props} />;
+              return <RadialCluster {...props} />;
+            }}
+          </TreeViewShell>
         </Suspense>
       </div>
     </div>
