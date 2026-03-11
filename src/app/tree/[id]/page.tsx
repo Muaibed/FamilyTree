@@ -7,9 +7,6 @@ import { downloadSVG, downloadPDF } from "@/components/client/ExportTreeButton";
 import { Modal } from "@/components/client/Modal";
 import RadialCluster from "@/components/client/RadialClsuter";
 import RadialDendrogram from "@/components/client/RadialDendrogram";
-import VerticalTree from "@/components/client/VerticalTree";
-import HorizontalTree from "@/components/client/HorizontalTree";
-import Sunburst from "@/components/client/Sunburst";
 import TreeViewShell from "@/components/client/TreeViewShell";
 import CreateFamily from "@/app/pages/CreateFamily";
 import { getOwnerMembers } from "@/lib/queries/familyTreeMembers";
@@ -24,14 +21,11 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
 
   const [isAddingFamily, setIsAddingFamily] = useState<boolean>(false);
   const [isCreatingPerson, setIsCreatingPerson] = useState<boolean>(false);
-  const [layout, setLayout] = useState<"radial" | "dendrogram" | "vertical" | "horizontal" | "sunburst">("radial");
+  const [layout, setLayout] = useState<"radial" | "dendrogram">("radial");
 
   const LAYOUTS = [
-    { key: "radial",      label: "شجري دائري" },
-    { key: "dendrogram",  label: "تجميعي دائري" },
-    { key: "vertical",    label: "عمودي" },
-    { key: "horizontal",  label: "أفقي" },
-    { key: "sunburst",    label: "شمسي" },
+    { key: "radial",     label: "شجري دائري" },
+    { key: "dendrogram", label: "تجميعي دائري" },
   ] as const;
 
   const { data: session, status: sessionStatus } = useSession();
@@ -160,9 +154,6 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
           >
             {(props) => {
               if (layout === "dendrogram") return <RadialDendrogram {...props} />;
-              if (layout === "vertical")   return <VerticalTree {...props} />;
-              if (layout === "horizontal") return <HorizontalTree {...props} />;
-              if (layout === "sunburst")   return <Sunburst {...props} />;
               return <RadialCluster {...props} />;
             }}
           </TreeViewShell>
