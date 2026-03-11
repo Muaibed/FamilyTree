@@ -16,6 +16,7 @@ import CreateSpouseRelationship from "@/app/pages/CreateSpouseRelationship";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addCollapsedBranch, removeCollapsedBranch } from "@/lib/queries/familyTrees";
 import { PopoverZoomContext } from "@/contexts/popoverZoom";
+import Fuse from 'fuse.js'
 
 export default function RadialCluster({
   members,
@@ -44,6 +45,8 @@ export default function RadialCluster({
   const svgRef = useRef<SVGSVGElement | null>(null);
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const rootDescendantsRef = useRef<d3.HierarchyPointNode<TreeNode>[]>([]);
+  const fuseRef = useRef<Fuse<d3.HierarchyPointNode<TreeNode>> | null>(null);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<d3.HierarchyPointNode<TreeNode>[]>([]);
 
@@ -150,6 +153,27 @@ export default function RadialCluster({
 
     rootDescendantsRef.current = root.descendants();
 
+    // Normalize alef variants (أ إ آ) → ا so searches are alef-agnostic
+    const normalizeAlef = (s: string) => s.replace(/[أإآ]/g, 'ا');
+
+    fuseRef.current = new Fuse(root.descendants(), {
+      keys: [
+        { name: 'data.name',                  weight: 0.50 },
+        { name: 'data.attributes.fullName',   weight: 0.35 },
+        { name: 'data.attributes.kunya',      weight: 0.10 },
+        { name: 'data.attributes.familyName', weight: 0.05 },
+      ],
+      threshold: 0.35,
+      minMatchCharLength: 2,
+      ignoreLocation: true,
+      getFn: (obj, path) => {
+        const val = Fuse.config.getFn(obj, path);
+        if (typeof val === 'string') return normalizeAlef(val);
+        if (Array.isArray(val)) return val.map(v => typeof v === 'string' ? normalizeAlef(v) : v);
+        return val;
+      },
+    });
+
     const svg = d3
       .select(svgRef.current)
       .attr("width", width)
@@ -235,19 +259,6 @@ export default function RadialCluster({
     setIsEditingPerson(false);
   };
 
-  const getLineage = (node: d3.HierarchyPointNode<TreeNode>): string => {
-    const parts: string[] = [];
-    let current = node;
-    let depth = 0;
-    while (current.parent && current.parent.data.name && depth < 4) {
-      const connector = current.data.attributes?.gender === 'FEMALE' ? 'بنت' : 'بن';
-      parts.push(`${connector} ${current.parent.data.name}`);
-      current = current.parent;
-      depth++;
-    }
-    return parts.join(' ');
-  };
-
   const focusNode = useCallback((query: string, exactId?: string) => {
     if (!query.trim() || !svgRef.current || !zoomRef.current) return;
 
@@ -291,7 +302,7 @@ export default function RadialCluster({
     const svgY = match.y * Math.sin(match.x - Math.PI / 2);
 
     // Pan + zoom: translate so the node lands at SVG origin (which is viewport center)
-    const k = 1.5;
+    const k = 3;
     const transform = d3.zoomIdentity.translate(-k * svgX, -k * svgY).scale(k);
     d3.select(svgRef.current)
       .transition()
@@ -308,18 +319,22 @@ export default function RadialCluster({
             onChange={e => {
               const q = e.target.value;
               setSearchQuery(q);
-              if (!q.trim()) { setSuggestions([]); return; }
-              // ignore بن\بنت when searching
-              const ancestorChain = (node: d3.HierarchyPointNode<TreeNode>): string => {
-                const parts: string[] = [];
-                let cur: d3.HierarchyPointNode<TreeNode> | null = node;
-                while (cur && cur.data.name) { parts.push(cur.data.name); cur = cur.parent; }
-                return parts.join(' ');
-              };
-              const normalizedQ = q.trim().toLowerCase();
-              const results = rootDescendantsRef.current
-                .filter(d => ancestorChain(d).toLowerCase().includes(normalizedQ))
+              if (!q.trim() || !fuseRef.current) { setSuggestions([]); return; }
+              const normalizeAlef = (s: string) => s.replace(/[أإآ]/g, 'ا');
+              const tokens = normalizeAlef(q).trim().split(/\s+/).filter(t => t.length >= 2);
+              if (tokens.length === 0) { setSuggestions([]); return; }
+
+              // Search each token independently
+              const tokenSets = tokens.map(token =>
+                new Set(fuseRef.current!.search(token).map(r => r.item.data.attributes?.id ?? r.item.data.name))
+              );
+              const matchedIds = tokenSets.reduce((acc, set) => new Set([...acc].filter(id => set.has(id))));
+
+              const results = fuseRef.current.search(tokens[0])
+                .map(r => r.item)
+                .filter(item => matchedIds.has(item.data.attributes?.id ?? item.data.name))
                 .slice(0, 8);
+
               setSuggestions(results);
             }}
             onKeyDown={e => { if (e.key === 'Escape') { setSuggestions([]); setSearchQuery(''); } }}
@@ -331,7 +346,10 @@ export default function RadialCluster({
             size="icon"
             variant="secondary"
             className="shadow-md shrink-0"
-            onClick={() => setSuggestions([])}
+            onClick={() => {
+              setSuggestions([])
+              setSearchQuery("")
+            }}
           >
             <Search className="h-4 w-4" />
           </Button>
@@ -339,7 +357,6 @@ export default function RadialCluster({
         {suggestions.length > 0 && (
           <ul className="w-56 bg-card border rounded-md shadow-lg overflow-hidden">
             {suggestions.map((s) => {
-              const lineage = getLineage(s);
               return (
                 <li
                   key={s.data.attributes?.id ?? s.data.name}
@@ -348,14 +365,13 @@ export default function RadialCluster({
                   onClick={() => {
                     const label = s.data.attributes?.fullName ?? s.data.name;
                     focusNode(label, s.data.attributes?.id);
-                    setSearchQuery(label);
+                    setSearchQuery(s.data.name + " " + s.data.attributes?.familyName);
                     setSuggestions([]);
+
                   }}
                 >
                   <p className="text-sm font-medium">{s.data.name}</p>
-                  {lineage && (
-                    <p className="text-xs text-muted-foreground mt-0.5">{lineage}</p>
-                  )}
+                  <p className="text-xs text-muted-foreground mt-0.5">{s.data.attributes?.fullName}</p>
                 </li>
               );
             })}

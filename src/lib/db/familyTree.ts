@@ -24,6 +24,7 @@ const personForTreeSelect = {
   gender: true,
   isDead: true,
   familyId: true,
+  family: true,
   kunya: true,
   deathDate: true,
   father: { select: { motherId: true, familyId: true } },
@@ -70,7 +71,7 @@ export const getFamilyTreeById = async (id: string) => {
   // Cache miss — compute and store
   const persons = await prisma.person.findMany({
     where: { family: { ownerId: tree.ownerId } },
-    select: personForTreeSelect,
+    select: personForTreeSelect
   });
 
   const collapsedPersonIds = tree.collapsedBranches.map(b => b.personId);

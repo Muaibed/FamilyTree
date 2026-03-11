@@ -4,8 +4,9 @@ export interface TreeNodeAttributes {
   isDead: boolean;
   fullName: string;
   kunya: string | null;
-  deathDate: string | null; // ISO date string (YYYY-MM-DD)
-  spouses: string[];        // active spouse fullNames
+  deathDate: string | null;
+  spouses: string[];
+  familyName: string;        
 }
 
 export interface TreeNode {

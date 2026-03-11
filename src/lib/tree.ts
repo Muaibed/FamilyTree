@@ -1,3 +1,4 @@
+import { Family } from "@/generated/prisma";
 import { TreeNode } from "@/types/tree";
 
 export type PersonForTree = {
@@ -7,6 +8,7 @@ export type PersonForTree = {
   gender: 'MALE' | 'FEMALE';
   isDead: boolean;
   familyId: string;
+  family: Family;
   kunya: string | null;
   deathDate: Date | null;
   father: { motherId: string | null; familyId: string } | null;
@@ -55,6 +57,7 @@ export const prepareTreeData = (
           gender: person.gender,
           isDead: person.isDead,
           fullName: person.fullName,
+          familyName: person.family.name,
           kunya: person.kunya,
           deathDate: person.deathDate
             ? person.deathDate.toISOString().slice(0, 10)
