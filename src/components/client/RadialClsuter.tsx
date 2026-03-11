@@ -39,7 +39,6 @@ export default function RadialCluster({
   const [isEditingPerson, setIsEditingPerson] = useState(false);
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
-  const [modalPos, setModalPos] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -99,36 +98,11 @@ export default function RadialCluster({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  function handleClick(event: MouseEvent, d: d3.HierarchyPointNode<TreeNode>) {
+  function handleClick(_event: MouseEvent, d: d3.HierarchyPointNode<TreeNode>) {
     setSelectedNode(d.data);
     setIsAddingChild(false);
     setIsAddingSpouse(false);
     setIsEditingPerson(false);
-
-    let clickX = event.clientX;
-    let clickY = event.clientY;
-
-    const isMobileView = window.innerWidth < 768;
-    const modalWidth = isMobileView ? 150 : Math.min(window.innerWidth * 0.9, 350);
-    const modalMaxHeight = isMobileView ? window.innerHeight * 0.45 : window.innerHeight * 0.7;
-
-    const padding = 10;
-    const halfWidth = modalWidth / 2;
-    const halfHeight = modalMaxHeight / 2;
-
-    if (clickX - halfWidth < padding) {
-      clickX = halfWidth + padding;
-    } else if (clickX + halfWidth > window.innerWidth - padding) {
-      clickX = window.innerWidth - halfWidth - padding;
-    }
-
-    if (clickY - halfHeight < padding) {
-      clickY = halfHeight + padding;
-    } else if (clickY + halfHeight > window.innerHeight - padding) {
-      clickY = window.innerHeight - halfHeight - padding;
-    }
-
-    setModalPos({ x: clickX, y: clickY });
   }
 
   useEffect(() => {
@@ -392,8 +366,8 @@ export default function RadialCluster({
             style={{
               ...(isMobile
                 ? {
-                    left: `${modalPos.x}px`,
-                    top: `${modalPos.y}px`,
+                    left: '50%',
+                    top: '50%',
                     transform: 'translate(-50%, -50%)',
                     width: '300px',
                     maxHeight: '55vh',
