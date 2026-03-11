@@ -9,10 +9,6 @@ import { TreeLayoutProps } from "./TreeViewShell";
 const NODE_DX = 100; // horizontal space per node
 const NODE_DY = 110; // vertical space per level
 
-/**
- * Vertical (top-down) tidy tree — root at the top, descendants spread downward.
- * Uses d3.tree() with Cartesian layout and d3.linkVertical() for links.
- */
 export default function VerticalTree({
   treeData,
   onNodeClick,

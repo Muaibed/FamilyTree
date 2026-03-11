@@ -6,10 +6,6 @@ import Fuse from "fuse.js";
 import { TreeNode } from "@/types/tree";
 import { TreeLayoutProps } from "./TreeViewShell";
 
-/**
- * Radial Dendrogram — uses d3.cluster() so all leaf nodes sit at the same radius,
- * making generation depth immediately visible as concentric rings.
- */
 export default function RadialDendrogram({
   treeData,
   onNodeClick,
@@ -31,7 +27,7 @@ export default function RadialDendrogram({
           ? d.data.attributes?.id === exactId
           : d.data.name.toLowerCase().includes(q) ||
             (d.data.attributes?.fullName ?? "").toLowerCase().includes(q)
-      );
+      ) as d3.HierarchyPointNode<TreeNode> | undefined;
       if (!match) return;
 
       d3.select(svgRef.current)
@@ -82,7 +78,6 @@ export default function RadialDendrogram({
     const radius = Math.min(width, height) / 2 - 60;
     const formattedData = treeData ?? undefined;
 
-    // d3.cluster places all leaves at the same radius
     const cluster = d3
       .cluster<TreeNode>()
       .size([2 * Math.PI, radius])

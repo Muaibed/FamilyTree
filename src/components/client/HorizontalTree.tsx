@@ -9,12 +9,6 @@ import { TreeLayoutProps } from "./TreeViewShell";
 const NODE_DX = 28; // vertical space per sibling row
 const NODE_DY = 200; // horizontal space per level
 
-/**
- * Horizontal (left-to-right) tidy tree — root on the left, descendants spread right.
- * Nodes are positioned by swapping d.x/d.y from d3.tree(), so:
- *   SVG x = d.y  (level depth → horizontal)
- *   SVG y = d.x  (sibling position → vertical)
- */
 export default function HorizontalTree({
   treeData,
   onNodeClick,
@@ -27,7 +21,6 @@ export default function HorizontalTree({
   const W = 4000;
   const H = 4000;
 
-  // Node's actual SVG position is (d.y, d.x) due to the x/y swap.
   const focusNode = useCallback(
     (query: string, exactId?: string) => {
       if (!query.trim() || !svgRef.current || !zoomRef.current) return;
@@ -63,7 +56,6 @@ export default function HorizontalTree({
           .attr("r", 2.5);
       }, 3000);
 
-      // SVG position is (d.y, d.x) due to the swap
       const k = 2.5;
       const transform = d3.zoomIdentity
         .translate(-k * match.y, -k * match.x)
