@@ -18,9 +18,14 @@ export default function Sunburst({
 }: TreeLayoutProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
+  // Exposed so the search focusNode callback can also trigger a zoom-in
+  const zoomToRef = useRef<
+    ((node: d3.HierarchyRectangularNode<TreeNode>) => void) | null
+  >(null);
+
   const W = 2000;
   const H = 2000;
-  const radius = Math.min(W, H) / 2 - 10;
+  const radius = Math.min(W, H) / 2;
 
   const focusNode = useCallback(
     (query: string, exactId?: string) => {
@@ -38,7 +43,9 @@ export default function Sunburst({
 
       // Highlight matched arc, dim others
       d3.select(svgRef.current)
-        .selectAll<SVGPathElement, d3.HierarchyRectangularNode<TreeNode>>(".sun-arc")
+        .selectAll<SVGPathElement, d3.HierarchyRectangularNode<TreeNode>>(
+          ".sun-arc"
+        )
         .attr("fill", (d) =>
           (d.data.attributes?.id ?? d.data.name) === matchId
             ? "#f59e0b"
@@ -51,25 +58,18 @@ export default function Sunburst({
       setTimeout(() => {
         if (!svgRef.current) return;
         d3.select(svgRef.current)
-          .selectAll<SVGPathElement, d3.HierarchyRectangularNode<TreeNode>>(".sun-arc")
+          .selectAll<SVGPathElement, d3.HierarchyRectangularNode<TreeNode>>(
+            ".sun-arc"
+          )
           .transition()
           .duration(600)
           .attr("fill", (d) => color(d.depth))
           .attr("opacity", 1);
       }, 3000);
 
-      // Pan to arc centroid (same formula as radial layouts)
+      // Zoom-in to show the matched node in context (zoom to its parent so siblings are visible)
       const m = match as unknown as d3.HierarchyRectangularNode<TreeNode>;
-      const angle = (m.x0 + m.x1) / 2 - Math.PI / 2;
-      const r = (m.y0 + m.y1) / 2;
-      const svgX = r * Math.cos(angle);
-      const svgY = r * Math.sin(angle);
-      const k = 3;
-      const transform = d3.zoomIdentity.translate(-k * svgX, -k * svgY).scale(k);
-      d3.select(svgRef.current)
-        .transition()
-        .duration(750)
-        .call(zoomRef.current.transform, transform);
+      zoomToRef.current?.(m.parent ?? m);
     },
     [rootDescendantsRef]
   );
@@ -116,25 +116,106 @@ export default function Sunburst({
       },
     });
 
+    // ── Scales used by the click-to-zoom interaction ───────────────────────
+    // xScale: maps an angular range [x0, x1] → [0, 2π] (the full circle)
+    // yScale: maps a radial range [y0, radius] → [innerEdge, radius]
+    const xScale = d3.scaleLinear().range([0, 2 * Math.PI]).clamp(true);
+    const yScale = d3.scaleLinear().range([0, radius]);
+
+    // Start at full view
+    xScale.domain([0, 2 * Math.PI]);
+    yScale.domain([0, radius]);
+
     const arcGen = d3
       .arc<d3.HierarchyRectangularNode<TreeNode>>()
-      .startAngle((d) => d.x0)
-      .endAngle((d) => d.x1)
-      .innerRadius((d) => d.y0)
-      .outerRadius((d) => d.y1 - 1)
-      .padAngle((d) => Math.min((d.x1 - d.x0) / 2, 0.004))
+      .startAngle((d) => xScale(d.x0))
+      .endAngle((d) => xScale(d.x1))
+      .innerRadius((d) => Math.max(0, yScale(d.y0)))
+      .outerRadius((d) => Math.max(0, yScale(d.y1) - 1))
+      .padAngle((d) =>
+        Math.min((xScale(d.x1) - xScale(d.x0)) / 2, 0.004)
+      )
       .cornerRadius(2);
 
+    const labelTransform = (d: d3.HierarchyRectangularNode<TreeNode>) => {
+      const midAngle = (xScale(d.x0) + xScale(d.x1)) / 2;
+      const midRadius = (yScale(d.y0) + yScale(d.y1)) / 2;
+      const deg = (midAngle * 180) / Math.PI;
+      return `rotate(${deg - 90}) translate(${midRadius},0) rotate(${
+        deg < 180 ? 0 : 180
+      })`;
+    };
+
+    // A label is visible when its arc spans more than 0.12 radians in the current view
+    const labelVisible = (d: d3.HierarchyRectangularNode<TreeNode>) =>
+      xScale(d.x1) - xScale(d.x0) > 0.12;
+
+    // ── SVG ────────────────────────────────────────────────────────────────
     const svg = d3
       .select(svgRef.current)
       .attr("width", W)
       .attr("height", H)
       .attr("viewBox", [-W / 2, -H / 2, W, H])
-      .attr("style", "width: 100%; height: 100vh; font: 10px sans-serif;");
+      .attr("style", "width: 100%; height: 100vh;");
 
     const container = svg.append("g");
+    const svgSel = d3.select(svgRef.current);
 
-    // Draw arcs
+    // ── Click-to-zoom function ─────────────────────────────────────────────
+    function zoomTo(p: d3.HierarchyRectangularNode<TreeNode>) {
+      xScale.domain([p.x0, p.x1]);
+      // When zoomed in (depth > 0), leave a small inner gap so the center
+      // "back" button remains visible; at root (depth 0) start from 0.
+      yScale.domain([p.y0, radius]).range([p.depth ? 40 : 0, radius]);
+
+      // Fade out → redraw → fade in to make the transition feel smooth
+      // without the complexity of attrTween path morphing.
+      svgSel
+        .selectAll<SVGPathElement, d3.HierarchyRectangularNode<TreeNode>>(
+          ".sun-arc"
+        )
+        .transition()
+        .duration(200)
+        .attr("opacity", 0)
+        .on("end", function () {
+          svgSel
+            .selectAll<SVGPathElement, d3.HierarchyRectangularNode<TreeNode>>(
+              ".sun-arc"
+            )
+            .attr("d", arcGen)
+            .transition()
+            .duration(400)
+            .attr("opacity", 1);
+        });
+
+      svgSel
+        .selectAll<SVGTextElement, d3.HierarchyRectangularNode<TreeNode>>(
+          ".sun-label"
+        )
+        .transition()
+        .duration(200)
+        .attr("opacity", 0)
+        .on("end", function () {
+          svgSel
+            .selectAll<
+              SVGTextElement,
+              d3.HierarchyRectangularNode<TreeNode>
+            >(".sun-label")
+            .attr("transform", labelTransform)
+            .transition()
+            .duration(400)
+            .attr("opacity", (d) => (labelVisible(d) ? 1 : 0));
+        });
+
+      // Update the center circle tooltip
+      svgSel
+        .select<SVGTextElement>(".sun-center-label")
+        .text(p.depth === 0 ? "" : p.data.name);
+    }
+
+    zoomToRef.current = zoomTo;
+
+    // ── Arcs ──────────────────────────────────────────────────────────────
     container
       .append("g")
       .selectAll("path")
@@ -144,31 +225,52 @@ export default function Sunburst({
       .attr("fill", (d) => color(d.depth))
       .attr("d", arcGen)
       .style("cursor", "pointer")
-      .on("click", (event, d) => onNodeClick(event, d));
+      .on("click", (event, d) => {
+        zoomTo(d);
+        onNodeClick(event, d);
+      });
 
-    // Labels — only on arcs wide enough to show text
+    // ── Labels ─────────────────────────────────────────────────────────────
     container
       .append("g")
       .attr("pointer-events", "none")
       .selectAll("text")
-      .data(
-        partitioned
-          .descendants()
-          .filter((d) => d.depth > 0 && (d.x1 - d.x0) > 0.05)
-      )
+      .data(partitioned.descendants().filter((d) => d.depth > 0))
       .join("text")
-      .attr("transform", (d) => {
-        const x = (((d.x0 + d.x1) / 2) * 180) / Math.PI;
-        const y = (d.y0 + d.y1) / 2;
-        return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
-      })
+      .attr("class", "sun-label")
+      .attr("transform", labelTransform)
       .attr("dy", "0.35em")
       .style("text-anchor", "middle")
       .style("user-select", "none")
-      .style("font-size", (d) => `${Math.max(8, 20 - d.depth)}px`)
+      .style("font-size", "11px")
       .attr("fill", "white")
+      .attr("paint-order", "stroke")
+      .attr("stroke", "rgba(0,0,0,0.4)")
+      .attr("stroke-width", 2)
+      .attr("opacity", (d) => (labelVisible(d) ? 1 : 0))
       .text((d) => d.data.name);
 
+    // ── Center circle — click resets to full view ──────────────────────────
+    const centerG = container.append("g").style("cursor", "pointer");
+
+    centerG
+      .append("circle")
+      .attr("r", 38)
+      .attr("fill", "#e2e8f0")
+      .attr("opacity", 0.85);
+
+    centerG
+      .append("text")
+      .attr("class", "sun-center-label")
+      .attr("dy", "0.35em")
+      .style("text-anchor", "middle")
+      .style("font-size", "10px")
+      .attr("fill", "#334155")
+      .text("");
+
+    centerG.on("click", () => zoomTo(partitioned));
+
+    // ── D3 pan/zoom ────────────────────────────────────────────────────────
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 8])
