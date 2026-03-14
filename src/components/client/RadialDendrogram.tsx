@@ -6,15 +6,34 @@ import Fuse from "fuse.js";
 import { TreeNode } from "@/types/tree";
 import { TreeLayoutProps } from "./TreeViewShell";
 
+function ancestorColor(
+  node: d3.HierarchyNode<TreeNode>,
+  colors: Record<string, { link: string; label: string }>,
+  type: "link" | "label",
+  defaultColor: string
+): string {
+  let n: d3.HierarchyNode<TreeNode> | null = node;
+  while (n) {
+    const id = n.data.attributes?.id;
+    if (id && colors[id]) return colors[id][type];
+    n = n.parent;
+  }
+  return defaultColor;
+}
+
 export default function RadialDendrogram({
   treeData,
   onNodeClick,
   rootDescendantsRef,
   fuseRef,
   onFocusNodeReady,
+  onCenterReady,
+  branchColors,
 }: TreeLayoutProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
+  const branchColorsRef = useRef(branchColors);
+  branchColorsRef.current = branchColors;
   const width = 2000;
   const height = 2000;
 
@@ -68,6 +87,37 @@ export default function RadialDendrogram({
   useEffect(() => {
     onFocusNodeReady(focusNode);
   }, [focusNode, onFocusNodeReady]);
+
+  const centerView = useCallback(() => {
+    if (!svgRef.current || !zoomRef.current) return;
+    d3.select(svgRef.current)
+      .transition().duration(500)
+      .call(zoomRef.current.transform, d3.zoomIdentity);
+  }, []);
+
+  useEffect(() => {
+    onCenterReady(centerView);
+  }, [centerView, onCenterReady]);
+
+  const applyColors = (
+    svgEl: SVGSVGElement | null,
+    colors: Record<string, { link: string; label: string }>
+  ) => {
+    if (!svgEl) return;
+    const svg = d3.select(svgEl);
+    svg
+      .selectAll<SVGPathElement, d3.HierarchyPointLink<TreeNode>>(".tree-link")
+      .attr("stroke", (d) => ancestorColor(d.target, colors, "link", "#555"));
+    svg
+      .selectAll<SVGTextElement, d3.HierarchyPointNode<TreeNode>>("text")
+      .attr("fill", (d) => ancestorColor(d, colors, "label", "currentColor"));
+  };
+
+  // Re-apply colors when branchColors changes (without rebuilding the tree)
+  useEffect(() => {
+    applyColors(svgRef.current, branchColors);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [branchColors]);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -124,12 +174,13 @@ export default function RadialDendrogram({
     container
       .append("g")
       .attr("fill", "none")
-      .attr("stroke", "#555")
       .attr("stroke-opacity", 0.4)
       .attr("stroke-width", 1.5)
       .selectAll("path")
       .data(root.links())
       .join("path")
+      .attr("class", "tree-link")
+      .attr("stroke", (d) => ancestorColor(d.target, branchColorsRef.current, "link", "#555"))
       .attr(
         "d",
         d3
@@ -185,7 +236,7 @@ export default function RadialDendrogram({
       )
       .attr("paint-order", "stroke")
       .attr("stroke", "white")
-      .attr("fill", "currentColor")
+      .attr("fill", (d) => ancestorColor(d, branchColorsRef.current, "label", "currentColor"))
       .text((d) => d.data.name)
       .clone(true)
       .lower()
@@ -202,6 +253,8 @@ export default function RadialDendrogram({
       });
     d3.select(svgRef.current).call(zoom);
     zoomRef.current = zoom;
+
+    applyColors(svgRef.current, branchColorsRef.current);
   }, [treeData, onNodeClick, rootDescendantsRef, fuseRef]);
 
   return (

@@ -36,6 +36,7 @@ const familyTreeWithDetails = Prisma.validator<Prisma.FamilyTreeInclude>()({
   collapsedBranches: {
     include: { person: true }
   },
+  personColors: true,
 });
 
 export type FamilyTreeWithDetails = Prisma.FamilyTreeGetPayload<{

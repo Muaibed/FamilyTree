@@ -73,6 +73,9 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
 
   const treeData = tree.treeJson as import("@/types/tree").TreeNode | null;
   const collapsedPersonIds = tree.collapsedBranches.map((b) => b.personId);
+  const initialBranchColors = Object.fromEntries(
+    tree.personColors.map((c) => [c.personId, { link: c.linkColor, label: c.labelColor }])
+  );
 
   const createMember = (
     <>
@@ -150,6 +153,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
             treeId={id}
             treeData={treeData}
             collapsedPersonIds={collapsedPersonIds}
+            initialBranchColors={initialBranchColors}
             onChange={() => "mutate members"}
           >
             {(props) => {

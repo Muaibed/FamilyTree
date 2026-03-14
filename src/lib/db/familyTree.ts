@@ -15,6 +15,7 @@ const familyTreeInclude = {
   collapsedBranches: {
     include: { person: true }
   },
+  personColors: true,
 };
 
 const personForTreeSelect = {
@@ -148,4 +149,18 @@ export const removeCollapsedBranch = async (treeId: string, personId: string) =>
       data: { treeJson: Prisma.DbNull },
     }),
   ]);
+};
+
+export const setPersonColor = async (treeId: string, personId: string, linkColor: string, labelColor: string) => {
+  return prisma.familyTreePersonColor.upsert({
+    where: { treeId_personId: { treeId, personId } },
+    create: { treeId, personId, linkColor, labelColor },
+    update: { linkColor, labelColor },
+  });
+};
+
+export const clearPersonColor = async (treeId: string, personId: string) => {
+  return prisma.familyTreePersonColor.deleteMany({
+    where: { treeId, personId },
+  });
 };

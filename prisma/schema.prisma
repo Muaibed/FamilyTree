@@ -82,6 +82,7 @@ model Person {
 
   rootOfTree        FamilyTree[]                @relation("RootOfTree")
   collapsedInTrees  FamilyTreeCollapsedBranch[]
+  personColors      FamilyTreePersonColor[]
 }
 
 model SpouseRelationship {
@@ -151,6 +152,7 @@ model FamilyTree {
   aliveCount        Int                         @default(0)
   deadCount         Int                         @default(0)
   collapsedBranches FamilyTreeCollapsedBranch[]
+  personColors      FamilyTreePersonColor[]
   createdAt         DateTime                    @default(now())
 }
 
@@ -161,5 +163,16 @@ model FamilyTreeCollapsedBranch {
   treeId    String     @db.Uuid
   person    Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
   personId  String     @db.Uuid
+  @@id([treeId, personId])
+}
+
+// Custom link/label colors per person per tree.
+model FamilyTreePersonColor {
+  tree      FamilyTree @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  treeId    String     @db.Uuid
+  person    Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId  String     @db.Uuid
+  linkColor String
+  labelColor String
   @@id([treeId, personId])
 }

@@ -62,3 +62,19 @@ export async function removeCollapsedBranch(treeId: string, personId: string): P
   });
   if (!res.ok) throw new Error('Failed to expand branch');
 }
+
+export async function setPersonColor(treeId: string, personId: string, linkColor: string, labelColor: string): Promise<void> {
+  const res = await fetch(`${BASE}/api/familyTree/${treeId}/colors`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ personId, linkColor, labelColor }),
+  });
+  if (!res.ok) throw new Error('Failed to set person color');
+}
+
+export async function clearPersonColor(treeId: string, personId: string): Promise<void> {
+  const res = await fetch(`${BASE}/api/familyTree/${treeId}/colors/${personId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error('Failed to clear person color');
+}

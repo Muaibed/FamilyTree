@@ -10,20 +10,22 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Search } from "lucide-react";
+import { Crosshair, Search } from "lucide-react";
 import CreatePerson from "@/app/pages/CreatePerson";
 import EditPerson from "@/app/pages/EditPerson";
 import CreateSpouseRelationship from "@/app/pages/CreateSpouseRelationship";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addCollapsedBranch, removeCollapsedBranch } from "@/lib/queries/familyTrees";
+import { addCollapsedBranch, removeCollapsedBranch, setPersonColor as setPersonColorQuery, clearPersonColor as clearPersonColorQuery } from "@/lib/queries/familyTrees";
 import { PopoverZoomContext } from "@/contexts/popoverZoom";
 
 export interface TreeLayoutProps {
   treeData: TreeNode | null;
   onNodeClick: (event: MouseEvent, d: d3.HierarchyNode<TreeNode>) => void;
-  rootDescendantsRef: React.MutableRefObject<d3.HierarchyNode<TreeNode>[]>;
+   rootDescendantsRef: React.MutableRefObject<d3.HierarchyNode<TreeNode>[]>;
   fuseRef: React.MutableRefObject<Fuse<any> | null>;
   onFocusNodeReady: (fn: (query: string, exactId?: string) => void) => void;
+  onCenterReady: (fn: () => void) => void;
+  branchColors: Record<string, { link: string; label: string }>;
 }
 
 export default function TreeViewShell({
@@ -31,6 +33,7 @@ export default function TreeViewShell({
   treeId,
   treeData,
   collapsedPersonIds,
+  initialBranchColors,
   onChange,
   children,
 }: {
@@ -38,6 +41,7 @@ export default function TreeViewShell({
   treeId: string;
   treeData: TreeNode | null;
   collapsedPersonIds: string[];
+  initialBranchColors: Record<string, { link: string; label: string }>;
   onChange: any;
   children: (props: TreeLayoutProps) => React.ReactNode;
 }) {
@@ -56,6 +60,7 @@ export default function TreeViewShell({
   const [countQuery, setCountQuery] = useState('');
   const [nameCount, setNameCount] = useState<number | null>(null);
   const [showSearch, setShowSearch] = useState(false);
+  const [branchColors, setBranchColors] = useState<Record<string, { link: string; label: string }>>(initialBranchColors);
 
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
@@ -106,6 +111,38 @@ export default function TreeViewShell({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const setColorMutation = useMutation({
+    mutationFn: ({ personId, linkColor, labelColor }: { personId: string; linkColor: string; labelColor: string }) =>
+      setPersonColorQuery(treeId, personId, linkColor, labelColor),
+    onSuccess: (_, { personId, linkColor, labelColor }) => {
+      setBranchColors((prev) => ({ ...prev, [personId]: { link: linkColor, label: labelColor } }));
+      queryClient.invalidateQueries({ queryKey: ["family-tree", treeId] });
+    },
+  });
+
+  const clearColorMutation = useMutation({
+    mutationFn: ({ personId }: { personId: string }) =>
+      clearPersonColorQuery(treeId, personId),
+    onSuccess: (_, { personId }) => {
+      setBranchColors((prev) => {
+        const next = { ...prev };
+        delete next[personId];
+        return next;
+      });
+      queryClient.invalidateQueries({ queryKey: ["family-tree", treeId] });
+    },
+  });
+
+  const setPersonColor = (personId: string, type: "link" | "label", color: string) => {
+    const existing = branchColors[personId] ?? { link: "#555555", label: "#111111" };
+    const updated = { ...existing, [type]: color };
+    setColorMutation.mutate({ personId, linkColor: updated.link, labelColor: updated.label });
+  };
+
+  const clearPersonColor = (personId: string) => {
+    clearColorMutation.mutate({ personId });
+  };
+
   const selectedPersonHasChildren =
     selectedPerson &&
     (selectedPerson.fatherChildren.length > 0 ||
@@ -139,12 +176,29 @@ export default function TreeViewShell({
     focusNodeFnRef.current?.(query, exactId);
   }, []);
 
+  const centerFnRef = useRef<(() => void) | null>(null);
+  const onCenterReady = useCallback((fn: () => void) => {
+    centerFnRef.current = fn;
+  }, []);
+  const centerTree = useCallback(() => {
+    centerFnRef.current?.();
+  }, []);
+
   const normalizeAlef = (s: string) => s.replace(/[أإآ]/g, "ا");
 
   return (
     <div className="relative">
       {/* Search panel */}
       <div className="fixed top-20 right-4 z-[45] flex flex-col items-end gap-1">
+        <Button
+          size="icon"
+          variant="secondary"
+          className="shadow-md"
+          onClick={centerTree}
+          title="توسيط الشجرة"
+        >
+          <Crosshair className="h-4 w-4" />
+        </Button>
         <Button
           size="icon"
           variant="secondary"
@@ -282,7 +336,7 @@ export default function TreeViewShell({
       </div>
 
       {/* Layout */}
-      {children({ treeData, onNodeClick: handleNodeClick, rootDescendantsRef, fuseRef, onFocusNodeReady })}
+      {children({ treeData, onNodeClick: handleNodeClick, rootDescendantsRef, fuseRef, onFocusNodeReady, onCenterReady, branchColors })}
 
       {/* Person modal */}
       {selectedNode && (
@@ -453,6 +507,46 @@ export default function TreeViewShell({
                             إخفاء الفروع
                           </Button>
                         ))}
+                    </div>
+                    {/* Branch color pickers */}
+                    <div className="border-t mt-[0.4em] pt-[0.3em] px-[0.5em]">
+                      <div className="flex items-center justify-between" dir="rtl">
+                        <span className="text-[0.75em] text-muted-foreground">ألوان الفروع</span>
+                        <div className="flex items-center gap-3 mt-1">
+                          <label className="flex flex-row items-center gap-1 text-[0.7em] cursor-pointer text-muted-foreground">
+                            الخطوط
+                            <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-muted">
+                              <input
+                                type="color"
+                                value={branchColors[selectedPerson.id]?.link ?? "#555555"}
+                                onChange={(e) => setPersonColor(selectedPerson.id, "link", e.target.value)}
+                                className="block cursor-pointer border-none p-0 appearance-none"
+                                style={{ width: "200%", height: "200%", margin: "-50%" }}
+                              />
+                            </div>
+                          </label>
+                          <label className="flex flex-row items-center gap-1 text-[0.7em] cursor-pointer text-muted-foreground">
+                            الأسماء
+                            <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-muted">
+                              <input
+                                type="color"
+                                value={branchColors[selectedPerson.id]?.label ?? "#111111"}
+                                onChange={(e) => setPersonColor(selectedPerson.id, "label", e.target.value)}
+                                className="block cursor-pointer border-none p-0 appearance-none"
+                                style={{ width: "200%", height: "200%", margin: "-50%" }}
+                              />
+                            </div>
+                          </label>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-[0.75em] h-7 px-2 py-0"
+                            onClick={() => clearPersonColor(selectedPerson.id)}
+                          >
+                            إعادة تعيين
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                     <div className="overflow-auto mt-[0.5em] flex justify-center">
                       <PopoverZoomContext.Provider
