@@ -184,7 +184,7 @@ export default function TreeViewShell({
     centerFnRef.current?.();
   }, []);
 
-  const normalizeAlef = (s: string) => s.replace(/[أإآ]/g, "ا");
+  const normalizeAlef = (s: string) => s.replace(/[أإآ]/g, "ا").replace(/\s+/g, "");
 
   return (
     <div className="relative">
