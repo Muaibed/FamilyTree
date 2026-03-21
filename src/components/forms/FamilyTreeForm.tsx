@@ -16,6 +16,9 @@ import DeletePage from "../client/DeletePage";
 import { deleteFamilyTree } from "@/lib/queries/familyTrees";
 import { getMembers } from "@/lib/queries/familyTreeMembers";
 import { Option } from "@/types/ui";
+import { useGroups } from "@/hooks/useGroup";
+
+type FamilyTreeFormValues = Omit<Partial<FamilyTreeWithDetails>, "groupId"> & { groupId?: string | null };
 
 export default function FamilyTreeForm({
   onSubmit,
@@ -23,14 +26,15 @@ export default function FamilyTreeForm({
   defaultValues,
   title,
 }: {
-  onSubmit: (data: Partial<FamilyTree>) => void;
+  onSubmit: (data: Partial<FamilyTree> & { groupId?: string | null }) => void;
   onDelete: () => void;
-  defaultValues?: Partial<FamilyTreeWithDetails>;
+  defaultValues?: FamilyTreeFormValues;
   title: string;
 }) {
   const queryClient = useQueryClient();
+  const { data: groups = [] } = useGroups('ADD_FAMILY_TREE');
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit } = useForm<FamilyTreeFormValues>({
     defaultValues,
   });
 
@@ -131,6 +135,31 @@ export default function FamilyTreeForm({
               </div>
             )}
           />
+
+          {groups.length > 0 && (
+            <Controller
+              name="groupId"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">المجموعة (اختياري)</label>
+                  <select
+                    {...field}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value || null)}
+                    dir="rtl"
+                    className="w-full border rounded-md p-2 bg-background text-foreground text-sm"
+                  >
+                    <option value="">بدون مجموعة (شخصي)</option>
+                    {groups.map((g: { id: string; name: string }) => (
+                      <option key={g.id} value={g.id}>{g.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            />
+          )}
+
           <div className="flex flex-col gap-2 mt-3">
             {defaultValues?.id && (
               <Button

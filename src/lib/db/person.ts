@@ -60,10 +60,23 @@ export const createPerson = async (data: {
     })
   ]);
 
-  await prisma.familyTree.updateMany({
-    where: { ownerId: user.id },
-    data: { treeJson: Prisma.DbNull },
+  // Invalidate tree cache: solo trees by ownerId, group trees by groupId
+  const familyWithOwnerAndGroupId = await prisma.family.findUnique({
+    where: { id: familyId },
+    select: { ownerId: true, groupId: true },
   });
+  if (familyWithOwnerAndGroupId?.ownerId) {
+    await prisma.familyTree.updateMany({
+      where: { ownerId: familyWithOwnerAndGroupId.ownerId },
+      data: { treeJson: Prisma.DbNull },
+    });
+  }
+  if (familyWithOwnerAndGroupId?.groupId) {
+    await prisma.familyTree.updateMany({
+      where: { groupId: familyWithOwnerAndGroupId.groupId },
+      data: { treeJson: Prisma.DbNull },
+    });
+  }
 
   return [newPerson, updatedUser];
 };
@@ -137,6 +150,28 @@ export const getAllPersonsWithSameOwner = async (userId: string) => {
            },
            family: true,
          },
+  });
+};
+
+export const getAllAccessiblePersons = async (userId: string) => {
+  return prisma.person.findMany({
+    where: {
+      family: {
+        OR: [
+          { ownerId: userId },
+          { group: { members: { some: { userId, inviteStatus: 'ACCEPTED' } } } },
+        ],
+      },
+    },
+    include: {
+      father: true,
+      mother: true,
+      fatherChildren: true,
+      motherChildren: true,
+      maleSpouses: { include: { male: true, female: true } },
+      femaleSpouses: { include: { male: true, female: true } },
+      family: true,
+    },
   });
 };
 

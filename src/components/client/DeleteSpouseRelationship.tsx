@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { SpouseRelationship } from "@/generated/prisma";
-import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { SpouseRelationship } from '@/generated/prisma';
+import { toast } from 'sonner';
+import { Button } from '../ui/button';
+import { useDeleteSpouseRelationshipById } from '@/hooks/useSpouseRelationship';
 
 const DeleteSpouseRelationship = ({
   relation,
@@ -11,27 +12,15 @@ const DeleteSpouseRelationship = ({
   relation: SpouseRelationship;
   onSubmit: () => void;
 }) => {
+  const { mutateAsync: deleteRelation } = useDeleteSpouseRelationshipById();
+
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
-
-      const response = await fetch(`api/spouseRelationship/${relation.id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        onSubmit();
-        toast(`Relation has been deleted successfully.`);
-      } else {
-        toast(`Deleting Relation Failed.`);
-      }
+      await deleteRelation(relation.id);
+      toast('Relation has been deleted successfully.');
     } catch (error) {
-      toast(`Deleting Relation Failed.`, {
-        description: `${error}`,
-      });
+      toast('Deleting Relation Failed.', { description: `${error}` });
     } finally {
       onSubmit();
     }
@@ -45,9 +34,7 @@ const DeleteSpouseRelationship = ({
       <Button
         className="p-1 pl-4 pr-4"
         variant="destructive"
-        onClick={(e) => {
-          handleSubmit(e);
-        }}
+        onClick={handleSubmit}
       >
         تأكيد
       </Button>

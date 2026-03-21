@@ -124,7 +124,7 @@ export default function Homepage() {
           </section> */}
     
           <footer className="py-10 text-center border-t border-black/5 opacity-50 text-sm">
-                © 2025 غصن. جميع الحقوق محفوظة
+                © 2026 غصن. جميع الحقوق محفوظة
           </footer>
         </div>
       );

@@ -31,15 +31,17 @@ export default function EditFamilyTree({
   });
 
   const updateMutation = useMutation({
-    mutationFn: (formData: Partial<FamilyTree>) =>
+    mutationFn: (formData: Partial<FamilyTree> & { groupId?: string | null }) =>
       updateFamilyTree(id, {
         name: formData.name,
         description: formData.description ?? undefined,
         rootPersonId: formData.rootPersonId ?? undefined,
+        groupId: formData.groupId !== undefined ? formData.groupId : undefined,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["family-tree", id] });
       queryClient.invalidateQueries({ queryKey: ["owner-family-trees"] });
+      onSubmit();
     },
   });
 
@@ -56,9 +58,9 @@ export default function EditFamilyTree({
   return (
     <>
       <FamilyTreeForm
+        key={`${tree.id}-${tree.groupId ?? ''}`}
         onSubmit={(data) => {
           updateMutation.mutate(data);
-          onSubmit();
         }}
         onDelete={() => onDelete()}
         defaultValues={tree}

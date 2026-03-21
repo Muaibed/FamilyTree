@@ -1,19 +1,7 @@
-import { PersonWithRelations } from "@/types/family";
+// Re-exported from services for backward compatibility.
+// Prefer importing from @/services/familyTreeMembers.service or @/hooks/useFamilyTreeMembers.
+import { familyTreeMembersService } from '@/services/familyTreeMembers.service';
 
-export async function getMembers(): Promise<PersonWithRelations[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers`)
-  if (!res.ok) throw new Error('Failed to fetch members')
-  return res.json()
-}
-
-export async function getOwnerMembers(): Promise<PersonWithRelations[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/owner`)
-  if (!res.ok) throw new Error('Failed to fetch owner members')
-  return res.json()
-}
-
-export async function getFamilyMembers(familyId: string): Promise<PersonWithRelations[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/familyTreeMembers/${familyId}`)
-  if (!res.ok) throw new Error('Failed to fetch family members')
-  return res.json()
-}
+export const getMembers = () => familyTreeMembersService.getMembers();
+export const getOwnerMembers = () => familyTreeMembersService.getOwnerMembers();
+export const getFamilyMembers = (familyId: string) => familyTreeMembersService.getFamilyMembers(familyId);

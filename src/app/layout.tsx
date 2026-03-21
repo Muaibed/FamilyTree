@@ -10,6 +10,8 @@ import { Amiri, Cairo } from 'next/font/google'
 import Head from "next/head";
 import { Suspense } from "react";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { usePathname } from "next/navigation";
+import BurgerMenu from "@/components/client/BurgerMenu";
  
 const amiri = Amiri({
   weight: '400',
@@ -25,9 +27,11 @@ export default function RootLayout({
   children: React.ReactNode;
   // menuContent: any;
 }>) {
-  
+  const pathname = usePathname();
+  const isTreePage = pathname?.startsWith('/tree');
+
   return (
-    <html lang="ar" suppressHydrationWarning className={amiri.className}>
+    <html lang="ar" dir="rtl" suppressHydrationWarning className={amiri.className}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
@@ -43,11 +47,16 @@ export default function RootLayout({
             <div className="absolute top-4 right-4 z-60">
               <ThemeToggle />
             </div>
+            {!isTreePage && (
+              <div className="absolute top-4 left-4 z-60">
+                <BurgerMenu />
+              </div>
+            )}
             {/* <div className="flex flex-row gap-2 p-4">
               <Menu menuContent={menuContent} />    
             </div>         */}
               <BlurBackground>
-                <div className="w-full">
+                <div className={`w-full${!isTreePage ? ' pt-16' : ''}`}>
                   <Suspense>
                     {children}
                   </Suspense>

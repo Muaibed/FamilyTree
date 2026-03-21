@@ -1,4 +1,5 @@
 import { prisma } from '../prisma';
+import { Prisma } from '@/generated/prisma';
 
 export const getAllRelations = async () => {
   return await prisma.spouseRelationship.findMany({
@@ -26,8 +27,26 @@ export const getAllRelationsWithSameOwner = async (userId: string) => {
     include: {
       male: true,
       female: true
-    } 
+    }
   })
+}
+
+export const getAllAccessibleRelations = async (userId: string) => {
+  const accessibleFamily: Prisma.FamilyWhereInput = {
+    OR: [
+      { ownerId: userId },
+      { group: { members: { some: { userId, inviteStatus: 'ACCEPTED' } } } },
+    ],
+  };
+  return prisma.spouseRelationship.findMany({
+    where: {
+      OR: [
+        { male: { family: accessibleFamily } },
+        { female: { family: accessibleFamily } },
+      ],
+    },
+    include: { male: true, female: true },
+  });
 }
 
 export const getAllRelationsForPerson = async (personId: string) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import CreatePerson from "@/app/pages/CreatePerson";
+import CreatePerson from "@/app/pages/Person/CreatePerson";
 import ErrorAlert from "@/components/alerts/ErrorAlert";
 import BurgerMenu from "@/components/client/BurgerMenu";
 import { downloadSVG, downloadPDF } from "@/components/client/ExportTreeButton";
@@ -8,7 +8,7 @@ import { Modal } from "@/components/client/Modal";
 import RadialCluster from "@/components/client/RadialClsuter";
 import RadialDendrogram from "@/components/client/RadialDendrogram";
 import TreeViewShell from "@/components/client/TreeViewShell";
-import CreateFamily from "@/app/pages/CreateFamily";
+import CreateFamily from "@/app/pages/Family/CreateFamily";
 import { getOwnerMembers } from "@/lib/queries/familyTreeMembers";
 import { getFamilyTree } from "@/lib/queries/familyTrees";
 import { useQuery } from "@tanstack/react-query";
@@ -24,12 +24,11 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
   const [layout, setLayout] = useState<"radial" | "dendrogram">("radial");
 
   const LAYOUTS = [
-    { key: "radial",     label: "شجري دائري" },
+    { key: "radial", label: "شجري دائري" },
     { key: "dendrogram", label: "تجميعي دائري" },
   ] as const;
 
   const { data: session, status: sessionStatus } = useSession();
-  const isAdmin = session?.user?.role === "ADMIN";
 
   const {
     data: members = [],
@@ -38,7 +37,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
   } = useQuery({
     queryKey: ["owner-members"],
     queryFn: getOwnerMembers,
-    enabled: isAdmin,
+    enabled: !!session,
   });
 
   const {
@@ -56,7 +55,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
 
   if (membersError || treeError) return <ErrorAlert title="حدث خطأ!" />;
 
-  if (treeLoading || sessionStatus === "loading" || (isAdmin && membersLoading))
+  if (treeLoading || sessionStatus === "loading" || membersLoading)
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <Loader2 />
@@ -74,7 +73,10 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
   const treeData = tree.treeJson as import("@/types/tree").TreeNode | null;
   const collapsedPersonIds = tree.collapsedBranches.map((b) => b.personId);
   const initialBranchColors = Object.fromEntries(
-    tree.personColors.map((c) => [c.personId, { link: c.linkColor, label: c.labelColor }])
+    tree.personColors.map((c) => [
+      c.personId,
+      { link: c.linkColor, label: c.labelColor },
+    ]),
   );
 
   const createMember = (
@@ -100,8 +102,8 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
           </div>
         </div>
       )}
-      <div className="absolute z-55">
-        <div className="flex flex-row gap-2 p-4">
+      <div className="absolute top-4 left-4 z-55">
+        <div className="flex flex-row gap-2">
           <BurgerMenu
             onCreatePerson={() => {
               setIsCreatingPerson(true);
@@ -116,7 +118,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
               downloadPDF();
             }}
           />
-          {session && isAdmin && (
+          {session && (
             <>
               <div>{createMember}</div>
               <Modal
@@ -157,7 +159,8 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
             onChange={() => "mutate members"}
           >
             {(props) => {
-              if (layout === "dendrogram") return <RadialDendrogram {...props} />;
+              if (layout === "dendrogram")
+                return <RadialDendrogram {...props} />;
               return <RadialCluster {...props} />;
             }}
           </TreeViewShell>

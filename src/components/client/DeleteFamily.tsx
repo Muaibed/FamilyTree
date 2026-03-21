@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { Family } from "@/generated/prisma";
-import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { Family } from '@/generated/prisma';
+import { toast } from 'sonner';
+import { Button } from '../ui/button';
+import { useDeleteFamily } from '@/hooks/useFamily';
 
 const DeleteFamily = ({
   family,
@@ -11,27 +12,15 @@ const DeleteFamily = ({
   family: Family;
   onSubmit: () => void;
 }) => {
+  const { mutateAsync: deleteFamily } = useDeleteFamily();
+
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/family/${family.id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        onSubmit();
-        toast(`${family.name} has been deleted successfully.`);
-      } else {
-        toast(`Deleting ${family.name} Failed.`);
-      }
+      await deleteFamily(family.id);
+      toast(`${family.name} has been deleted successfully.`);
     } catch (error) {
-      toast(`Deleting ${family.name} Failed.`, {
-        description: `${error}`,
-      });
+      toast(`Deleting ${family.name} Failed.`, { description: `${error}` });
     } finally {
       onSubmit();
     }
@@ -45,9 +34,7 @@ const DeleteFamily = ({
       <Button
         className="p-1 pl-4 pr-4 w-1/6"
         variant="destructive"
-        onClick={(e) => {
-          handleSubmit(e);
-        }}
+        onClick={handleSubmit}
       >
         تأكيد
       </Button>

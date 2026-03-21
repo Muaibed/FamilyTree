@@ -7,11 +7,13 @@ import { PersonWithRelations } from "@/types/family";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
+type PersonRow = PersonWithRelations & { canEdit?: boolean };
+
 export function columns({
   onEdit,
 }: {
-  onEdit: (person: PersonWithRelations) => void;
-}): ColumnDef<PersonWithRelations>[] {
+  onEdit: (person: PersonRow) => void;
+}): ColumnDef<PersonRow>[] {
   return [
     {
       accessorKey: "firstName",
@@ -33,6 +35,7 @@ export function columns({
       id: "actions",
       cell: ({ row }) => {
         const person = row.original;
+        if (!person.canEdit) return null;
         return (
           <Button
             variant="ghost"

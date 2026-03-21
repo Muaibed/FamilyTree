@@ -59,7 +59,7 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 shadow-md">
-      <div className="bg-card text-card-foreground p-6 rounded-lg max-w-md relative">
+      <div className="bg-card text-card-foreground p-6 rounded-lg max-w-md relative min-w-full md:min-w-md">
         {children}
         <Button
           onClick={onClose}
