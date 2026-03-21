@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const permitted = await canDoFamilyPermission(userId, familyId, FamilyPermission.ADD_PERSON);
     if (!permitted) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-    const newPerson = await createPerson({
+    const [newPerson] = await createPerson({
       firstName,
       familyId,
       gender,
