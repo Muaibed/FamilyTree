@@ -59,7 +59,7 @@ export default function TreeHome() {
 
   return (
     <div className="font-arabic w-full">
-      <div className="flex flex-row gap-2 p-4">
+      <div className="absolute top-4 left-4 z-50">
         <BurgerMenu
           onAddFamily={() => {
             setIsAddingFamily(true);
