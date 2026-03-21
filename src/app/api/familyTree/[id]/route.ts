@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
-import { isAdmin } from '@/lib/session';
+import { getUserId } from '@/lib/session';
+import { canDoTreePermission } from '@/lib/permissions';
+import { TreePermission, ActivityAction, ActivityEntityType } from '@/generated/prisma';
 import { getFamilyTreeById, updateFamilyTree, deleteFamilyTree } from '@/lib/db/familyTree';
+import { logActivity } from '@/lib/activityLog';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -16,10 +20,21 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    if (!await isAdmin()) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const userId = await getUserId();
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const { id } = await params;
+    const permitted = await canDoTreePermission(userId, id, TreePermission.EDIT_TREE);
+    if (!permitted) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
     const body = await request.json();
     const tree = await updateFamilyTree(id, body);
+
+    if (tree.groupId) {
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+      await logActivity({ groupId: tree.groupId, userId, userName: user?.name, action: ActivityAction.UPDATE, entityType: ActivityEntityType.FAMILY_TREE, entityId: id, entityName: tree.name });
+    }
+
     return NextResponse.json(tree);
   } catch (error: unknown) {
     if (error instanceof Error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -29,9 +44,21 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    if (!await isAdmin()) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const userId = await getUserId();
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const { id } = await params;
+    const permitted = await canDoTreePermission(userId, id, TreePermission.DELETE_TREE);
+    if (!permitted) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+    const tree = await getFamilyTreeById(id);
     await deleteFamilyTree(id);
+
+    if (tree?.groupId) {
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+      await logActivity({ groupId: tree.groupId, userId, userName: user?.name, action: ActivityAction.DELETE, entityType: ActivityEntityType.FAMILY_TREE, entityId: id, entityName: tree.name });
+    }
+
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     if (error instanceof Error) return NextResponse.json({ error: error.message }, { status: 500 });

@@ -1,8 +1,8 @@
 import FamilyForm from "@/components/forms/FamilyForm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFamily } from "@/lib/queries/families";
-import { Family } from "@/generated/prisma";
 import { FamilyWithRootPerson } from "@/types/family";
+import { Family } from "@/generated/prisma";
 
 export default function CreateFamily({
   onSuccess,
@@ -14,7 +14,7 @@ export default function CreateFamily({
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: (formData: Family) => createFamily(formData),
+    mutationFn: (data: { name: string; groupId?: string | null }) => createFamily({ name: data.name, groupId: data.groupId ?? undefined }),
     onSuccess: (newFamily) => {
       queryClient.setQueryData(["families", newFamily.id], newFamily);
       queryClient.invalidateQueries({ queryKey: ["families"] });
@@ -25,7 +25,7 @@ export default function CreateFamily({
   return (
     <>
       <FamilyForm
-        onSubmit={(data) => createMutation.mutate(data as Family)}
+        onSubmit={(data) => createMutation.mutate({ name: (data as Partial<Family>).name!, groupId: data.groupId ?? undefined })}
         onDelete={() => null}
         defaultValues={defaultValues}
         title="إضافة عائلة"

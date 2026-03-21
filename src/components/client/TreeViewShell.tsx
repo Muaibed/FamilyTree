@@ -11,17 +11,22 @@ import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Crosshair, Search } from "lucide-react";
-import CreatePerson from "@/app/pages/CreatePerson";
-import EditPerson from "@/app/pages/EditPerson";
-import CreateSpouseRelationship from "@/app/pages/CreateSpouseRelationship";
+import CreatePerson from "@/app/pages/Person/CreatePerson";
+import EditPerson from "@/app/pages/Person/EditPerson";
+import CreateSpouseRelationship from "@/app/pages/SpouseRelationship/CreateSpouseRelationship";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addCollapsedBranch, removeCollapsedBranch, setPersonColor as setPersonColorQuery, clearPersonColor as clearPersonColorQuery } from "@/lib/queries/familyTrees";
+import {
+  addCollapsedBranch,
+  removeCollapsedBranch,
+  setPersonColor as setPersonColorQuery,
+  clearPersonColor as clearPersonColorQuery,
+} from "@/lib/queries/familyTrees";
 import { PopoverZoomContext } from "@/contexts/popoverZoom";
 
 export interface TreeLayoutProps {
   treeData: TreeNode | null;
   onNodeClick: (event: MouseEvent, d: d3.HierarchyNode<TreeNode>) => void;
-   rootDescendantsRef: React.MutableRefObject<d3.HierarchyNode<TreeNode>[]>;
+  rootDescendantsRef: React.MutableRefObject<d3.HierarchyNode<TreeNode>[]>;
   fuseRef: React.MutableRefObject<Fuse<any> | null>;
   onFocusNodeReady: (fn: (query: string, exactId?: string) => void) => void;
   onCenterReady: (fn: () => void) => void;
@@ -45,7 +50,9 @@ export default function TreeViewShell({
   onChange: any;
   children: (props: TreeLayoutProps) => React.ReactNode;
 }) {
-  const [selectedNode, setSelectedNode] = useState<TreeNode | undefined>(undefined);
+  const [selectedNode, setSelectedNode] = useState<TreeNode | undefined>(
+    undefined,
+  );
   const [isEditingPerson, setIsEditingPerson] = useState(false);
   const [isAddingChild, setIsAddingChild] = useState(false);
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
@@ -53,17 +60,22 @@ export default function TreeViewShell({
 
   const rootDescendantsRef = useRef<d3.HierarchyNode<TreeNode>[]>([]);
   const fuseRef = useRef<Fuse<any> | null>(null);
-  const focusNodeFnRef = useRef<((query: string, exactId?: string) => void) | null>(null);
+  const focusNodeFnRef = useRef<
+    ((query: string, exactId?: string) => void) | null
+  >(null);
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [countQuery, setCountQuery] = useState('');
+  const [countQuery, setCountQuery] = useState("");
   const [nameCount, setNameCount] = useState<number | null>(null);
   const [showSearch, setShowSearch] = useState(false);
-  const [branchColors, setBranchColors] = useState<Record<string, { link: string; label: string }>>(initialBranchColors);
+  const [branchColors, setBranchColors] =
+    useState<Record<string, { link: string; label: string }>>(
+      initialBranchColors,
+    );
 
   const { data: session } = useSession();
-  const isAdmin = session?.user?.role === "ADMIN";
+  const isAdmin = !!session;
 
   const selectedPerson: PersonWithRelations | undefined =
     isAdmin && selectedNode
@@ -77,11 +89,15 @@ export default function TreeViewShell({
     | undefined;
   const displaySpouses: string[] = isAdmin
     ? displayGender === "FEMALE"
-      ? selectedPerson?.femaleSpouses.filter((s) => s.isActive).map((s) => s.male.fullName) ?? []
-      : selectedPerson?.maleSpouses.filter((s) => s.isActive).map((s) => s.female.fullName) ?? []
-    : attrs?.spouses ?? [];
+      ? (selectedPerson?.femaleSpouses
+          .filter((s) => s.isActive)
+          .map((s) => s.male.fullName) ?? [])
+      : (selectedPerson?.maleSpouses
+          .filter((s) => s.isActive)
+          .map((s) => s.female.fullName) ?? [])
+    : (attrs?.spouses ?? []);
   const displayDeathStatus: string | null = attrs?.isDead
-    ? attrs.deathDate ?? "متوفى"
+    ? (attrs.deathDate ?? "متوفى")
     : null;
 
   const mobileModalZoom = 0.43;
@@ -112,10 +128,20 @@ export default function TreeViewShell({
   }, []);
 
   const setColorMutation = useMutation({
-    mutationFn: ({ personId, linkColor, labelColor }: { personId: string; linkColor: string; labelColor: string }) =>
-      setPersonColorQuery(treeId, personId, linkColor, labelColor),
+    mutationFn: ({
+      personId,
+      linkColor,
+      labelColor,
+    }: {
+      personId: string;
+      linkColor: string;
+      labelColor: string;
+    }) => setPersonColorQuery(treeId, personId, linkColor, labelColor),
     onSuccess: (_, { personId, linkColor, labelColor }) => {
-      setBranchColors((prev) => ({ ...prev, [personId]: { link: linkColor, label: labelColor } }));
+      setBranchColors((prev) => ({
+        ...prev,
+        [personId]: { link: linkColor, label: labelColor },
+      }));
       queryClient.invalidateQueries({ queryKey: ["family-tree", treeId] });
     },
   });
@@ -133,10 +159,21 @@ export default function TreeViewShell({
     },
   });
 
-  const setPersonColor = (personId: string, type: "link" | "label", color: string) => {
-    const existing = branchColors[personId] ?? { link: "#555555", label: "#111111" };
+  const setPersonColor = (
+    personId: string,
+    type: "link" | "label",
+    color: string,
+  ) => {
+    const existing = branchColors[personId] ?? {
+      link: "#555555",
+      label: "#111111",
+    };
     const updated = { ...existing, [type]: color };
-    setColorMutation.mutate({ personId, linkColor: updated.link, labelColor: updated.label });
+    setColorMutation.mutate({
+      personId,
+      linkColor: updated.link,
+      labelColor: updated.label,
+    });
   };
 
   const clearPersonColor = (personId: string) => {
@@ -162,14 +199,14 @@ export default function TreeViewShell({
       setIsAddingSpouse(false);
       setIsEditingPerson(false);
     },
-    []
+    [],
   );
 
   const onFocusNodeReady = useCallback(
     (fn: (query: string, exactId?: string) => void) => {
       focusNodeFnRef.current = fn;
     },
-    []
+    [],
   );
 
   const focusNode = useCallback((query: string, exactId?: string) => {
@@ -184,7 +221,8 @@ export default function TreeViewShell({
     centerFnRef.current?.();
   }, []);
 
-  const normalizeAlef = (s: string) => s.replace(/[أإآ]/g, "ا").replace(/\s+/g, "");
+  const normalizeAlef = (s: string) =>
+    s.replace(/[أإآ]/g, "ا").replace(/\s+/g, "");
 
   return (
     <div className="relative">
@@ -236,22 +274,24 @@ export default function TreeViewShell({
                   const tokenSets = tokens.map(
                     (token) =>
                       new Set(
-                        fuseRef.current!
-                          .search(token)
+                        fuseRef
+                          .current!.search(token)
                           .map(
                             (r) =>
-                              r.item.data.attributes?.id ?? r.item.data.name
-                          )
-                      )
+                              r.item.data.attributes?.id ?? r.item.data.name,
+                          ),
+                      ),
                   );
                   const matchedIds = tokenSets.reduce(
-                    (acc, set) => new Set([...acc].filter((id) => set.has(id)))
+                    (acc, set) => new Set([...acc].filter((id) => set.has(id))),
                   );
                   const results = fuseRef.current
                     .search(tokens[0])
                     .map((r) => r.item)
                     .filter((item) =>
-                      matchedIds.has(item.data.attributes?.id ?? item.data.name)
+                      matchedIds.has(
+                        item.data.attributes?.id ?? item.data.name,
+                      ),
                     )
                     .slice(0, 8);
                   setSuggestions(results);
@@ -289,7 +329,7 @@ export default function TreeViewShell({
                   const count = rootDescendantsRef.current.filter(
                     (d) =>
                       normalizeAlef(d.data.name).trim() ===
-                      normalizeAlef(q).trim()
+                      normalizeAlef(q).trim(),
                   ).length;
                   setNameCount(count);
                 }}
@@ -318,7 +358,7 @@ export default function TreeViewShell({
                       const label = s.data.attributes?.fullName ?? s.data.name;
                       focusNode(label, s.data.attributes?.id);
                       setSearchQuery(
-                        s.data.name + " " + s.data.attributes?.familyName
+                        s.data.name + " " + s.data.attributes?.familyName,
                       );
                       setSuggestions([]);
                     }}
@@ -336,12 +376,23 @@ export default function TreeViewShell({
       </div>
 
       {/* Layout */}
-      {children({ treeData, onNodeClick: handleNodeClick, rootDescendantsRef, fuseRef, onFocusNodeReady, onCenterReady, branchColors })}
+      {children({
+        treeData,
+        onNodeClick: handleNodeClick,
+        rootDescendantsRef,
+        fuseRef,
+        onFocusNodeReady,
+        onCenterReady,
+        branchColors,
+      })}
 
       {/* Person modal */}
       {selectedNode && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-40" onClick={closeModal} />
+          <div
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={closeModal}
+          />
           <div
             className="fixed z-50 overflow-y-auto [&::-webkit-scrollbar]:hidden"
             style={{
@@ -367,7 +418,11 @@ export default function TreeViewShell({
               scrollbarWidth: "none",
             }}
           >
-            <PersonModal isOpen={true} onClose={closeModal} gender={displayGender}>
+            <PersonModal
+              isOpen={true}
+              onClose={closeModal}
+              gender={displayGender}
+            >
               <div className="text-center overflow-x-hidden">
                 <div className="break-words">
                   <h1 className="text-[1.3em] font-bold break-words">
@@ -510,18 +565,36 @@ export default function TreeViewShell({
                     </div>
                     {/* Branch color pickers */}
                     <div className="border-t mt-[0.4em] pt-[0.3em] px-[0.5em]">
-                      <div className="flex items-center justify-between" dir="rtl">
-                        <span className="text-[0.75em] text-muted-foreground">ألوان الفروع</span>
+                      <div
+                        className="flex items-center justify-between"
+                        dir="rtl"
+                      >
+                        <span className="text-[0.75em] text-muted-foreground">
+                          ألوان الفروع
+                        </span>
                         <div className="flex items-center gap-3 mt-1">
                           <label className="flex flex-row items-center gap-1 text-[0.7em] cursor-pointer text-muted-foreground">
                             الخطوط
                             <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-muted">
                               <input
                                 type="color"
-                                value={branchColors[selectedPerson.id]?.link ?? "#555555"}
-                                onChange={(e) => setPersonColor(selectedPerson.id, "link", e.target.value)}
+                                value={
+                                  branchColors[selectedPerson.id]?.link ??
+                                  "#555555"
+                                }
+                                onChange={(e) =>
+                                  setPersonColor(
+                                    selectedPerson.id,
+                                    "link",
+                                    e.target.value,
+                                  )
+                                }
                                 className="block cursor-pointer border-none p-0 appearance-none"
-                                style={{ width: "200%", height: "200%", margin: "-50%" }}
+                                style={{
+                                  width: "200%",
+                                  height: "200%",
+                                  margin: "-50%",
+                                }}
                               />
                             </div>
                           </label>
@@ -530,10 +603,23 @@ export default function TreeViewShell({
                             <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-muted">
                               <input
                                 type="color"
-                                value={branchColors[selectedPerson.id]?.label ?? "#111111"}
-                                onChange={(e) => setPersonColor(selectedPerson.id, "label", e.target.value)}
+                                value={
+                                  branchColors[selectedPerson.id]?.label ??
+                                  "#111111"
+                                }
+                                onChange={(e) =>
+                                  setPersonColor(
+                                    selectedPerson.id,
+                                    "label",
+                                    e.target.value,
+                                  )
+                                }
                                 className="block cursor-pointer border-none p-0 appearance-none"
-                                style={{ width: "200%", height: "200%", margin: "-50%" }}
+                                style={{
+                                  width: "200%",
+                                  height: "200%",
+                                  margin: "-50%",
+                                }}
                               />
                             </div>
                           </label>
@@ -556,7 +642,11 @@ export default function TreeViewShell({
                           <div
                             style={
                               isMobile
-                                ? { zoom: mobileModalZoom, width: "100%", flexShrink: 0 }
+                                ? {
+                                    zoom: mobileModalZoom,
+                                    width: "100%",
+                                    flexShrink: 0,
+                                  }
                                 : { width: "100%" }
                             }
                           >
@@ -574,7 +664,11 @@ export default function TreeViewShell({
                           <div
                             style={
                               isMobile
-                                ? { zoom: mobileModalZoom, width: "100%", flexShrink: 0 }
+                                ? {
+                                    zoom: mobileModalZoom,
+                                    width: "100%",
+                                    flexShrink: 0,
+                                  }
                                 : { width: "100%" }
                             }
                           >
@@ -596,7 +690,11 @@ export default function TreeViewShell({
                           <div
                             style={
                               isMobile
-                                ? { zoom: mobileModalZoom, width: "100%", flexShrink: 0 }
+                                ? {
+                                    zoom: mobileModalZoom,
+                                    width: "100%",
+                                    flexShrink: 0,
+                                  }
                                 : { width: "100%" }
                             }
                           >

@@ -27,8 +27,7 @@ export async function POST(req: Request) {
     data: {
       name,
       phone,
-      password: hashed,
-      role: "USER", 
+      password: hashed, 
     },
   });
 

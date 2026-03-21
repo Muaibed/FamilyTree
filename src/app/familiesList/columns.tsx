@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { FamilyWithRootPerson } from "@/types/family";
 import { ColumnDef } from "@tanstack/react-table";
 
+type FamilyRow = FamilyWithRootPerson & { canEdit?: boolean };
+
 export function columns({
   onEdit,
 }: {
-  onEdit: (family: FamilyWithRootPerson) => void;
-}): ColumnDef<FamilyWithRootPerson>[] {
+  onEdit: (family: FamilyRow) => void;
+}): ColumnDef<FamilyRow>[] {
   return [
     {
       accessorKey: "name",
@@ -18,6 +20,7 @@ export function columns({
       id: "actions",
       cell: ({ row }) => {
         const family = row.original;
+        if (!family.canEdit) return null;
         return (
           <Button
             variant="ghost"

@@ -11,11 +11,12 @@ export default function CreateFamilyTree({
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: (formData: Partial<FamilyTree>) =>
+    mutationFn: (formData: Partial<FamilyTree> & { groupId?: string | null }) =>
       createFamilyTree({
         name: formData.name!,
         description: formData.description ?? undefined,
         rootPersonId: formData.rootPersonId!,
+        groupId: formData.groupId ?? undefined,
       }),
     onSuccess: (newTree) => {
       queryClient.setQueryData(["family-tree", newTree.id], newTree);

@@ -26,10 +26,11 @@ export default function EditFamily({
   });
 
   const updateMutation = useMutation({
-    mutationFn: (formData: Family) => updateFamily(id, formData),
+    mutationFn: (formData: Partial<Family> & { groupId?: string | null }) => updateFamily(id, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["family", id] });
       queryClient.invalidateQueries({ queryKey: ["families"] });
+      onSubmit();
     },
   });
 
@@ -39,9 +40,9 @@ export default function EditFamily({
   return (
     <>
       <FamilyForm
+        key={`${family.id}-${family.groupId ?? ''}`}
         onSubmit={(data) => {
-          updateMutation.mutate(data as Family);
-          onSubmit();
+          updateMutation.mutate(data);
         }}
         onDelete={() => onDelete()}
         defaultValues={family}

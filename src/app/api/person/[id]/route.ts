@@ -1,90 +1,85 @@
 import { deletePerson, getPersonById, updatePerson } from '@/lib/db/person';
+import { prisma } from '@/lib/prisma';
 import { qstash } from '@/lib/qstash';
-import { isAdmin } from '@/lib/session';
+import { getUserId } from '@/lib/session';
+import { canDoFamilyPermission } from '@/lib/permissions';
+import { FamilyPermission, ActivityAction, ActivityEntityType } from '@/generated/prisma';
 import { NextResponse } from 'next/server';
+import { logActivity } from '@/lib/activityLog';
 
-export async function GET(req:Request, { params } : { params: Promise<{ id: string }> }) {
+export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-
-    if (!id) {
-        return new Response("Person ID is required", { status: 400 });
-    }
-
+    if (!id) return new Response('Person ID is required', { status: 400 });
     const person = await getPersonById(id);
-
     return NextResponse.json(person);
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    if (error instanceof Error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
   }
 }
 
-export async function PUT(req: Request, { params } : { params: Promise<{ id: string }> }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const isPermitted = await isAdmin()
+    const userId = await getUserId();
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const { id } = await params;
-    if (!isPermitted) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-    }
-    
+    if (!id) return new Response('Person ID is required', { status: 400 });
+
+    const person = await prisma.person.findUnique({ where: { id }, select: { familyId: true, firstName: true } });
+    if (!person) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
+    const permitted = await canDoFamilyPermission(userId, person.familyId, FamilyPermission.EDIT_PERSON);
+    if (!permitted) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
     const { firstName, familyId, gender, kunya, fatherId, motherId, birthDate, deathDate, isDead } = await req.json();
+    await updatePerson(id, { firstName, familyId, gender, kunya, fatherId, motherId, birthDate, deathDate, isDead });
 
-    const data = {
-      firstName,
-      familyId,
-      gender,
-      kunya,
-      birthDate,
-      deathDate,
-      fatherId,
-      motherId,
-      isDead    
-    }
-
-    if (!id) {
-      return new Response("Person ID is required", { status: 400});
-    }
-
-    await updatePerson(id, data);
-
-    const result = await qstash.publishJSON({
+    await qstash.publishJSON({
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName`,
       body: { personId: id },
-    })
+    });
 
-    // return NextResponse.json({
-    //   message: "Person queued for processing!",
-    //   qstashMessageId: result.messageId,
-    // })
-    
-    return NextResponse.json("Updated successfully", { status: 201 });
+    const family = await prisma.family.findUnique({ where: { id: person.familyId }, select: { groupId: true } });
+    if (family?.groupId) {
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+      await logActivity({ groupId: family.groupId, userId, userName: user?.name, action: ActivityAction.UPDATE, entityType: ActivityEntityType.PERSON, entityId: id, entityName: firstName ?? person.firstName });
+    }
+
+    return NextResponse.json('Updated successfully', { status: 200 });
   } catch (error) {
     console.log(error);
-    return new Response("Failed to update person: " + error, { status: 500 });
+    return new Response('Failed to update person: ' + error, { status: 500 });
   }
 }
 
-export async function DELETE(req: Request, { params } : { params: Promise<{ id: string }> }) {
-    try {
-      const isPermitted = await isAdmin()
-      const { id } = await params;
+export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const userId = await getUserId();
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-      if (!isPermitted) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-      }
-    
-      if (!id) {
-        return new Response("Person ID is required", { status: 400 });
-      }
-  
-      await deletePerson(id);
-  
-      return new Response("Person deleted successfully", { status: 200 });
-    } catch (error) {
-      console.error(error);
-      return new Response("Failed to delete person " + error, { status: 500 });
+    const { id } = await params;
+    if (!id) return new Response('Person ID is required', { status: 400 });
+
+    const person = await prisma.person.findUnique({ where: { id }, select: { familyId: true, firstName: true } });
+    if (!person) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
+    const permitted = await canDoFamilyPermission(userId, person.familyId, FamilyPermission.DELETE_PERSON);
+    if (!permitted) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+    const family = await prisma.family.findUnique({ where: { id: person.familyId }, select: { groupId: true } });
+
+    await deletePerson(id);
+
+    if (family?.groupId) {
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+      await logActivity({ groupId: family.groupId, userId, userName: user?.name, action: ActivityAction.DELETE, entityType: ActivityEntityType.PERSON, entityId: id, entityName: person.firstName });
     }
+
+    return new Response('Person deleted successfully', { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return new Response('Failed to delete person: ' + error, { status: 500 });
   }
+}

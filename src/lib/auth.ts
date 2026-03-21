@@ -29,8 +29,8 @@ export const authOptions: NextAuthOptions = {
 
         return {
             id: user.id,
-            role: user.role,
             name: user.name,
+            subscribtion: user.subscribtion,
         }
 
         },
@@ -78,17 +78,17 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
         token.id = user.id;
         token.name = user.name;
+        token.subscribtion = user.subscribtion;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.id;
-        session.user.role = token.role;
         session.user.name = token.name;
+        session.user.subscribtion = token.subscribtion;
       }
       return session;
     },

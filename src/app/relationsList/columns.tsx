@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
+type RelationRow = SpouseRelationship & { canEdit?: boolean };
+
 export function columns({
   onEdit,
 }: {
-  onEdit: (relation: SpouseRelationship) => void;
-}): ColumnDef<SpouseRelationship>[] {
+  onEdit: (relation: RelationRow) => void;
+}): ColumnDef<RelationRow>[] {
   return [
     {
       accessorKey: "male.fullName",
@@ -29,6 +31,7 @@ export function columns({
       id: "actions",
       cell: ({ row }) => {
         const relation = row.original;
+        if (!relation.canEdit) return null;
         return (
           <Button
             variant="ghost"

@@ -8,9 +8,9 @@ import { useSession } from "next-auth/react";
 import { Suspense, useState } from "react";
 import BurgerMenu from "@/components/client/BurgerMenu";
 import { Modal } from "@/components/client/Modal";
-import CreatePerson from "../pages/CreatePerson";
-import CreateFamily from "../pages/CreateFamily";
-import CreateFamilyTree from "../pages/CreateFamilyTree";
+import CreatePerson from "../pages/Person/CreatePerson";
+import CreateFamily from "../pages/Family/CreateFamily";
+import CreateFamilyTree from "../pages/FamilyTree/CreateFamilyTree";
 import { useQuery } from "@tanstack/react-query";
 import { getOwnerFamilyTrees } from "@/lib/queries/familyTrees";
 
@@ -23,7 +23,11 @@ export default function TreeHome() {
 
   const router = useRouter();
 
-  const { data: trees = [], isLoading, isError } = useQuery({
+  const {
+    data: trees = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["owner-family-trees"],
     queryFn: getOwnerFamilyTrees,
   });
@@ -38,21 +42,34 @@ export default function TreeHome() {
     }
   };
 
-  if (isError) return <ErrorAlert title="حدث خطأ!" message="حدث خطأ في الحصول على بيانات الأشجار" />;
+  if (isError)
+    return (
+      <ErrorAlert
+        title="حدث خطأ!"
+        message="حدث خطأ في الحصول على بيانات الأشجار"
+      />
+    );
 
-  if (isLoading) return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <Loader2 />
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <Loader2 />
+      </div>
+    );
 
   return (
     <div className="font-arabic w-full">
       <div className="flex flex-row gap-2 p-4">
         <BurgerMenu
-          onAddFamily={() => { setIsAddingFamily(true) }}
-          onCreatePerson={() => { setIsCreatingPerson(true) }}
-          onCreateTree={() => { setIsCreatingTree(true) }}
+          onAddFamily={() => {
+            setIsAddingFamily(true);
+          }}
+          onCreatePerson={() => {
+            setIsCreatingPerson(true);
+          }}
+          onCreateTree={() => {
+            setIsCreatingTree(true);
+          }}
         />
       </div>
       <Suspense>
@@ -67,23 +84,25 @@ export default function TreeHome() {
             isOpen={!!isAddingFamily}
             onClose={() => setIsAddingFamily(false)}
           >
-            <CreateFamily
-              onSuccess={() => setIsAddingFamily(false)}
-            />
+            <CreateFamily onSuccess={() => setIsAddingFamily(false)} />
           </Modal>
           <Modal
             isOpen={!!isCreatingTree}
             onClose={() => setIsCreatingTree(false)}
           >
-            <CreateFamilyTree
-              onSuccess={() => setIsCreatingTree(false)}
-            />
+            <CreateFamilyTree onSuccess={() => setIsCreatingTree(false)} />
           </Modal>
         </>
         <div className="flex items-center-safe justify-center-safe h-screen w-full">
-          <form onSubmit={handleRedirect} className="flex flex-col gap-4 justify-center items-center h-screen w-full">
+          <form
+            onSubmit={handleRedirect}
+            className="flex flex-col gap-4 justify-center items-center h-screen w-full"
+          >
             <div className="w-full flex items-center justify-center">
-              <select name="treeId" className="w-1/2 flex border rounded-lg p-2">
+              <select
+                name="treeId"
+                className="w-1/2 flex border rounded-lg p-2"
+              >
                 <option value="">اختر شجرة عائلية</option>
                 {trees.map((t) => (
                   <option key={t.id} value={t.id} className="text-black">

@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server';
-import { isAdmin } from '@/lib/session';
+import { getUserId } from '@/lib/session';
+import { canDoTreePermission } from '@/lib/permissions';
+import { TreePermission } from '@/generated/prisma';
 import { clearPersonColor } from '@/lib/db/familyTree';
 
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string; personId: string }> }) {
   try {
-    if (!await isAdmin()) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const userId = await getUserId();
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const { id: treeId, personId } = await params;
+    const permitted = await canDoTreePermission(userId, treeId, TreePermission.SET_COLORS);
+    if (!permitted) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
     await clearPersonColor(treeId, personId);
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

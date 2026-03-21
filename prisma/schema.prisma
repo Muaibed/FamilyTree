@@ -15,32 +15,29 @@ datasource db {
 }
 
 
+// ─── User ─────────────────────────────────────────────────────────────────────
+
 model User {
-  id             String          @id @default(uuid()) @db.Uuid
-  email          String?         @unique
-  phone          String?         @unique
-  password       String
-  role           Role            @default(USER)
-  name           String?
-  verified       Boolean         @default(false)
+  id           String       @id @default(uuid()) @db.Uuid
+  email        String?      @unique
+  phone        String?      @unique
+  password     String
+  name         String?
+  verified     Boolean      @default(false)
+  subscribtion Subscribtion @default(TRIAL)
+  recordsCount Int          @default(0)
+
+  // Solo ownership
+  familiesOwner Family[]     @relation("FamilyOwner")
+  familyTrees   FamilyTree[] @relation("FamilyTreeOwner")
+
+  // Group context
+  createdFamilies    Family[]     @relation("FamilyCreator")
+  createdFamilyTrees FamilyTree[] @relation("FamilyTreeCreator")
+  createdGroups      Group[]      @relation("GroupCreator")
+  groupMemberships   GroupMember[]
+
   changeRequests ChangeRequest[] @relation("ChangeRequester")
-  familiesOwner  Family[]
-  familyTrees    FamilyTree[]
-  subscribtion   Subscribtion    @default(TRIAL)
-  recordsCount   Int             @default(0)
-}
-
-model VerificationToken {
-  id         String   @id @default(cuid())
-  identifier String   
-  token      String   @unique
-  expires    DateTime
-}
-
-
-enum Role {
-  ADMIN
-  USER
 }
 
 enum Gender {
@@ -53,20 +50,22 @@ enum Subscribtion {
   PRO
 }
 
-model Person {
-  id         String          @id @default(uuid()) @db.Uuid
-  firstName  String
-  fullName   String
-  gender     Gender
-  kunya      String? 
-  birthDate  DateTime?
-  deathDate  DateTime?
-  phone      String?
 
-  isDead     Boolean         @default(false)
-  
-  family     Family    @relation("FamilyMembers", fields: [familyId], references: [id])
-  familyId   String @db.Uuid
+// ─── Person ───────────────────────────────────────────────────────────────────
+
+model Person {
+  id        String    @id @default(uuid()) @db.Uuid
+  firstName String
+  fullName  String
+  gender    Gender
+  kunya     String?
+  birthDate DateTime?
+  deathDate DateTime?
+  phone     String?
+  isDead    Boolean   @default(false)
+
+  family   Family @relation("FamilyMembers", fields: [familyId], references: [id])
+  familyId String @db.Uuid
 
   fatherId String? @db.Uuid
   motherId String? @db.Uuid
@@ -77,12 +76,12 @@ model Person {
   fatherChildren Person[] @relation("FatherRelation")
   motherChildren Person[] @relation("MotherRelation")
 
-  maleSpouses    SpouseRelationship[] @relation("Males")
-  femaleSpouses  SpouseRelationship[] @relation("Females")
+  maleSpouses   SpouseRelationship[] @relation("Males")
+  femaleSpouses SpouseRelationship[] @relation("Females")
 
-  rootOfTree        FamilyTree[]                @relation("RootOfTree")
-  collapsedInTrees  FamilyTreeCollapsedBranch[]
-  personColors      FamilyTreePersonColor[]
+  rootOfTree       FamilyTree[]                @relation("RootOfTree")
+  collapsedInTrees FamilyTreeCollapsedBranch[]
+  personColors     FamilyTreePersonColor[]
 }
 
 model SpouseRelationship {
@@ -98,6 +97,296 @@ model SpouseRelationship {
 
   @@unique([maleId, femaleId])
 }
+
+
+// ─── Family ───────────────────────────────────────────────────────────────────
+
+model Family {
+  id      String   @id @default(uuid()) @db.Uuid
+  name    String
+  members Person[] @relation("FamilyMembers")
+
+  // Solo context: ownerId set, groupId null
+  owner   User?   @relation("FamilyOwner", fields: [ownerId], references: [id])
+  ownerId String? @db.Uuid
+
+  // Group context: groupId set, creatorId set, ownerId null
+  group     Group?  @relation(fields: [groupId], references: [id])
+  groupId   String? @db.Uuid
+  creator   User?   @relation("FamilyCreator", fields: [creatorId], references: [id])
+  creatorId String? @db.Uuid
+
+  // Permission models referencing this family
+  memberPermissions   MemberFamilyPermission[]
+  assignmentFamilyScopes AssignmentFamilyScope[]
+}
+
+
+// ─── FamilyTree ───────────────────────────────────────────────────────────────
+
+model FamilyTree {
+  id           String  @id @default(uuid()) @db.Uuid
+  name         String
+  description  String?
+  rootPerson   Person  @relation("RootOfTree", fields: [rootPersonId], references: [id])
+  rootPersonId String  @db.Uuid
+  treeJson     Json?
+  membersCount Int     @default(0)
+  aliveCount   Int     @default(0)
+  deadCount    Int     @default(0)
+
+  createdAt DateTime @default(now())
+
+  // Solo context: ownerId set, groupId null
+  owner   User?   @relation("FamilyTreeOwner", fields: [ownerId], references: [id])
+  ownerId String? @db.Uuid
+
+  // Group context: groupId set, creatorId set, ownerId null
+  group     Group?  @relation(fields: [groupId], references: [id])
+  groupId   String? @db.Uuid
+  creator   User?   @relation("FamilyTreeCreator", fields: [creatorId], references: [id])
+  creatorId String? @db.Uuid
+
+  collapsedBranches FamilyTreeCollapsedBranch[]
+  personColors      FamilyTreePersonColor[]
+
+  // Permission models referencing this tree
+  memberPermissions  MemberTreePermission[]
+  assignmentTreeScopes AssignmentTreeScope[]
+}
+
+// Person whose children/subtree are hidden in this tree.
+model FamilyTreeCollapsedBranch {
+  tree     FamilyTree @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  treeId   String     @db.Uuid
+  person   Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId String     @db.Uuid
+
+  @@id([treeId, personId])
+}
+
+// Custom link/label colors per person per tree.
+model FamilyTreePersonColor {
+  tree       FamilyTree @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  treeId     String     @db.Uuid
+  person     Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId   String     @db.Uuid
+  linkColor  String
+  labelColor String
+
+  @@id([treeId, personId])
+}
+
+
+// ─── Group ────────────────────────────────────────────────────────────────────
+
+model Group {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  creator   User   @relation("GroupCreator", fields: [creatorId], references: [id])
+  creatorId String @db.Uuid
+
+  members          GroupMember[]
+  families         Family[]
+  familyTrees      FamilyTree[]
+  permissionGroups PermissionGroup[]
+  activityLogs     ActivityLog[]
+}
+
+enum ActivityAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum ActivityEntityType {
+  PERSON
+  FAMILY
+  FAMILY_TREE
+  SPOUSE_RELATIONSHIP
+}
+
+model ActivityLog {
+  id         String             @id @default(uuid()) @db.Uuid
+  group      Group              @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId    String             @db.Uuid
+  userId     String             @db.Uuid
+  userName   String?
+  action     ActivityAction
+  entityType ActivityEntityType
+  entityId   String?            @db.Uuid
+  entityName String?
+  createdAt  DateTime           @default(now())
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model GroupMember {
+  id           String       @id @default(uuid()) @db.Uuid
+  group        Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId      String       @db.Uuid
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String       @db.Uuid
+  isAdmin      Boolean      @default(false)
+  inviteStatus InviteStatus @default(PENDING)
+  invitedAt    DateTime     @default(now())
+  joinedAt     DateTime?
+
+  // Individual permissions
+  groupPermissions  MemberGroupPermission[]
+  familyPermissions MemberFamilyPermission[]
+  treePermissions   MemberTreePermission[]
+
+  // Rule-group assignments
+  permissionGroupAssignments MemberPermissionGroupAssignment[]
+
+  @@unique([groupId, userId])
+}
+
+
+// ─── Permission Enums ─────────────────────────────────────────────────────────
+
+// Applies at the Group level (not scoped to a specific family/tree)
+enum GroupPermission {
+  ADD_FAMILY
+  ADD_FAMILY_TREE
+}
+
+// Applies per Family
+enum FamilyPermission {
+  EDIT_FAMILY
+  DELETE_FAMILY
+  ADD_PERSON
+  EDIT_PERSON
+  DELETE_PERSON
+  ADD_SPOUSE
+  EDIT_SPOUSE
+  DELETE_SPOUSE
+}
+
+// Applies per FamilyTree
+enum TreePermission {
+  EDIT_TREE
+  DELETE_TREE
+  COLLAPSE_BRANCHES
+  SET_COLORS
+}
+
+
+// ─── Permission Group (Rule-Template) ─────────────────────────────────────────
+
+// A named set of permissions defined by a group admin.
+model PermissionGroup {
+  id      String @id @default(uuid()) @db.Uuid
+  name    String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId String @db.Uuid
+
+  groupPermissions  PermissionGroupGroupEntry[]
+  familyPermissions PermissionGroupFamilyEntry[]
+  treePermissions   PermissionGroupTreeEntry[]
+
+  assignments MemberPermissionGroupAssignment[]
+}
+
+model PermissionGroupGroupEntry {
+  permissionGroup   PermissionGroup @relation(fields: [permissionGroupId], references: [id], onDelete: Cascade)
+  permissionGroupId String          @db.Uuid
+  permission        GroupPermission
+
+  @@id([permissionGroupId, permission])
+}
+
+model PermissionGroupFamilyEntry {
+  permissionGroup   PermissionGroup @relation(fields: [permissionGroupId], references: [id], onDelete: Cascade)
+  permissionGroupId String          @db.Uuid
+  permission        FamilyPermission
+
+  @@id([permissionGroupId, permission])
+}
+
+model PermissionGroupTreeEntry {
+  permissionGroup   PermissionGroup @relation(fields: [permissionGroupId], references: [id], onDelete: Cascade)
+  permissionGroupId String          @db.Uuid
+  permission        TreePermission
+
+  @@id([permissionGroupId, permission])
+}
+
+
+// ─── Member Permission Group Assignment ───────────────────────────────────────
+
+// Assigns a rule-group template to a group member, with optional scoping.
+// Empty familyScopes/treeScopes means the rule applies to ALL families/trees in the group.
+model MemberPermissionGroupAssignment {
+  id              String          @id @default(uuid()) @db.Uuid
+  groupMember     GroupMember     @relation(fields: [groupMemberId], references: [id], onDelete: Cascade)
+  groupMemberId   String          @db.Uuid
+  permissionGroup PermissionGroup @relation(fields: [permissionGroupId], references: [id], onDelete: Cascade)
+  permissionGroupId String        @db.Uuid
+
+  familyScopes AssignmentFamilyScope[]
+  treeScopes   AssignmentTreeScope[]
+}
+
+model AssignmentFamilyScope {
+  assignment   MemberPermissionGroupAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  assignmentId String                          @db.Uuid
+  family       Family                          @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  familyId     String                          @db.Uuid
+
+  @@id([assignmentId, familyId])
+}
+
+model AssignmentTreeScope {
+  assignment   MemberPermissionGroupAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  assignmentId String                          @db.Uuid
+  tree         FamilyTree                      @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  treeId       String                          @db.Uuid
+
+  @@id([assignmentId, treeId])
+}
+
+
+// ─── Individual Member Permissions ────────────────────────────────────────────
+
+model MemberGroupPermission {
+  groupMember   GroupMember     @relation(fields: [groupMemberId], references: [id], onDelete: Cascade)
+  groupMemberId String          @db.Uuid
+  permission    GroupPermission
+
+  @@id([groupMemberId, permission])
+}
+
+model MemberFamilyPermission {
+  groupMember   GroupMember      @relation(fields: [groupMemberId], references: [id], onDelete: Cascade)
+  groupMemberId String           @db.Uuid
+  family        Family           @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  familyId      String           @db.Uuid
+  permission    FamilyPermission
+
+  @@id([groupMemberId, familyId, permission])
+}
+
+model MemberTreePermission {
+  groupMember   GroupMember    @relation(fields: [groupMemberId], references: [id], onDelete: Cascade)
+  groupMemberId String         @db.Uuid
+  tree          FamilyTree     @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  treeId        String         @db.Uuid
+  permission    TreePermission
+
+  @@id([groupMemberId, treeId, permission])
+}
+
+
+// ─── Change Request (legacy, kept for history) ────────────────────────────────
 
 enum ChangeRequestAction {
   ADD
@@ -117,62 +406,23 @@ enum ChangeRequestTargetModel {
 }
 
 model ChangeRequest {
-  id             String              @id @default(uuid()) @db.Uuid
-  displayId      Int                 @default(autoincrement())
+  id             String                   @id @default(uuid()) @db.Uuid
+  displayId      Int                      @default(autoincrement())
   action         ChangeRequestAction
-  status         ChangeRequestStatus @default(PENDING)
+  status         ChangeRequestStatus      @default(PENDING)
   targetModel    ChangeRequestTargetModel
-  targetId       String? @db.Uuid
+  targetId       String?                  @db.Uuid
   data           Json?
-  requester      User?               @relation("ChangeRequester", fields: [requesterId], references: [id])
-  requesterId    String? @db.Uuid
+  requester      User?                    @relation("ChangeRequester", fields: [requesterId], references: [id])
+  requesterId    String?                  @db.Uuid
   requesterName  String?
   requesterPhone String?
-  createdAt      DateTime            @default(now())
+  createdAt      DateTime                 @default(now())
 }
 
-model Family {
-  id      String   @id @default(uuid()) @db.Uuid
-  name    String
-  owner   User?    @relation(fields: [ownerId], references: [id])
-  ownerId String?  @db.Uuid
-  members Person[] @relation("FamilyMembers")
-}
-
-model FamilyTree {
-  id                String                      @id @default(uuid()) @db.Uuid
-  name              String
-  description       String?
-  rootPerson        Person                      @relation("RootOfTree", fields: [rootPersonId], references: [id])
-  rootPersonId      String                      @db.Uuid
-  owner             User                        @relation(fields: [ownerId], references: [id])
-  ownerId           String                      @db.Uuid
-  treeJson          Json?
-  membersCount      Int                         @default(0)
-  aliveCount        Int                         @default(0)
-  deadCount         Int                         @default(0)
-  collapsedBranches FamilyTreeCollapsedBranch[]
-  personColors      FamilyTreePersonColor[]
-  createdAt         DateTime                    @default(now())
-}
-
-// Person whose children/subtree are hidden in this tree.
-// The person node itself stays visible; only their descendants are hidden.
-model FamilyTreeCollapsedBranch {
-  tree      FamilyTree @relation(fields: [treeId], references: [id], onDelete: Cascade)
-  treeId    String     @db.Uuid
-  person    Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
-  personId  String     @db.Uuid
-  @@id([treeId, personId])
-}
-
-// Custom link/label colors per person per tree.
-model FamilyTreePersonColor {
-  tree      FamilyTree @relation(fields: [treeId], references: [id], onDelete: Cascade)
-  treeId    String     @db.Uuid
-  person    Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
-  personId  String     @db.Uuid
-  linkColor String
-  labelColor String
-  @@id([treeId, personId])
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
 }

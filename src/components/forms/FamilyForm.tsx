@@ -11,6 +11,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Modal } from "../client/Modal";
 import DeletePage from "../client/DeletePage";
 import { deleteFamily } from "@/lib/queries/families";
+import { useGroups } from "@/hooks/useGroup";
+
+type FamilyFormValues = Omit<Partial<FamilyWithRootPerson>, "groupId"> & { groupId?: string | null };
 
 export default function FamilyForm({
   onSubmit,
@@ -18,17 +21,18 @@ export default function FamilyForm({
   defaultValues,
   title,
 }: {
-  onSubmit: (data: Partial<Family>) => void;
+  onSubmit: (data: Partial<Family> & { groupId?: string | null }) => void;
   onDelete: () => void;
-  defaultValues?: Partial<FamilyWithRootPerson>;
+  defaultValues?: FamilyFormValues;
   title: string;
 }) {
   const queryClient = useQueryClient();
+  const { data: groups = [] } = useGroups('ADD_FAMILY');
 
   const {
     control,
     handleSubmit,
-  } = useForm({
+  } = useForm<FamilyFormValues>({
     defaultValues,
   });
 
@@ -71,6 +75,30 @@ export default function FamilyForm({
               </div>
             )}
           />
+
+          {groups.length > 0 && (
+            <Controller
+              name="groupId"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block text-right" dir="rtl">المجموعة (اختياري)</label>
+                  <select
+                    {...field}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value || null)}
+                    dir="rtl"
+                    className="w-full border rounded-md p-2 bg-background text-foreground text-sm"
+                  >
+                    <option value="">بدون مجموعة (شخصي)</option>
+                    {groups.map((g: { id: string; name: string }) => (
+                      <option key={g.id} value={g.id}>{g.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            />
+          )}
 
           <div>
             <div className="flex flex-col gap-2 mt-3">

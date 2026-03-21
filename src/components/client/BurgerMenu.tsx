@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/navigation-menu"
 import { signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation";
+import { useGroupInvites } from "@/hooks/useGroup";
 
 
 type BurgerMenuProps = {
@@ -20,7 +21,7 @@ type BurgerMenuProps = {
 
 export default function BurgerMenu({ onCreatePerson, onAddFamily, onCreateTree, onExportSVG, onExportPDF }: BurgerMenuProps) {
     const { data: session } = useSession();
-    const isAdmin = session?.user?.role === "ADMIN";
+    const { data: invites = [] } = useGroupInvites();
 
     const router = useRouter();
 
@@ -31,7 +32,7 @@ export default function BurgerMenu({ onCreatePerson, onAddFamily, onCreateTree, 
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px] hover:cursor-pointer">
-                {session && isAdmin && (
+                {session && (
                     <>
                       {onCreatePerson && (
                         <li
@@ -57,6 +58,18 @@ export default function BurgerMenu({ onCreatePerson, onAddFamily, onCreateTree, 
                             إضافة شجرة عائلية
                         </li>
                       )}
+                      <li
+                        key={'Groups'}
+                        onClick={() => router.push('/groups')}
+                        className="relative"
+                      >
+                        المجموعات
+                        {invites.length > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-5 h-5 flex items-center justify-center px-1">
+                            {invites.length}
+                          </span>
+                        )}
+                      </li>
                       <li
                         key={'MembersList'}
                         onClick={() => {router.push('/membersList')}}

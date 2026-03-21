@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { PersonWithRelations } from "@/types/family";
-import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { PersonWithRelations } from '@/types/family';
+import { toast } from 'sonner';
+import { Button } from '../ui/button';
+import { useDeletePerson } from '@/hooks/usePerson';
 
 const DeletePerson = ({
   person,
@@ -11,29 +12,15 @@ const DeletePerson = ({
   person: PersonWithRelations;
   onSubmit: () => void;
 }) => {
+  const { mutateAsync: deletePerson } = useDeletePerson();
+
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/person/${person.id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        onSubmit();
-        toast(`${person.firstName} has been deleted successfully.`);
-      } else {
-        const error = await response.json();
-        console.log(error)
-        toast(`Deleting ${person.firstName} Failed.`);
-      }
+      await deletePerson(person.id);
+      toast(`${person.firstName} has been deleted successfully.`);
     } catch (error) {
-      toast(`Deleting ${person.firstName} Failed.`, {
-        description: `${error}`,
-      });
+      toast(`Deleting ${person.firstName} Failed.`, { description: `${error}` });
     } finally {
       onSubmit();
     }
@@ -47,9 +34,7 @@ const DeletePerson = ({
       <Button
         className="p-1 pl-4 pr-4 w-1/6"
         variant="destructive"
-        onClick={(e) => {
-          handleSubmit(e);
-        }}
+        onClick={handleSubmit}
       >
         حذف
       </Button>

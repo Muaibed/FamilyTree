@@ -101,10 +101,24 @@ export const getAllFamilyTreesFromOwnerId = async (ownerId: string) => {
   });
 };
 
+export const getAllAccessibleFamilyTrees = async (userId: string) => {
+  return prisma.familyTree.findMany({
+    where: {
+      OR: [
+        { ownerId: userId },
+        { group: { members: { some: { userId, inviteStatus: 'ACCEPTED' } } } },
+      ],
+    },
+    include: familyTreeInclude,
+    orderBy: { createdAt: 'desc' },
+  });
+};
+
 export const updateFamilyTree = async (id: string, data: {
   name?: string;
   description?: string;
   rootPersonId?: string;
+  groupId?: string | null;
 }) => {
   return prisma.familyTree.update({
     where: { id },
@@ -114,6 +128,9 @@ export const updateFamilyTree = async (id: string, data: {
       treeJson: Prisma.DbNull,
       ...(data.rootPersonId && {
         rootPerson: { connect: { id: data.rootPersonId } }
+      }),
+      ...(data.groupId !== undefined && {
+        group: data.groupId ? { connect: { id: data.groupId } } : { disconnect: true }
       }),
     },
     include: familyTreeInclude,
