@@ -11,13 +11,14 @@ import TreeViewShell from "@/components/client/TreeViewShell";
 import CreateFamily from "@/app/pages/Family/CreateFamily";
 import { getOwnerMembers } from "@/lib/queries/familyTreeMembers";
 import { getFamilyTree } from "@/lib/queries/familyTrees";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { Suspense, use, useEffect, useState } from "react";
 
 export default function Tree({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const queryClient = useQueryClient();
 
   const [isAddingFamily, setIsAddingFamily] = useState<boolean>(false);
   const [isCreatingPerson, setIsCreatingPerson] = useState<boolean>(false);
@@ -85,7 +86,10 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
         isOpen={!!isCreatingPerson}
         onClose={() => setIsCreatingPerson(false)}
       >
-        <CreatePerson onSuccess={() => setIsCreatingPerson(false)} />
+        <CreatePerson onSuccess={() => {
+          setIsCreatingPerson(false);
+          queryClient.invalidateQueries({ queryKey: ["family-tree", id] });
+        }} />
       </Modal>
     </>
   );
@@ -156,7 +160,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
             treeData={treeData}
             collapsedPersonIds={collapsedPersonIds}
             initialBranchColors={initialBranchColors}
-            onChange={() => "mutate members"}
+            onChange={() => queryClient.invalidateQueries({ queryKey: ["family-tree", id] })}
           >
             {(props) => {
               if (layout === "dendrogram")

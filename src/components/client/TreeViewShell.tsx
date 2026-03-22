@@ -631,7 +631,10 @@ export default function TreeViewShell({
                             }
                           >
                             <CreatePerson
-                              onSuccess={() => setIsAddingChild(false)}
+                              onSuccess={() => {
+                                setIsAddingChild(false);
+                                queryClient.invalidateQueries({ queryKey: ["family-tree", treeId] });
+                              }}
                               defaultValues={
                                 selectedPerson.gender === "MALE"
                                   ? { father: selectedPerson }
@@ -680,8 +683,14 @@ export default function TreeViewShell({
                           >
                             <EditPerson
                               id={selectedPerson.id}
-                              onSubmit={() => setIsEditingPerson(false)}
-                              onDelete={() => setSelectedNode(undefined)}
+                              onSubmit={() => {
+                                setIsEditingPerson(false);
+                                queryClient.invalidateQueries({ queryKey: ["family-tree", treeId] });
+                              }}
+                              onDelete={() => {
+                                setSelectedNode(undefined);
+                                queryClient.invalidateQueries({ queryKey: ["family-tree", treeId] });
+                              }}
                             />
                           </div>
                         )}
