@@ -9,8 +9,8 @@ import RadialCluster from "@/components/client/RadialClsuter";
 import RadialDendrogram from "@/components/client/RadialDendrogram";
 import TreeViewShell from "@/components/client/TreeViewShell";
 import CreateFamily from "@/app/pages/Family/CreateFamily";
-import { getOwnerMembers } from "@/lib/queries/familyTreeMembers";
-import { getFamilyTree } from "@/lib/queries/familyTrees";
+import { getMembers } from "@/lib/queries/familyTreeMembers";
+import { getFamilyTree, getTreePermissions } from "@/lib/queries/familyTrees";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -36,8 +36,8 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
     isLoading: membersLoading,
     isError: membersError,
   } = useQuery({
-    queryKey: ["owner-members"],
-    queryFn: getOwnerMembers,
+    queryKey: ["members"],
+    queryFn: getMembers,
     enabled: !!session,
   });
 
@@ -48,6 +48,12 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
   } = useQuery({
     queryKey: ["family-tree", id],
     queryFn: () => getFamilyTree(id),
+  });
+
+  const { data: treePermissions } = useQuery({
+    queryKey: ["tree-permissions", id],
+    queryFn: () => getTreePermissions(id),
+    enabled: !!session,
   });
 
   useEffect(() => {
@@ -160,6 +166,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
             treeData={treeData}
             collapsedPersonIds={collapsedPersonIds}
             initialBranchColors={initialBranchColors}
+            treePermissions={treePermissions}
             onChange={() => queryClient.invalidateQueries({ queryKey: ["family-tree", id] })}
           >
             {(props) => {

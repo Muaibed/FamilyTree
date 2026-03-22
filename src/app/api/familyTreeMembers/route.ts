@@ -12,11 +12,15 @@ export async function GET() {
     const members = await getAllAccessiblePersons(userId);
 
     const withPerms = await Promise.all(
-      members.map(async (person) => ({
-        ...person,
-        canEdit: await canDoFamilyPermission(userId, person.familyId, FamilyPermission.EDIT_PERSON),
-        canDelete: await canDoFamilyPermission(userId, person.familyId, FamilyPermission.DELETE_PERSON),
-      }))
+      members.map(async (person) => {
+        const [canEdit, canDelete, canAddPerson, canAddSpouse] = await Promise.all([
+          canDoFamilyPermission(userId, person.familyId, FamilyPermission.EDIT_PERSON),
+          canDoFamilyPermission(userId, person.familyId, FamilyPermission.DELETE_PERSON),
+          canDoFamilyPermission(userId, person.familyId, FamilyPermission.ADD_PERSON),
+          canDoFamilyPermission(userId, person.familyId, FamilyPermission.ADD_SPOUSE),
+        ]);
+        return { ...person, canEdit, canDelete, canAddPerson, canAddSpouse };
+      })
     );
 
     return NextResponse.json(withPerms);

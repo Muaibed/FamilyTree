@@ -5,6 +5,7 @@ import * as d3 from "d3";
 import Fuse from "fuse.js";
 import { TreeNode, TreeNodeAttributes } from "@/types/tree";
 import { PersonWithRelations } from "@/types/family";
+import { TreePermissions } from "@/services/familyTree.service";
 import { PersonModal } from "./Modal";
 import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
@@ -32,20 +33,29 @@ export interface TreeLayoutProps {
   branchColors: Record<string, { link: string; label: string }>;
 }
 
+type PersonWithPermissions = PersonWithRelations & {
+  canEdit?: boolean;
+  canDelete?: boolean;
+  canAddPerson?: boolean;
+  canAddSpouse?: boolean;
+};
+
 export default function TreeViewShell({
   members,
   treeId,
   treeData,
   collapsedPersonIds,
   initialBranchColors,
+  treePermissions,
   onChange,
   children,
 }: {
-  members: PersonWithRelations[];
+  members: PersonWithPermissions[];
   treeId: string;
   treeData: TreeNode | null;
   collapsedPersonIds: string[];
   initialBranchColors: Record<string, { link: string; label: string }>;
+  treePermissions?: TreePermissions;
   onChange: any;
   children: (props: TreeLayoutProps) => React.ReactNode;
 }) {
@@ -74,12 +84,17 @@ export default function TreeViewShell({
     );
 
   const { data: session } = useSession();
-  const isAdmin = !!session;
 
-  const selectedPerson: PersonWithRelations | undefined =
-    isAdmin && selectedNode
+  const selectedPerson: PersonWithPermissions | undefined =
+    session && selectedNode
       ? members.find((p) => p.id === selectedNode.attributes?.id)
       : undefined;
+
+  const canAddPerson = selectedPerson?.canAddPerson ?? false;
+  const canAddSpouse = selectedPerson?.canAddSpouse ?? false;
+  const canEditPerson = selectedPerson?.canEdit ?? false;
+  const canCollapseBranches = treePermissions?.canCollapseBranches ?? false;
+  const canSetColors = treePermissions?.canSetColors ?? false;
 
   const attrs: TreeNodeAttributes | undefined = selectedNode?.attributes;
   const displayGender = (selectedPerson?.gender ?? attrs?.gender) as
@@ -482,9 +497,10 @@ export default function TreeViewShell({
                   )}
                 </div>
 
-                {isAdmin && selectedPerson && (
+                {selectedPerson && (canAddPerson || canAddSpouse || canEditPerson || canCollapseBranches || canSetColors) && (
                   <div>
                     <div className="flex flex-col gap-[0.4em] mt-[0.5em] px-[0.5em]">
+                      {canAddPerson && (
                       <Button
                         onClick={() => {
                           setIsAddingChild(!isAddingChild);
@@ -495,6 +511,8 @@ export default function TreeViewShell({
                       >
                         إضافة ابن
                       </Button>
+                      )}
+                      {canAddSpouse && (
                       <Button
                         onClick={() => {
                           setIsAddingSpouse(!isAddingSpouse);
@@ -505,6 +523,8 @@ export default function TreeViewShell({
                       >
                         إضافة زوج
                       </Button>
+                      )}
+                      {canEditPerson && (
                       <Button
                         variant="outline"
                         className="w-full text-[1em] py-[0.3em] h-auto px-[0.5em]"
@@ -516,7 +536,8 @@ export default function TreeViewShell({
                       >
                         تعديل
                       </Button>
-                      {selectedPersonHasChildren &&
+                      )}
+                      {canCollapseBranches && selectedPersonHasChildren &&
                         (collapsedPersonIds.includes(selectedPerson.id) ? (
                           <Button
                             variant="outline"
@@ -544,6 +565,7 @@ export default function TreeViewShell({
                         ))}
                     </div>
                     {/* Branch color pickers */}
+                    {canSetColors && (
                     <div className="border-t mt-[0.4em] pt-[0.3em] px-[0.5em]">
                       <div
                         className="flex items-center justify-between"
@@ -614,6 +636,7 @@ export default function TreeViewShell({
                         </div>
                       </div>
                     </div>
+                    )}
                     <div className="overflow-auto mt-[0.5em] flex justify-center">
                       <PopoverZoomContext.Provider
                         value={isMobile ? mobileModalZoom : undefined}

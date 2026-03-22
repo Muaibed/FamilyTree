@@ -3,6 +3,7 @@
 import { familyTreeService } from '@/services/familyTree.service';
 
 export const getOwnerFamilyTrees = () => familyTreeService.getOwnerFamilyTrees();
+export const getTreePermissions = (id: string) => familyTreeService.getTreePermissions(id);
 export const getFamilyTree = (id: string) => familyTreeService.getFamilyTree(id);
 export const createFamilyTree = (data: { name: string; description?: string; rootPersonId: string; groupId?: string }) =>
   familyTreeService.createFamilyTree(data);

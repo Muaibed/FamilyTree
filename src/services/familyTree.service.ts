@@ -2,6 +2,12 @@ import { FamilyTreeWithDetails } from '@/types/family';
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL;
 
+export type TreePermissions = {
+  canCollapseBranches: boolean;
+  canSetColors: boolean;
+  canEditTree: boolean;
+};
+
 export const familyTreeService = {
   async getOwnerFamilyTrees(): Promise<FamilyTreeWithDetails[]> {
     const res = await fetch(`${BASE}/api/familyTree`);
@@ -12,6 +18,12 @@ export const familyTreeService = {
   async getFamilyTree(id: string): Promise<FamilyTreeWithDetails> {
     const res = await fetch(`${BASE}/api/familyTree/${id}`);
     if (!res.ok) throw new Error('Failed to fetch family tree');
+    return res.json();
+  },
+
+  async getTreePermissions(id: string): Promise<TreePermissions> {
+    const res = await fetch(`${BASE}/api/familyTree/${id}/permissions`);
+    if (!res.ok) return { canCollapseBranches: false, canSetColors: false, canEditTree: false };
     return res.json();
   },
 
