@@ -88,7 +88,9 @@ export const getFamilyTreeById = async (id: string) => {
 
   // Cache miss — compute and store
   const persons = await prisma.person.findMany({
-    where: { family: { ownerId: tree.ownerId } },
+    where: tree.groupId
+      ? { family: { groupId: tree.groupId } }
+      : { family: { ownerId: tree.ownerId } },
     select: personForTreeSelect
   });
 

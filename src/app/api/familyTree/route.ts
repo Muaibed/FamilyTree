@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getUserId } from '@/lib/session';
 import { canDoGroupPermission, canDoTreePermission } from '@/lib/permissions';
 import { GroupPermission, TreePermission, ActivityAction, ActivityEntityType } from '@/generated/prisma';
-import { createFamilyTree, getAllAccessibleFamilyTrees } from '@/lib/db/familyTree';
+import { createFamilyTree, getAllAccessibleFamilyTrees, getFamilyTreeById } from '@/lib/db/familyTree';
 import { logActivity } from '@/lib/activityLog';
 import { prisma } from '@/lib/prisma';
 
@@ -40,14 +40,16 @@ export async function POST(request: Request) {
       const permitted = await canDoGroupPermission(userId, groupId, GroupPermission.ADD_FAMILY_TREE);
       if (!permitted) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-      const tree = await createFamilyTree({ ...body, groupId, creatorId: userId, ownerId: undefined });
+      const created = await createFamilyTree({ ...body, groupId, creatorId: userId, ownerId: undefined });
       const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
-      await logActivity({ groupId, userId, userName: user?.name, action: ActivityAction.CREATE, entityType: ActivityEntityType.FAMILY_TREE, entityId: tree.id, entityName: tree.name });
-      return NextResponse.json(tree, { status: 201 });
+      await logActivity({ groupId, userId, userName: user?.name, action: ActivityAction.CREATE, entityType: ActivityEntityType.FAMILY_TREE, entityId: created.id, entityName: created.name });
+      const tree = await getFamilyTreeById(created.id);
+      return NextResponse.json(tree ?? created, { status: 201 });
     }
 
-    const tree = await createFamilyTree({ ...body, ownerId: userId });
-    return NextResponse.json(tree, { status: 201 });
+    const created = await createFamilyTree({ ...body, ownerId: userId });
+    const tree = await getFamilyTreeById(created.id);
+    return NextResponse.json(tree ?? created, { status: 201 });
   } catch (error: unknown) {
     if (error instanceof Error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
