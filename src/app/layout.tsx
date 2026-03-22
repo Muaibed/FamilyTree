@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner"
 import SessionProviderWrapper from "@/components/client/SessionProviderWrapper";
 import ThemeToggle from "@/theme/theme-toggle";
 import { BlurBackground } from "@/components/ui/BlurBackground";
-import { Amiri, Cairo } from 'next/font/google'
+import { Amiri } from 'next/font/google'
 import Head from "next/head";
 import { Suspense } from "react";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -15,6 +15,7 @@ import BurgerMenu from "@/components/client/BurgerMenu";
  
 const amiri = Amiri({
   weight: '400',
+  preload: false,
   subsets: ['arabic'],
 })
 

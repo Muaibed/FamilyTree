@@ -32,6 +32,7 @@ export default function FamilyForm({
   const {
     control,
     handleSubmit,
+  formState: { isDirty },
   } = useForm<FamilyFormValues>({
     defaultValues,
   });
@@ -109,7 +110,7 @@ export default function FamilyForm({
               >
                 حذف
               </Button>
-              <Button type="submit">تأكيد</Button>
+              <Button type="submit" disabled={!isDirty}>تأكيد</Button>
             </div>
           </div>
         </form>

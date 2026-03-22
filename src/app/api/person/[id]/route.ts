@@ -3,9 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { qstash } from '@/lib/qstash';
 import { getUserId } from '@/lib/session';
 import { canDoFamilyPermission } from '@/lib/permissions';
-import { FamilyPermission, ActivityAction, ActivityEntityType } from '@/generated/prisma';
+import { FamilyPermission, ActivityAction } from '@/generated/prisma';
 import { NextResponse } from 'next/server';
-import { logActivity } from '@/lib/activityLog';
+import { logPersonActivity } from '@/lib/activityLog';
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -36,16 +36,17 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const { firstName, familyId, gender, kunya, fatherId, motherId, birthDate, deathDate, isDead } = await req.json();
     await updatePerson(id, { firstName, familyId, gender, kunya, fatherId, motherId, birthDate, deathDate, isDead });
 
-    await qstash.publishJSON({
-      url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName`,
-      body: { personId: id },
-    });
-
-    const family = await prisma.family.findUnique({ where: { id: person.familyId }, select: { groupId: true } });
-    if (family?.groupId) {
-      const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
-      await logActivity({ groupId: family.groupId, userId, userName: user?.name, action: ActivityAction.UPDATE, entityType: ActivityEntityType.PERSON, entityId: id, entityName: firstName ?? person.firstName });
+    try {
+      await qstash.publishJSON({
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/updateFullName`,
+        body: { personId: id },
+      });
+    } catch {
+      // qstash failure should not block the update
     }
+
+    const effectiveFamilyId = familyId ?? person.familyId;
+    await logPersonActivity({ personId: id, familyId: effectiveFamilyId, userId, action: ActivityAction.UPDATE, entityName: firstName ?? person.firstName });
 
     return NextResponse.json('Updated successfully', { status: 200 });
   } catch (error) {
@@ -68,14 +69,9 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
     const permitted = await canDoFamilyPermission(userId, person.familyId, FamilyPermission.DELETE_PERSON);
     if (!permitted) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-    const family = await prisma.family.findUnique({ where: { id: person.familyId }, select: { groupId: true } });
-
     await deletePerson(id);
 
-    if (family?.groupId) {
-      const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
-      await logActivity({ groupId: family.groupId, userId, userName: user?.name, action: ActivityAction.DELETE, entityType: ActivityEntityType.PERSON, entityId: id, entityName: person.firstName });
-    }
+    await logPersonActivity({ personId: id, familyId: person.familyId, userId, action: ActivityAction.DELETE, entityName: person.firstName });
 
     return new Response('Person deleted successfully', { status: 200 });
   } catch (error) {

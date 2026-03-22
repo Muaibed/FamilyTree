@@ -46,7 +46,10 @@ export function FamilyTreeTableClient({ data }: { data: TreeRow[] }) {
               });
               setSelectedTree(undefined);
             }}
-            onDelete={() => setSelectedTree(undefined)}
+            onDelete={() => {
+              queryClient.invalidateQueries({ queryKey: ["owner-family-trees"] });
+              setSelectedTree(undefined);
+            }}
           />
         </Modal>
       )}

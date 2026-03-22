@@ -13,6 +13,7 @@ export const getAllRelations = async () => {
 export const getRelationById = async (id: string) => {
   return prisma.spouseRelationship.findUnique({
     where: { id },
+    include: { male: true, female: true },
   })
 }
 

@@ -37,7 +37,18 @@ model User {
   createdGroups      Group[]      @relation("GroupCreator")
   groupMemberships   GroupMember[]
 
-  changeRequests ChangeRequest[] @relation("ChangeRequester")
+  changeRequests       ChangeRequest[]      @relation("ChangeRequester")
+  passwordResetTokens  PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  token     String   @unique
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 enum Gender {
@@ -82,6 +93,7 @@ model Person {
   rootOfTree       FamilyTree[]                @relation("RootOfTree")
   collapsedInTrees FamilyTreeCollapsedBranch[]
   personColors     FamilyTreePersonColor[]
+  familyTreeMemberships FamilyTreeMember[]
 }
 
 model SpouseRelationship {
@@ -149,10 +161,20 @@ model FamilyTree {
 
   collapsedBranches FamilyTreeCollapsedBranch[]
   personColors      FamilyTreePersonColor[]
+  members           FamilyTreeMember[]
 
   // Permission models referencing this tree
   memberPermissions  MemberTreePermission[]
   assignmentTreeScopes AssignmentTreeScope[]
+}
+
+model FamilyTreeMember {
+  familyTree FamilyTree @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  treeId     String     @db.Uuid
+  person     Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId   String     @db.Uuid
+
+  @@id([treeId, personId])
 }
 
 // Person whose children/subtree are hidden in this tree.
@@ -200,6 +222,10 @@ enum ActivityAction {
   CREATE
   UPDATE
   DELETE
+  INVITE
+  ACCEPT
+  REJECT
+  REMOVE
 }
 
 enum ActivityEntityType {
@@ -207,6 +233,9 @@ enum ActivityEntityType {
   FAMILY
   FAMILY_TREE
   SPOUSE_RELATIONSHIP
+  PERMISSION_GROUP
+  GROUP
+  GROUP_MEMBER
 }
 
 model ActivityLog {

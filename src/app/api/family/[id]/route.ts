@@ -30,12 +30,20 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     if (!permitted) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const body = await req.json();
+    const before = await getFamilyById(id);
     await updateFamily(id, { name: body.name, groupId: 'groupId' in body ? (body.groupId || null) : undefined });
+    const after = await getFamilyById(id);
 
-    const family = await getFamilyById(id);
-    if (family?.groupId) {
+    const oldGroup = before?.groupId ?? null;
+    const newGroup = after?.groupId ?? null;
+    const targetGroup = newGroup ?? oldGroup;
+
+    if (targetGroup) {
       const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
-      await logActivity({ groupId: family.groupId, userId, userName: user?.name, action: ActivityAction.UPDATE, entityType: ActivityEntityType.FAMILY, entityId: id, entityName: family.name });
+      const action = !oldGroup && newGroup ? ActivityAction.CREATE
+        : oldGroup && !newGroup ? ActivityAction.DELETE
+        : ActivityAction.UPDATE;
+      await logActivity({ groupId: targetGroup, userId, userName: user?.name, action, entityType: ActivityEntityType.FAMILY, entityId: id, entityName: after?.name ?? before?.name });
     }
 
     return NextResponse.json('Updated successfully', { status: 200 });

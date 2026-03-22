@@ -32,8 +32,14 @@ export function FamilyTableClient({ data }: { data: PersonWithRelations[] }) {
         <Modal isOpen={true} onClose={() => setSelectedPerson(undefined)}>
           <EditPerson
             id={selectedPerson.id}
-            onSubmit={() => setSelectedPerson(undefined)}
-            onDelete={() => setSelectedPerson(undefined)}
+            onSubmit={() => {
+              queryClient.invalidateQueries({ queryKey: ["members"] });
+              setSelectedPerson(undefined);
+            }}
+            onDelete={() => {
+              queryClient.invalidateQueries({ queryKey: ["members"] });
+              setSelectedPerson(undefined);
+            }}
           />
         </Modal>
       )}

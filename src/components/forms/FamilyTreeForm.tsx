@@ -34,7 +34,7 @@ export default function FamilyTreeForm({
   const queryClient = useQueryClient();
   const { data: groups = [] } = useGroups('ADD_FAMILY_TREE');
 
-  const { control, handleSubmit } = useForm<FamilyTreeFormValues>({
+  const { control, handleSubmit, formState: { isDirty } } = useForm<FamilyTreeFormValues>({
     defaultValues,
   });
 
@@ -170,7 +170,7 @@ export default function FamilyTreeForm({
                 حذف
               </Button>
             )}
-            <Button type="submit">تأكيد</Button>
+            <Button type="submit" disabled={!isDirty}>تأكيد</Button>
           </div>
         </form>
 

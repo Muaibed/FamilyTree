@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "../ui/button";
-import Image from "next/image";
+import { X } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 
 interface ModalProps {
@@ -34,22 +34,9 @@ export function PersonModal({
         onClick={onClose}
         className="absolute top-[0.3em] right-[0.3em] bg-transparent text-card-foreground hover:bg-secondary rounded-full w-[1.4em] h-[1.4em] p-0 z-10"
       >
-        <Image
-          src="/icons/close.png"
-          alt="X"
-          width={512}
-          height={512}
-          className="w-[0.9em] h-[0.9em] block dark:hidden"
-        />
-        <Image
-          src="/icons/white-close.png"
-          alt="X"
-          width={512}
-          height={512}
-          className="w-[0.9em] h-[0.9em] hidden dark:block"
-        />
+        <X className="w-[0.9em] h-[0.9em]" />
       </Button>
-      <div className="pr-[1.5em] pb-[0.5em]">{children}</div>
+      <div className="px-[1.5em] pb-[0.5em]">{children}</div>
     </div>
   );
 }
@@ -65,20 +52,7 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
           onClick={onClose}
           className="absolute top-2 right-2 bg-transparent text-card-foreground hover:bg-secondary rounded-full w-6 h-6 p-0"
         >
-          <Image
-            src="/icons/close.png"
-            alt="X"
-            width={512}
-            height={512}
-            className="w-4 block dark:hidden"
-          />
-          <Image
-            src="/icons/white-close.png"
-            alt="X"
-            width={512}
-            height={512}
-            className="w-4 hidden dark:block"
-          />
+          <X className="w-4 h-4" />
         </Button>
       </div>
     </div>

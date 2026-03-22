@@ -45,15 +45,15 @@ export function useGroupInvites() {
   });
 }
 
-export function usePermissionGroups(groupId: string) {
+export function usePermissionGroups(groupId: string, isAdmin = false) {
   return useQuery({
     queryKey: groupKeys.permissionGroups(groupId),
     queryFn: () => groupService.getPermissionGroups(groupId),
-    enabled: !!groupId,
+    enabled: !!groupId && isAdmin,
   });
 }
 
-export function useActivityLog(groupId: string) {
+export function useActivityLog(groupId: string, isAdmin = false) {
   return useQuery({
     queryKey: groupKeys.activityLog(groupId),
     queryFn: async () => {
@@ -68,7 +68,7 @@ export function useActivityLog(groupId: string) {
         createdAt: string;
       }[]>;
     },
-    enabled: !!groupId,
+    enabled: !!groupId && isAdmin,
   });
 }
 

@@ -14,7 +14,7 @@ export default function SignIn() {
     <BlurBackground className="">
       <div className="flex items-center justify-center min-h-screen">
           <div className="w-md mx-auto mt-8 p-10 bg-card rounded-lg shadow-md">
-          <h1 className="text-4xl text-card-foreground font-bold pb-8">Login</h1>
+          <h1 className="text-4xl text-card-foreground font-bold pb-8">تسجيل الدخول</h1>
           <form
             onSubmit={async (e) => {
               e.preventDefault();
@@ -25,10 +25,10 @@ export default function SignIn() {
               });
 
               if (result?.ok) {
-                toast("Login Successfully.");
+                toast("تم تسجيل الدخول بنجاح.");
                 window.location.href = "/tree";
               } else {
-                toast("Login Failed.");
+                toast("فشل تسجيل الدخول.");
               }
             }}
           >
@@ -36,7 +36,7 @@ export default function SignIn() {
                 <input
                   className="w-full px-6 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                   type="text"
-                  placeholder="Email"
+                  placeholder="البريد الإلكتروني"
                   onChange={(e) => setEmail(e.target.value.toLowerCase())}
                 />
             </div>
@@ -44,21 +44,26 @@ export default function SignIn() {
                 <input
                   className="w-full px-4 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                   type="password"
-                  placeholder="Password"
+                  placeholder="كلمة المرور"
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               <div className="flex items-center justify-center">
                 <Button type="submit" className="w-full py-2 px-4 font-semibold rounded-md transition"
   >
-                  Login
+                  تسجيل الدخول
                 </Button>
+              </div>
+              <div className="flex justify-center pt-2">
+                <a href="/auth/forgot-password" className="text-sm text-blue-500 dark:text-primary">
+                  نسيت كلمة المرور؟
+                </a>
               </div>
               <div className="flex flex-row items-center justify-center gap-2 pt-2 text-card-foreground">
                 <div>
-                  Doesn't have an account? 
+                  ليس لديك حساب؟ 
                   </div>
-                  <a href="/auth/signup" className="text-blue-500 dark:text-primary">Signup</a>
+                  <a href="/auth/signup" className="text-blue-500 dark:text-primary">إنشاء حساب</a>
             </div>
           </form>
         </div>

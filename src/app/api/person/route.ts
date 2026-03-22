@@ -2,9 +2,8 @@ import { NextResponse } from 'next/server';
 import { createPerson } from '@/lib/db/person';
 import { getUserId } from '@/lib/session';
 import { canDoFamilyPermission } from '@/lib/permissions';
-import { FamilyPermission, ActivityAction, ActivityEntityType } from '@/generated/prisma';
-import { logActivity } from '@/lib/activityLog';
-import { prisma } from '@/lib/prisma';
+import { FamilyPermission, ActivityAction } from '@/generated/prisma';
+import { logPersonActivity } from '@/lib/activityLog';
 
 export async function POST(req: Request) {
   try {
@@ -27,11 +26,7 @@ export async function POST(req: Request) {
       ...(motherId ? { motherId } : {}),
     });
 
-    const family = await prisma.family.findUnique({ where: { id: familyId }, select: { groupId: true } });
-    if (family?.groupId) {
-      const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
-      await logActivity({ groupId: family.groupId, userId, userName: user?.name, action: ActivityAction.CREATE, entityType: ActivityEntityType.PERSON, entityId: newPerson.id, entityName: firstName });
-    }
+    await logPersonActivity({ personId: newPerson.id, familyId, userId, action: ActivityAction.CREATE, entityName: firstName });
 
     return NextResponse.json(newPerson, { status: 201 });
   } catch (error: unknown) {

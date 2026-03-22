@@ -1,6 +1,16 @@
 import { Family } from "@/generated/prisma";
 import { TreeNode } from "@/types/tree";
 
+export const collectPersonIds = (node: TreeNode): string[] => {
+  const ids: string[] = [];
+  const traverse = (n: TreeNode) => {
+    if (n.attributes?.id) ids.push(n.attributes.id as string);
+    n.children.forEach(traverse);
+  };
+  traverse(node);
+  return ids;
+};
+
 export type PersonForTree = {
   id: string;
   firstName: string;

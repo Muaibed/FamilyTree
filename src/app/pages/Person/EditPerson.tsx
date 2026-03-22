@@ -14,11 +14,12 @@ export default function EditPerson({ id, onSubmit, onDelete }: {id: string, onSu
   });
 
   const updateMutation = useMutation({
-    mutationFn: (formData: Partial<Person>) => updatePerson(id, formData), 
+    mutationFn: (formData: Partial<Person>) => updatePerson(id, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["person", id] });
       queryClient.invalidateQueries({ queryKey: ["members"] });
       queryClient.invalidateQueries({ queryKey: ["family-tree"] });
+      onSubmit();
     },
   });
 
@@ -29,7 +30,6 @@ export default function EditPerson({ id, onSubmit, onDelete }: {id: string, onSu
     <>
         <PersonForm onSubmit={(data) => {
             updateMutation.mutate(data);
-            onSubmit();
           }}
           onDelete={() => onDelete()} 
           defaultValues={person} 

@@ -1,4 +1,4 @@
-import { createFamily, getAllFamiliesFromOwnerId } from '@/lib/db/family';
+import { createFamily, getAccessibleFamiliesForAddPerson } from '@/lib/db/family';
 import { getUserId } from '@/lib/session';
 import { canDoGroupPermission } from '@/lib/permissions';
 import { GroupPermission, ActivityAction, ActivityEntityType } from '@/generated/prisma';
@@ -36,7 +36,7 @@ export async function GET() {
     const userId = await getUserId();
     if (!userId) return NextResponse.json('Not Found', { status: 404 });
 
-    const families = await getAllFamiliesFromOwnerId(userId);
+    const families = await getAccessibleFamiliesForAddPerson(userId);
     return NextResponse.json(families);
   } catch (error: unknown) {
     if (error instanceof Error) return NextResponse.json({ error: error.message }, { status: 500 });

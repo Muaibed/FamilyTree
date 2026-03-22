@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { getUserId } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
 import { respondToInvite } from '@/lib/db/group';
+import { logActivity } from '@/lib/activityLog';
+import { ActivityAction, ActivityEntityType } from '@/generated/prisma';
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string; memberId: string }> }) {
   try {
@@ -27,6 +29,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     }
 
     const updated = await respondToInvite(memberId, action);
+    const { id: groupId } = await params;
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+    const logAction = action === 'ACCEPT' ? ActivityAction.ACCEPT : ActivityAction.REJECT;
+    await logActivity({ groupId, userId, userName: user?.name, action: logAction, entityType: ActivityEntityType.GROUP_MEMBER, entityId: memberId, entityName: user?.name });
     return NextResponse.json(updated);
   } catch (error: unknown) {
     if (error instanceof Error) return NextResponse.json({ error: error.message }, { status: 500 });

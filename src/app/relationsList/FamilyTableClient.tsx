@@ -44,7 +44,10 @@ export function FamilyTableClient({
               onChange();
               setSelectedRelation(undefined);
             }}
-            onDelete={() => setSelectedRelation(undefined)}
+            onDelete={() => {
+              onChange();
+              setSelectedRelation(undefined);
+            }}
           />
         </Modal>
       )}

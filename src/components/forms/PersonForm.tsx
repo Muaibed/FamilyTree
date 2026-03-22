@@ -11,7 +11,7 @@ import ErrorAlert from "../alerts/ErrorAlert";
 import TrueFalseSelect from "../preDefinedData/BooleanSelect";
 import { Controller, useForm } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteSpouseRelationship } from "@/lib/queries/spouseRelationships";
+import { deleteSpouseRelationship, createSpouseRelationship } from "@/lib/queries/spouseRelationships";
 import { getFamilies } from "@/lib/queries/families";
 import { Modal } from "../client/Modal";
 import DeletePage from "../client/DeletePage";
@@ -20,6 +20,7 @@ import { getMembers } from "@/lib/queries/familyTreeMembers";
 import { Option } from "@/types/ui";
 import SearchSelectFamily from "../preDefinedData/SearchSelectFamily";
 import { usePopoverZoom } from "@/contexts/popoverZoom";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 export default function PersonForm({
   onSubmit,
@@ -44,6 +45,7 @@ export default function PersonForm({
     handleSubmit,
     watch,
     setValue,
+    formState: { isDirty },
   } = useForm({
     values: defaultValues,
   });
@@ -57,6 +59,9 @@ export default function PersonForm({
   });
 
   const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmSpouseDelete, setConfirmSpouseDelete] = useState<{ maleId: string; femaleId: string; name: string } | null>(null);
+  const [isAddingSpouse, setIsAddingSpouse] = useState(false);
+  const [newSpouseId, setNewSpouseId] = useState<string | undefined>(undefined);
 
   const {
     data: members = [],
@@ -177,6 +182,19 @@ export default function PersonForm({
     mutationFn: deleteSpouseRelationship,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["relations"] });
+    },
+  });
+
+  const createSpouseMutation = useMutation({
+    mutationFn: createSpouseRelationship,
+    onSuccess: (newRelation) => {
+      queryClient.invalidateQueries({ queryKey: ["relations"] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      const spousePersonId = defaultValues?.gender === "MALE" ? newRelation.femaleId : newRelation.maleId;
+      const spousePerson = members.find((m) => m.id === spousePersonId);
+      if (spousePerson) setSpouses((prev) => [...prev, spousePerson]);
+      setIsAddingSpouse(false);
+      setNewSpouseId(undefined);
     },
   });
 
@@ -352,7 +370,7 @@ export default function PersonForm({
             )}
           />
 
-          {spouses && spouses.length > 0 && (
+          {defaultValues?.id && (
             <div>
               <label className="text-xs text-muted-foreground mb-2 block text-right" dir="rtl" style={labelStyle}>الأزواج</label>
               <div className="space-y-2">
@@ -364,12 +382,9 @@ export default function PersonForm({
                       variant="ghost"
                       className="w-7 text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
                       onClick={() => {
-                        if (defaultValues?.gender === "MALE") {
-                          deleteRelation(defaultValues.id!, spouse.id);
-                        } else {
-                          deleteRelation(spouse.id, defaultValues?.id!);
-                        }
-                        setSpouses((prev) => prev.filter((s) => s.id !== spouse.id));
+                        const maleId = defaultValues?.gender === "MALE" ? defaultValues.id! : spouse.id;
+                        const femaleId = defaultValues?.gender === "MALE" ? spouse.id : defaultValues?.id!;
+                        setConfirmSpouseDelete({ maleId, femaleId, name: spouse.fullName });
                       }}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -380,6 +395,55 @@ export default function PersonForm({
                     </div>
                   </div>
                 ))}
+
+                {isAddingSpouse ? (
+                  <div className="flex flex-col gap-2 pt-1">
+                    <SearchSelectMember
+                      options={defaultValues?.gender === "MALE" ? femaleMembersOptions : maleMembersOptions}
+                      placeholder={defaultValues?.gender === "MALE" ? "اختر زوجة" : "اختر زوجاً"}
+                      selectedMemberId={newSpouseId}
+                      onChange={(id) => setNewSpouseId(id ?? undefined)}
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="flex-1"
+                        disabled={!newSpouseId || createSpouseMutation.isPending}
+                        onClick={() => {
+                          if (!newSpouseId || !defaultValues?.id) return;
+                          createSpouseMutation.mutate(
+                            defaultValues.gender === "MALE"
+                              ? { maleId: defaultValues.id, femaleId: newSpouseId }
+                              : { maleId: newSpouseId, femaleId: defaultValues.id }
+                          );
+                        }}
+                      >
+                        {createSpouseMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "حفظ"}
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => { setIsAddingSpouse(false); setNewSpouseId(undefined); }}
+                      >
+                        إلغاء
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    style={labelStyle}
+                    onClick={() => setIsAddingSpouse(true)}
+                  >
+                    {defaultValues?.gender === "MALE" ? "+ إضافة زوجة" : "+ إضافة زوج"}
+                  </Button>
+                )}
               </div>
             </div>
           )}
@@ -393,7 +457,7 @@ export default function PersonForm({
               >
                 حذف
               </Button>
-              <Button type="submit" style={labelStyle}>تأكيد</Button>
+              <Button type="submit" style={labelStyle} disabled={!isDirty}>تأكيد</Button>
             </div>
           </div>
         </form>
@@ -415,6 +479,20 @@ export default function PersonForm({
           />
         )}
       </Modal>
+
+      <ConfirmDialog
+        open={!!confirmSpouseDelete}
+        title="تأكيد حذف العلاقة الزوجية"
+        message={`هل أنت متأكد من حذف العلاقة الزوجية مع ${confirmSpouseDelete?.name}؟`}
+        onConfirm={() => {
+          if (confirmSpouseDelete) {
+            deleteRelation(confirmSpouseDelete.maleId, confirmSpouseDelete.femaleId);
+            setSpouses((prev) => prev.filter((s) => s.id !== confirmSpouseDelete.maleId && s.id !== confirmSpouseDelete.femaleId));
+          }
+          setConfirmSpouseDelete(null);
+        }}
+        onCancel={() => setConfirmSpouseDelete(null)}
+      />
     </div>
   );
 }

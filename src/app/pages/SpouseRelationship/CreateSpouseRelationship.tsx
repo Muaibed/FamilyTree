@@ -29,7 +29,7 @@ export default function CreateSpouseRelationship({
         onSubmit={(data) => createMutation.mutate(data)}
         defaultValues={defaultValues}
         title="إضافة زوج"
-        gender={defaultValues?.maleId ? "FEMALE" : "MALE"}
+        gender={defaultValues?.maleId ? "FEMALE" : defaultValues?.femaleId ? "MALE" : undefined}
       />
     </>
   );

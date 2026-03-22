@@ -7,22 +7,25 @@ import SearchSelectMember from "../preDefinedData/SearchSelectMember";
 import { SpouseRelationship } from "@/generated/prisma";
 import { ScrollArea } from "../ui/scroll-area";
 import { Controller, useForm } from "react-hook-form";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getMembers } from "@/lib/queries/familyTreeMembers";
 import { Option } from "@/types/ui";
-import { Loader2 } from "lucide-react";
+import { Loader2, User } from "lucide-react";
 import ErrorAlert from "../alerts/ErrorAlert";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 const SpouseForm = ({
   onSubmit,
+  onDelete,
   defaultValues,
   title,
   gender,
 }: {
   onSubmit: (data: Partial<SpouseRelationship>) => void;
+  onDelete?: () => void;
   defaultValues?: Partial<SpouseRelationshipWithPartners>;
   title: string;
-  gender: "MALE" | "FEMALE";
+  gender?: "MALE" | "FEMALE";
 }) => {
   const {
     control,
@@ -31,7 +34,7 @@ const SpouseForm = ({
     reset,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm({
     defaultValues: {
       isActive: true,
@@ -49,15 +52,6 @@ const SpouseForm = ({
     queryKey: ["members"],
     queryFn: getMembers,
   });
-
-  if (membersLoading)
-    return (
-      <div className="flex items-center justify-center w-full h-screen">
-        <Loader2 />
-      </div>
-    );
-  if (membersError) return <ErrorAlert />;
-  if (!members) return null;
 
   const maleMembersOptions = useMemo<Option[]>(
     () =>
@@ -83,6 +77,19 @@ const SpouseForm = ({
     [members],
   );
 
+  const isEditMode = !!(defaultValues?.maleId && defaultValues?.femaleId);
+  const showMale = !isEditMode && (!gender || gender === "MALE");
+  const showFemale = !isEditMode && (!gender || gender === "FEMALE");
+
+  if (membersLoading)
+    return (
+      <div className="flex items-center justify-center w-full h-screen">
+        <Loader2 />
+      </div>
+    );
+  if (membersError) return <ErrorAlert />;
+  if (!members) return null;
+
   return (
     <div className="max-w-md mx-auto mt-8 p-6 rounded-lg">
       <div className="flex items-center justify-center w-full">
@@ -90,7 +97,44 @@ const SpouseForm = ({
       </div>
       <ScrollArea className="max-h-[100vh] md:max-h-[600px] overflow-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 m-1">
-          {gender === "MALE" && (
+
+          {/* Edit mode: show read-only partner names + isActive toggle */}
+          {isEditMode && (
+            <>
+              <div className="space-y-2" dir="rtl">
+                <label className="text-xs text-muted-foreground block">الزوج</label>
+                <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-muted/30">
+                  <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm">{(defaultValues as SpouseRelationshipWithPartners)?.male?.fullName ?? defaultValues?.maleId}</span>
+                </div>
+              </div>
+              <div className="space-y-2" dir="rtl">
+                <label className="text-xs text-muted-foreground block">الزوجة</label>
+                <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-muted/30">
+                  <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm">{(defaultValues as SpouseRelationshipWithPartners)?.female?.fullName ?? defaultValues?.femaleId}</span>
+                </div>
+              </div>
+              <Controller
+                name="isActive"
+                control={control}
+                render={({ field }) => (
+                  <label className="flex items-center gap-2 cursor-pointer text-sm" dir="rtl">
+                    <input
+                      type="checkbox"
+                      checked={!!field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      className="accent-primary w-4 h-4"
+                    />
+                    العلاقة مستمرة
+                  </label>
+                )}
+              />
+            </>
+          )}
+
+          {/* Create mode: partner selectors */}
+          {showMale && (
             <Controller
               name="maleId"
               control={control}
@@ -108,7 +152,7 @@ const SpouseForm = ({
             />
           )}
 
-          {gender === "FEMALE" && (
+          {showFemale && (
             <Controller
               name="femaleId"
               control={control}
@@ -126,20 +170,51 @@ const SpouseForm = ({
             />
           )}
 
+          {!isEditMode && (
+            <Controller
+              name="isActive"
+              control={control}
+              render={({ field }) => (
+                <label className="flex items-center gap-2 cursor-pointer text-sm" dir="rtl">
+                  <input
+                    type="checkbox"
+                    checked={!!field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    className="accent-primary w-4 h-4"
+                  />
+                  العلاقة مستمرة
+                </label>
+              )}
+            />
+          )}
+
           <div>
             <div className="flex flex-col gap-2 mt-3">
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => setIsDeleting(true)}
-              >
-                حذف
-              </Button>
-              <Button type="submit">تأكيد</Button>
+              {onDelete && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => setIsDeleting(true)}
+                >
+                  حذف
+                </Button>
+              )}
+              <Button type="submit" disabled={!isDirty}>تأكيد</Button>
             </div>
           </div>
         </form>
       </ScrollArea>
+
+      <ConfirmDialog
+        open={isDeleting}
+        title="تأكيد حذف العلاقة الزوجية"
+        message="هل أنت متأكد من حذف هذه العلاقة الزوجية؟"
+        onConfirm={() => {
+          setIsDeleting(false);
+          onDelete?.();
+        }}
+        onCancel={() => setIsDeleting(false)}
+      />
     </div>
   );
 };

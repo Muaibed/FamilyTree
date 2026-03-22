@@ -22,10 +22,9 @@ async function canActOnRelation(userId: string, relationId: string, permission: 
   return canMale || canFemale;
 }
 
-export async function GET(req: Request) {
+export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
+    const { id } = await params;
     if (!id) return new Response('Relation ID is required', { status: 400 });
     const relation = await getRelationById(id);
     return NextResponse.json(relation);

@@ -50,6 +50,20 @@ export function PermissionGroupForm({
   const [newPermGroupTreePerms, setNewPermGroupTreePerms] = useState<TreePermission[]>(defaultValues?.treePermissions ?? []);
   const [saving, setSaving] = useState(false);
 
+  const isDirty = useMemo(() => {
+    if (newPermGroupName.trim() !== (defaultValues?.name ?? '').trim()) return true;
+    const sortedCurrent = [...newPermGroupGroupPerms].sort();
+    const sortedDefault = [...(defaultValues?.groupPermissions ?? [])].sort();
+    if (JSON.stringify(sortedCurrent) !== JSON.stringify(sortedDefault)) return true;
+    const sortedCurrentF = [...newPermGroupFamilyPerms].sort();
+    const sortedDefaultF = [...(defaultValues?.familyPermissions ?? [])].sort();
+    if (JSON.stringify(sortedCurrentF) !== JSON.stringify(sortedDefaultF)) return true;
+    const sortedCurrentT = [...newPermGroupTreePerms].sort();
+    const sortedDefaultT = [...(defaultValues?.treePermissions ?? [])].sort();
+    if (JSON.stringify(sortedCurrentT) !== JSON.stringify(sortedDefaultT)) return true;
+    return false;
+  }, [newPermGroupName, newPermGroupGroupPerms, newPermGroupFamilyPerms, newPermGroupTreePerms, defaultValues]);
+
   const { data: session } = useSession();
 
   const toggle = <T extends string>(arr: T[], val: T): T[] =>
@@ -127,7 +141,7 @@ export function PermissionGroupForm({
             </div>
           </div>
 
-          <Button className="w-full" onClick={handleSave}>حفظ</Button>
+          <Button className="w-full" onClick={handleSave} disabled={!isDirty}>حفظ</Button>
         </div>
   );
 }

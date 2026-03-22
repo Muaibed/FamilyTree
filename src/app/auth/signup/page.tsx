@@ -15,10 +15,10 @@ export default function SignupPage() {
   const onSubmit = async (data: SignupForm) => {
     try {
       await signup(data);
-      toast('User Created Successfully.');
+      toast('تم إنشاء الحساب بنجاح.');
       window.location.href = '/auth/signin';
     } catch {
-      toast('Creating User Failed.');
+      toast('فشل إنشاء الحساب.');
     }
   };
 
@@ -26,40 +26,40 @@ export default function SignupPage() {
     <BlurBackground>
       <div className="flex items-center justify-center min-h-screen">
         <div className="w-md mx-auto mt-8 p-10 bg-card rounded-lg shadow-md">
-          <h1 className="text-4xl font-bold pb-8">Sign Up</h1>
+          <h1 className="text-4xl font-bold pb-8">إنشاء حساب</h1>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="items-center justify-center">
               <div className="mb-2">
                 <input
                   className="w-full px-6 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-                  placeholder="Name"
+                  placeholder="الاسم"
                   {...register('name')}
                 />
               </div>
               <div className="mb-2">
                 <input
                   className="w-full px-6 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-                  placeholder="Email"
+                  placeholder="البريد الإلكتروني"
                   {...register('email', { required: true })}
                 />
               </div>
               <div className="mb-8">
                 <input
                   className="w-full px-6 py-2 border rounded-md bg-card-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-                  placeholder="Password"
+                  placeholder="كلمة المرور"
                   type="password"
                   {...register('password', { required: true })}
                 />
               </div>
               <div className="flex items-center justify-center">
                 <Button type="submit" className="w-full py-2 px-4 font-semibold rounded-md transition">
-                  Sign Up
+                  إنشاء حساب
                 </Button>
               </div>
               <div className="flex flex-row items-center justify-center gap-2 pt-2 text-card-foreground">
-                <div>Already have an account?</div>
-                <a href="/auth/signin" className="text-blue-500 dark:text-primary">Signin</a>
+                <div>لديك حساب بالفعل؟</div>
+                <a href="/auth/signin" className="text-blue-500 dark:text-primary">تسجيل الدخول</a>
               </div>
             </div>
           </form>

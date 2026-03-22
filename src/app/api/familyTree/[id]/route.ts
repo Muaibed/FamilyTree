@@ -28,11 +28,19 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     if (!permitted) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const body = await request.json();
+    const before = await getFamilyTreeById(id);
     const tree = await updateFamilyTree(id, body);
 
-    if (tree.groupId) {
+    const oldGroup = before?.groupId ?? null;
+    const newGroup = tree.groupId ?? null;
+    const targetGroup = newGroup ?? oldGroup;
+
+    if (targetGroup) {
       const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
-      await logActivity({ groupId: tree.groupId, userId, userName: user?.name, action: ActivityAction.UPDATE, entityType: ActivityEntityType.FAMILY_TREE, entityId: id, entityName: tree.name });
+      const action = !oldGroup && newGroup ? ActivityAction.CREATE
+        : oldGroup && !newGroup ? ActivityAction.DELETE
+        : ActivityAction.UPDATE;
+      await logActivity({ groupId: targetGroup, userId, userName: user?.name, action, entityType: ActivityEntityType.FAMILY_TREE, entityId: id, entityName: tree.name });
     }
 
     return NextResponse.json(tree);

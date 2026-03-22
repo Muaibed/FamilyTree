@@ -1,6 +1,6 @@
 import { prisma } from '../prisma';
 import { Prisma } from '@/generated/prisma';
-import { prepareTreeData } from '../tree';
+import { prepareTreeData, collectPersonIds } from '../tree';
 import type { TreeNode } from '@/types/tree';
 
 const countNodes = (node: TreeNode): number =>
@@ -45,14 +45,18 @@ export const createFamilyTree = async (data: {
   name: string;
   description?: string;
   rootPersonId: string;
-  ownerId: string;
+  ownerId?: string;
+  groupId?: string;
+  creatorId?: string;
 }) => {
   return prisma.familyTree.create({
     data: {
       name: data.name,
       description: data.description,
       rootPerson: { connect: { id: data.rootPersonId } },
-      owner: { connect: { id: data.ownerId } },
+      ...(data.ownerId && { owner: { connect: { id: data.ownerId } } }),
+      ...(data.groupId && { group: { connect: { id: data.groupId } } }),
+      ...(data.creatorId && { creator: { connect: { id: data.creatorId } } }),
     },
     include: familyTreeInclude,
   });
@@ -67,7 +71,20 @@ export const getFamilyTreeById = async (id: string) => {
   if (!tree) return null;
 
   // Cache hit — return stored JSON if it contains the display fields (fullName)
-  if (tree.treeJson !== null && (tree.treeJson as any)?.attributes?.fullName !== undefined) return tree;
+  if (tree.treeJson !== null && (tree.treeJson as any)?.attributes?.fullName !== undefined) {
+    // Backfill FamilyTreeMember if not yet populated (e.g. trees cached before the feature was added)
+    const memberCount = await prisma.familyTreeMember.count({ where: { treeId: id } });
+    if (memberCount === 0) {
+      const personIds = collectPersonIds(tree.treeJson as unknown as TreeNode);
+      if (personIds.length > 0) {
+        await prisma.familyTreeMember.createMany({
+          data: personIds.map((personId) => ({ treeId: id, personId })),
+          skipDuplicates: true,
+        });
+      }
+    }
+    return tree;
+  }
 
   // Cache miss — compute and store
   const persons = await prisma.person.findMany({
@@ -81,16 +98,27 @@ export const getFamilyTreeById = async (id: string) => {
 
   if (!computed) return tree;
 
-  return prisma.familyTree.update({
-    where: { id },
-    data: {
-      treeJson: computed as unknown as Prisma.InputJsonValue,
-      membersCount: countNodes(computed),
-      deadCount: countDead(computed),
-      aliveCount: countNodes(computed) - countDead(computed),
-    },
-    include: familyTreeInclude,
-  });
+  const personIds = collectPersonIds(computed);
+
+  const [updated] = await prisma.$transaction([
+    prisma.familyTree.update({
+      where: { id },
+      data: {
+        treeJson: computed as unknown as Prisma.InputJsonValue,
+        membersCount: countNodes(computed),
+        deadCount: countDead(computed),
+        aliveCount: countNodes(computed) - countDead(computed),
+      },
+      include: familyTreeInclude,
+    }),
+    prisma.familyTreeMember.deleteMany({ where: { treeId: id } }),
+    prisma.familyTreeMember.createMany({
+      data: personIds.map((personId) => ({ treeId: id, personId })),
+      skipDuplicates: true,
+    }),
+  ]);
+
+  return updated;
 };
 
 export const getAllFamilyTreesFromOwnerId = async (ownerId: string) => {

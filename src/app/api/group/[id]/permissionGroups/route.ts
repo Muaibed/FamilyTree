@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { getUserId } from '@/lib/session';
 import { isGroupAdmin } from '@/lib/permissions';
 import { createPermissionGroup, getPermissionGroupsForGroup } from '@/lib/db/group';
+import { logActivity } from '@/lib/activityLog';
+import { ActivityAction, ActivityEntityType } from '@/generated/prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -31,6 +34,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     if (!name) return NextResponse.json({ error: 'Name is required' }, { status: 400 });
 
     const pg = await createPermissionGroup({ name, groupId, groupPermissions, familyPermissions, treePermissions });
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+    await logActivity({ groupId, userId, userName: user?.name, action: ActivityAction.CREATE, entityType: ActivityEntityType.PERMISSION_GROUP, entityId: pg.id, entityName: name });
     return NextResponse.json(pg, { status: 201 });
   } catch (error: unknown) {
     if (error instanceof Error) return NextResponse.json({ error: error.message }, { status: 500 });

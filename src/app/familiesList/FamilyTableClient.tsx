@@ -40,7 +40,10 @@ export function FamilyTableClient({
               onChange();
               setSelectedFamily(undefined);
             }}
-            onDelete={() => setSelectedFamily(undefined)}
+            onDelete={() => {
+              onChange();
+              setSelectedFamily(undefined);
+            }}
           />
         </Modal>
       )}

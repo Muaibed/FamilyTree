@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getUserId } from '@/lib/session';
-import { isGroupAdmin } from '@/lib/permissions';
 import { getGroupMembers } from '@/lib/db/group';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -9,7 +9,11 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id: groupId } = await params;
-    if (!await isGroupAdmin(userId, groupId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+    const membership = await prisma.groupMember.findUnique({
+      where: { groupId_userId: { groupId, userId } },
+    });
+    if (!membership) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const members = await getGroupMembers(groupId);
     return NextResponse.json(members);

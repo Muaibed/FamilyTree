@@ -6,7 +6,6 @@ import Fuse from "fuse.js";
 import { TreeNode, TreeNodeAttributes } from "@/types/tree";
 import { PersonWithRelations } from "@/types/family";
 import { PersonModal } from "./Modal";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -83,18 +82,18 @@ export default function TreeViewShell({
       : undefined;
 
   const attrs: TreeNodeAttributes | undefined = selectedNode?.attributes;
-  const displayGender = (isAdmin ? selectedPerson?.gender : attrs?.gender) as
+  const displayGender = (selectedPerson?.gender ?? attrs?.gender) as
     | "MALE"
     | "FEMALE"
     | undefined;
-  const displaySpouses: string[] = isAdmin
+  const displaySpouses: string[] = selectedPerson
     ? displayGender === "FEMALE"
-      ? (selectedPerson?.femaleSpouses
+      ? (selectedPerson.femaleSpouses
           .filter((s) => s.isActive)
-          .map((s) => s.male.fullName) ?? [])
-      : (selectedPerson?.maleSpouses
+          .map((s) => s.male.fullName))
+      : (selectedPerson.maleSpouses
           .filter((s) => s.isActive)
-          .map((s) => s.female.fullName) ?? [])
+          .map((s) => s.female.fullName))
     : (attrs?.spouses ?? []);
   const displayDeathStatus: string | null = attrs?.isDead
     ? (attrs.deathDate ?? "متوفى")
@@ -426,49 +425,38 @@ export default function TreeViewShell({
               <div className="text-center overflow-x-hidden">
                 <div className="break-words">
                   <h1 className="text-[1.3em] font-bold break-words">
-                    {isAdmin ? selectedPerson?.firstName : selectedNode.name}
+                    {selectedPerson?.firstName ?? selectedNode.name}
                   </h1>
                   <p className="text-[1em] opacity-50 mt-[0.3em] break-words">
-                    {isAdmin ? selectedPerson?.fullName : attrs?.fullName}
+                    {selectedPerson?.fullName ?? attrs?.fullName}
                   </p>
                   <p className="text-[1em] opacity-50 mt-[0.2em] break-words">
-                    {isAdmin ? selectedPerson?.kunya : attrs?.kunya}
+                    {selectedPerson?.kunya ?? attrs?.kunya}
                   </p>
                 </div>
                 <div className="m-[0.5em]">
                   {displaySpouses.length > 0 && (
                     <div className="bg-accent dark:bg-secondary rounded m-[0.3em] h-auto p-[0.3em]">
-                      <div className="flex flex-row items-center justify-between py-[0.3em] relative min-h-[2em]">
-                        <div className="relative left-1/2 transform -translate-x-1/2 w-2/3">
-                          <div className="flex flex-col text-[1em]">
-                            {displaySpouses.map((name, i) => (
-                              <>
-                                <div
-                                  key={i}
-                                  className="py-[0.2em] flex items-center-safe justify-center-safe w-full h-full break-words"
-                                >
-                                  {name}
-                                </div>
-                                <div className="w-full bg-primary-foreground h-px opacity-50 dark:opacity-10 rounded-4xl" />
-                              </>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="absolute right-[0.4em] top-1/2 transform -translate-y-1/2">
-                          <Image
+                      <div className="flex flex-row items-center gap-2 py-[0.3em] px-[0.4em]">
+                        <div className="flex-shrink-0">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
                             src="/icons/wedding-rings.png"
-                            alt="Star"
-                            width={512}
-                            height={512}
-                            className="w-[1.4em] h-[1.4em] block dark:hidden"
+                            alt="wedding rings"
+                            className="w-[1.4em] h-[1.4em] dark:invert"
                           />
-                          <Image
-                            src="/icons/white-wedding-rings.png"
-                            alt="Star"
-                            width={512}
-                            height={512}
-                            className="w-[1.4em] h-[1.4em] hidden dark:block"
-                          />
+                        </div>
+                        <div className="flex flex-col text-[1em] flex-1 text-center">
+                          {displaySpouses.map((name, i) => (
+                            <>
+                              <div key={i} className="py-[0.2em] break-words">
+                                {name}
+                              </div>
+                              {i < displaySpouses.length - 1 && (
+                                <div className="w-full bg-primary-foreground h-px opacity-50 dark:opacity-10 rounded-full" />
+                              )}
+                            </>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -482,19 +470,11 @@ export default function TreeViewShell({
                           </p>
                         </div>
                         <div className="absolute right-[0.4em] top-1/2 transform -translate-y-1/2">
-                          <Image
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
                             src="/icons/tombstone.png"
-                            alt="Star"
-                            width={512}
-                            height={512}
-                            className="w-[1.2em] h-[1.2em] block dark:hidden"
-                          />
-                          <Image
-                            src="/icons/white-tombstone.png"
-                            alt="Star"
-                            width={512}
-                            height={512}
-                            className="w-[1.2em] h-[1.2em] hidden dark:block"
+                            alt="tombstone"
+                            className="w-[1.2em] h-[1.2em] dark:invert"
                           />
                         </div>
                       </div>
