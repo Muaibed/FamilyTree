@@ -277,36 +277,43 @@ export default function TreeViewShell({
                     setSuggestions([]);
                     return;
                   }
-                  const tokens = normalizeAlef(q)
-                    .trim()
+                  // Normalize: unify alef variants and strip بن/بنت connectors
+                  const normalizeForSearch = (s: string) =>
+                    s
+                      .replace(/[أإآ]/g, "ا")
+                      .replace(/\bبن\b|\bبنت\b/g, " ")
+                      .replace(/\s+/g, " ")
+                      .trim();
+
+                  const tokens = normalizeForSearch(q)
                     .split(/\s+/)
                     .filter((t) => t.length >= 2);
                   if (tokens.length === 0) {
                     setSuggestions([]);
                     return;
                   }
-                  const tokenSets = tokens.map(
-                    (token) =>
-                      new Set(
-                        fuseRef
-                          .current!.search(token)
-                          .map(
-                            (r) =>
-                              r.item.data.attributes?.id ?? r.item.data.name,
-                          ),
-                      ),
-                  );
-                  const matchedIds = tokenSets.reduce(
-                    (acc, set) => new Set([...acc].filter((id) => set.has(id))),
-                  );
-                  const results = fuseRef.current
-                    .search(tokens[0])
-                    .map((r) => r.item)
-                    .filter((item) =>
-                      matchedIds.has(
-                        item.data.attributes?.id ?? item.data.name,
-                      ),
-                    )
+
+                  // Collect candidates from Fuse for every token (union across all tokens)
+                  const candidateMap = new Map<string, any>();
+                  for (const token of tokens) {
+                    fuseRef.current!.search(token).forEach((r) => {
+                      const id =
+                        r.item.data.attributes?.id ?? r.item.data.name;
+                      if (!candidateMap.has(id)) candidateMap.set(id, r.item);
+                    });
+                  }
+
+                  // Keep candidates where ALL tokens appear as substrings
+                  // in the normalized full name (بن/بنت stripped)
+                  const results = [...candidateMap.values()]
+                    .filter((item) => {
+                      const searchable = normalizeForSearch(
+                        item.data.attributes?.fullName ?? item.data.name ?? "",
+                      );
+                      return tokens.every((token) =>
+                        searchable.includes(token),
+                      );
+                    })
                     .slice(0, 8);
                   setSuggestions(results);
                 }}
