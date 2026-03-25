@@ -36,7 +36,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
     isLoading: membersLoading,
     isError: membersError,
   } = useQuery({
-    queryKey: ["members"],
+    queryKey: ["members", id],
     queryFn: getMembers,
     enabled: !!session,
     staleTime: 1000 * 60 * 10,

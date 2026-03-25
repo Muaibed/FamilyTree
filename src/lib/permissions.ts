@@ -100,21 +100,37 @@ export async function canDoGroupPermission(
 }
 
 
-// ─── Family-level permission ──────────────────────────────────────────────────
-
-/**
- * Can the user perform a family-level action?
- * Handles both solo families (owner check) and group families (full permission check).
- */
+// Family-level permission 
 export async function canDoFamilyPermission(
   userId: string,
   familyId: string,
   permission: FamilyPermission
 ): Promise<boolean> {
-  const family = await prisma.family.findUnique({
-    where: { id: familyId },
-    select: { ownerId: true, groupId: true, creatorId: true },
-  });
+  // Fetch family and member context in parallel
+  const [family, memberRaw] = await Promise.all([
+    prisma.family.findUnique({
+      where: { id: familyId },
+      select: { ownerId: true, groupId: true, creatorId: true },
+    }),
+    prisma.groupMember.findFirst({
+      where: { userId, group: { families: { some: { id: familyId } } }, inviteStatus: InviteStatus.ACCEPTED },
+      select: {
+        id: true,
+        isAdmin: true,
+        inviteStatus: true,
+        familyPermissions: {
+          where: { familyId, permission },
+          select: { permission: true },
+        },
+        permissionGroupAssignments: {
+          include: {
+            permissionGroup: { include: { familyPermissions: true } },
+            familyScopes: true,
+          },
+        },
+      },
+    }),
+  ]);
 
   if (!family) return false;
 
@@ -123,52 +139,23 @@ export async function canDoFamilyPermission(
     return family.ownerId === userId;
   }
 
-  // Group family
-  const groupId = family.groupId;
-
-  const member = await prisma.groupMember.findUnique({
-    where: { groupId_userId: { groupId, userId } },
-    select: { id: true, isAdmin: true, inviteStatus: true },
-  });
-
-  if (!member || member.inviteStatus !== InviteStatus.ACCEPTED) return false;
+  if (!memberRaw) return false;
 
   // Group admin gets everything
-  if (member.isAdmin) return true;
+  if (memberRaw.isAdmin) return true;
 
   // Creator of this family gets everything on it
   if (family.creatorId === userId) return true;
 
-  // Check individual family permission
-  const individual = await prisma.memberFamilyPermission.findUnique({
-    where: {
-      groupMemberId_familyId_permission: {
-        groupMemberId: member.id,
-        familyId,
-        permission,
-      },
-    },
-  });
-  if (individual) return true;
+  if (memberRaw.familyPermissions.length > 0) return true;
 
   // Check via permission group assignments (with family scope)
-  const assignments = await prisma.memberPermissionGroupAssignment.findMany({
-    where: { groupMemberId: member.id },
-    include: {
-      permissionGroup: {
-        include: { familyPermissions: true },
-      },
-      familyScopes: true,
-    },
-  });
-
-  for (const assignment of assignments) {
+  for (const assignment of memberRaw.permissionGroupAssignments) {
     const hasPermission = assignment.permissionGroup.familyPermissions.some(
       (e) => e.permission === permission
     );
     if (!hasPermission) continue;
 
-    // Empty scopes = applies to all families
     const scoped = assignment.familyScopes.length > 0;
     if (!scoped) return true;
     if (assignment.familyScopes.some((s) => s.familyId === familyId)) return true;
@@ -178,21 +165,38 @@ export async function canDoFamilyPermission(
 }
 
 
-// ─── Tree-level permission ────────────────────────────────────────────────────
+// Tree-level permission 
 
-/**
- * Can the user perform a tree-level action?
- * Handles both solo trees (owner check) and group trees (full permission check).
- */
 export async function canDoTreePermission(
   userId: string,
   treeId: string,
   permission: TreePermission
 ): Promise<boolean> {
-  const tree = await prisma.familyTree.findUnique({
-    where: { id: treeId },
-    select: { ownerId: true, groupId: true, creatorId: true },
-  });
+  // Fetch tree and member context in parallel
+  const [tree, memberRaw] = await Promise.all([
+    prisma.familyTree.findUnique({
+      where: { id: treeId },
+      select: { ownerId: true, groupId: true, creatorId: true },
+    }),
+    prisma.groupMember.findFirst({
+      where: { userId, group: { familyTrees: { some: { id: treeId } } }, inviteStatus: InviteStatus.ACCEPTED },
+      select: {
+        id: true,
+        isAdmin: true,
+        inviteStatus: true,
+        treePermissions: {
+          where: { treeId, permission },
+          select: { permission: true },
+        },
+        permissionGroupAssignments: {
+          include: {
+            permissionGroup: { include: { treePermissions: true } },
+            treeScopes: true,
+          },
+        },
+      },
+    }),
+  ]);
 
   if (!tree) return false;
 
@@ -201,52 +205,23 @@ export async function canDoTreePermission(
     return tree.ownerId === userId;
   }
 
-  // Group tree
-  const groupId = tree.groupId;
-
-  const member = await prisma.groupMember.findUnique({
-    where: { groupId_userId: { groupId, userId } },
-    select: { id: true, isAdmin: true, inviteStatus: true },
-  });
-
-  if (!member || member.inviteStatus !== InviteStatus.ACCEPTED) return false;
+  if (!memberRaw) return false;
 
   // Group admin gets everything
-  if (member.isAdmin) return true;
+  if (memberRaw.isAdmin) return true;
 
   // Creator of this tree gets everything on it
   if (tree.creatorId === userId) return true;
 
-  // Check individual tree permission
-  const individual = await prisma.memberTreePermission.findUnique({
-    where: {
-      groupMemberId_treeId_permission: {
-        groupMemberId: member.id,
-        treeId,
-        permission,
-      },
-    },
-  });
-  if (individual) return true;
+  if (memberRaw.treePermissions.length > 0) return true;
 
   // Check via permission group assignments (with tree scope)
-  const assignments = await prisma.memberPermissionGroupAssignment.findMany({
-    where: { groupMemberId: member.id },
-    include: {
-      permissionGroup: {
-        include: { treePermissions: true },
-      },
-      treeScopes: true,
-    },
-  });
-
-  for (const assignment of assignments) {
+  for (const assignment of memberRaw.permissionGroupAssignments) {
     const hasPermission = assignment.permissionGroup.treePermissions.some(
       (e) => e.permission === permission
     );
     if (!hasPermission) continue;
 
-    // Empty scopes = applies to all trees
     const scoped = assignment.treeScopes.length > 0;
     if (!scoped) return true;
     if (assignment.treeScopes.some((s) => s.treeId === treeId)) return true;
@@ -256,9 +231,9 @@ export async function canDoTreePermission(
 }
 
 
-// ─── Group admin check ────────────────────────────────────────────────────────
+// Group admin check 
 
-/** Returns true if userId is an accepted admin of the group. */
+
 export async function isGroupAdmin(
   userId: string,
   groupId: string
