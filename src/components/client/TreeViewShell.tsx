@@ -156,7 +156,6 @@ export default function TreeViewShell({
         ...prev,
         [personId]: { link: linkColor, label: labelColor },
       }));
-      queryClient.invalidateQueries({ queryKey: ["family-tree", treeId] });
     },
   });
 
@@ -169,7 +168,6 @@ export default function TreeViewShell({
         delete next[personId];
         return next;
       });
-      queryClient.invalidateQueries({ queryKey: ["family-tree", treeId] });
     },
   });
 
