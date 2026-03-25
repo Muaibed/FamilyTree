@@ -34,20 +34,22 @@ export const prepareTreeData = (
   familyId: string,
   collapsedPersonIds: string[] = [],
 ): TreeNode | undefined => {
-  const addedMembers: string[] = [];
+  const memberMap = new Map(members.map(p => [p.id, p]));
+  const addedMembers = new Set<string>();
+  const collapsedSet = new Set(collapsedPersonIds);
 
   const build = (id: string, prevNodeGender?: string): TreeNode | undefined => {
-    const person = members.find(p => p.id === id);
+    const person = memberMap.get(id);
     if (!person) return undefined;
 
     // Already placed in the tree through another path — skip
-    if (addedMembers.includes(person.id)) return undefined;
+    if (addedMembers.has(person.id)) return undefined;
 
     let node: TreeNode | null = null;
 
     let grandmother: PersonForTree | undefined;
     if (prevNodeGender === "FEMALE")
-      grandmother = members.find(p => p.id === person.father?.motherId);
+      grandmother = person.father?.motherId ? memberMap.get(person.father.motherId) : undefined;
 
     if (
       !prevNodeGender ||
@@ -77,17 +79,14 @@ export const prepareTreeData = (
         children: [],
       };
 
-      // Only mark as added when the node is actually created.
-      // If excluded by the filter this traversal, the person must remain
-      // available for a later male-path traversal to pick them up correctly.
-      addedMembers.push(person.id);
+      addedMembers.add(person.id);
     } else {
       // This path excludes the person — return immediately so their children
       // are not consumed here. They will be reached via their father's branch.
       return undefined;
     }
 
-    if (collapsedPersonIds.includes(person.id)) {
+    if (collapsedSet.has(person.id)) {
       return node;
     }
 
