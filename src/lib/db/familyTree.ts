@@ -3,12 +3,16 @@ import { Prisma } from '@/generated/prisma';
 import { prepareTreeData, collectPersonIds } from '../tree';
 import type { TreeNode } from '@/types/tree';
 
-const countNodes = (node: TreeNode): number =>
-  1 + node.children.reduce((sum, c) => sum + countNodes(c), 0);
-
-const countDead = (node: TreeNode): number =>
-  (node.attributes?.isDead ? 1 : 0) +
-  node.children.reduce((sum, c) => sum + countDead(c), 0);
+const countStats = (node: TreeNode): { total: number; dead: number } => {
+  const dead = node.attributes?.isDead ? 1 : 0;
+  return node.children.reduce(
+    (acc, c) => {
+      const r = countStats(c);
+      return { total: acc.total + r.total, dead: acc.dead + r.dead };
+    },
+    { total: 1, dead },
+  );
+};
 
 const familyTreeInclude = {
   rootPerson: true,
@@ -114,14 +118,16 @@ export const getFamilyTreeById = async (id: string) => {
 
   const personIds = collectPersonIds(computed);
 
+  const { total, dead } = countStats(computed);
+
   const [updated] = await prisma.$transaction([
     prisma.familyTree.update({
       where: { id },
       data: {
         treeJson: computed as unknown as Prisma.InputJsonValue,
-        membersCount: countNodes(computed),
-        deadCount: countDead(computed),
-        aliveCount: countNodes(computed) - countDead(computed),
+        membersCount: total,
+        deadCount: dead,
+        aliveCount: total - dead,
       },
       include: familyTreeInclude,
     }),
