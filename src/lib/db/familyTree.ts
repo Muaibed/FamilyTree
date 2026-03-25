@@ -12,10 +12,22 @@ const countDead = (node: TreeNode): number =>
 
 const familyTreeInclude = {
   rootPerson: true,
-  collapsedBranches: {
-    include: { person: true }
-  },
+  collapsedBranches: { select: { personId: true } },
   personColors: true,
+};
+
+// Lean select for list views 
+const familyTreeListSelect = {
+  id: true,
+  name: true,
+  description: true,
+  membersCount: true,
+  aliveCount: true,
+  deadCount: true,
+  createdAt: true,
+  ownerId: true,
+  groupId: true,
+  rootPerson: { select: { id: true, firstName: true } },
 };
 
 const personForTreeSelect = {
@@ -126,7 +138,7 @@ export const getFamilyTreeById = async (id: string) => {
 export const getAllFamilyTreesFromOwnerId = async (ownerId: string) => {
   return prisma.familyTree.findMany({
     where: { ownerId },
-    include: familyTreeInclude,
+    select: familyTreeListSelect,
     orderBy: { createdAt: 'desc' },
   });
 };
@@ -139,7 +151,7 @@ export const getAllAccessibleFamilyTrees = async (userId: string) => {
         { group: { members: { some: { userId, inviteStatus: 'ACCEPTED' } } } },
       ],
     },
-    include: familyTreeInclude,
+    select: familyTreeListSelect,
     orderBy: { createdAt: 'desc' },
   });
 };
