@@ -12,6 +12,8 @@ export function useOwnerFamilyTrees() {
   return useQuery({
     queryKey: familyTreeKeys.all,
     queryFn: () => familyTreeService.getOwnerFamilyTrees(),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -20,6 +22,8 @@ export function useFamilyTree(id: string) {
     queryKey: familyTreeKeys.detail(id),
     queryFn: () => familyTreeService.getFamilyTree(id),
     enabled: !!id,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 }
 

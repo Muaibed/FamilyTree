@@ -39,6 +39,8 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
     queryKey: ["members"],
     queryFn: getMembers,
     enabled: !!session,
+    staleTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false,
   });
 
   const {
@@ -48,12 +50,16 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
   } = useQuery({
     queryKey: ["family-tree", id],
     queryFn: () => getFamilyTree(id),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
   const { data: treePermissions } = useQuery({
     queryKey: ["tree-permissions", id],
     queryFn: () => getTreePermissions(id),
     enabled: !!session,
+    staleTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
