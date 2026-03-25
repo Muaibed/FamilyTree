@@ -94,6 +94,10 @@ model Person {
   collapsedInTrees FamilyTreeCollapsedBranch[]
   personColors     FamilyTreePersonColor[]
   familyTreeMemberships FamilyTreeMember[]
+
+  @@index([familyId])
+  @@index([fatherId])
+  @@index([motherId])
 }
 
 model SpouseRelationship {
@@ -131,6 +135,9 @@ model Family {
   // Permission models referencing this family
   memberPermissions   MemberFamilyPermission[]
   assignmentFamilyScopes AssignmentFamilyScope[]
+
+  @@index([ownerId])
+  @@index([groupId])
 }
 
 
@@ -166,6 +173,9 @@ model FamilyTree {
   // Permission models referencing this tree
   memberPermissions  MemberTreePermission[]
   assignmentTreeScopes AssignmentTreeScope[]
+
+  @@index([ownerId])
+  @@index([groupId])
 }
 
 model FamilyTreeMember {
@@ -277,6 +287,7 @@ model GroupMember {
   permissionGroupAssignments MemberPermissionGroupAssignment[]
 
   @@unique([groupId, userId])
+  @@index([userId, inviteStatus])
 }
 
 
