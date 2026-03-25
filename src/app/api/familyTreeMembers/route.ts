@@ -11,17 +11,31 @@ export async function GET() {
 
     const members = await getAllAccessiblePersons(userId);
 
-    const withPerms = await Promise.all(
-      members.map(async (person) => {
+    const uniqueFamilyIds = [...new Set(members.map((p) => p.familyId))];
+
+    const familyPermMap = new Map<string, {
+      canEdit: boolean;
+      canDelete: boolean;
+      canAddPerson: boolean;
+      canAddSpouse: boolean;
+    }>();
+
+    await Promise.all(
+      uniqueFamilyIds.map(async (familyId) => {
         const [canEdit, canDelete, canAddPerson, canAddSpouse] = await Promise.all([
-          canDoFamilyPermission(userId, person.familyId, FamilyPermission.EDIT_PERSON),
-          canDoFamilyPermission(userId, person.familyId, FamilyPermission.DELETE_PERSON),
-          canDoFamilyPermission(userId, person.familyId, FamilyPermission.ADD_PERSON),
-          canDoFamilyPermission(userId, person.familyId, FamilyPermission.ADD_SPOUSE),
+          canDoFamilyPermission(userId, familyId, FamilyPermission.EDIT_PERSON),
+          canDoFamilyPermission(userId, familyId, FamilyPermission.DELETE_PERSON),
+          canDoFamilyPermission(userId, familyId, FamilyPermission.ADD_PERSON),
+          canDoFamilyPermission(userId, familyId, FamilyPermission.ADD_SPOUSE),
         ]);
-        return { ...person, canEdit, canDelete, canAddPerson, canAddSpouse };
+        familyPermMap.set(familyId, { canEdit, canDelete, canAddPerson, canAddSpouse });
       })
     );
+
+    const withPerms = members.map((person) => ({
+      ...person,
+      ...familyPermMap.get(person.familyId),
+    }));
 
     return NextResponse.json(withPerms);
   } catch (err) {
