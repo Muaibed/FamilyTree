@@ -35,8 +35,7 @@ export default function Select({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className={`w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center justify-between ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className ?? ""}`}
-          style={zoom ? { fontSize: `${1 / zoom}em` } : undefined}
+          className={`w-full px-4 py-2 border rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring flex items-center justify-between text-sm ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className ?? ""}`}
           aria-expanded={open}
           disabled={disabled}
         >

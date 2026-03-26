@@ -26,8 +26,8 @@ import { PopoverZoomContext } from "@/contexts/popoverZoom";
 export interface TreeLayoutProps {
   treeData: TreeNode | null;
   onNodeClick: (event: MouseEvent, d: d3.HierarchyNode<TreeNode>) => void;
-  rootDescendantsRef: React.MutableRefObject<d3.HierarchyNode<TreeNode>[]>;
-  fuseRef: React.MutableRefObject<Fuse<any> | null>;
+  rootDescendantsRef: React.RefObject<d3.HierarchyNode<TreeNode>[]>;
+  fuseRef: React.RefObject<Fuse<any> | null>;
   onFocusNodeReady: (fn: (query: string, exactId?: string) => void) => void;
   onCenterReady: (fn: () => void) => void;
   branchColors: Record<string, { link: string; label: string }>;
@@ -114,8 +114,6 @@ export default function TreeViewShell({
   const displayDeathStatus: string | null = attrs?.isDead
     ? (attrs.deathDate ?? "متوفى")
     : null;
-
-  const mobileModalZoom = 0.43;
 
   const queryClient = useQueryClient();
 
@@ -441,7 +439,6 @@ export default function TreeViewShell({
                     width: "300px",
                     maxHeight: "min(55dvh, calc(100dvh - env(safe-area-inset-bottom) - 120px))",
                     fontSize: "15px",
-                    paddingBottom: "env(safe-area-inset-bottom)",
                   }
                 : {
                     left: "50%",
@@ -451,11 +448,11 @@ export default function TreeViewShell({
                     maxWidth: "350px",
                     maxHeight: "min(70dvh, calc(100dvh - env(safe-area-inset-bottom) - 80px))",
                     fontSize: "18px",
-                    paddingBottom: "env(safe-area-inset-bottom)",
                   }),
               msOverflowStyle: "none",
               scrollbarWidth: "none",
               WebkitOverflowScrolling: "touch",
+              overscrollBehavior: "contain",
             }}
           >
             <PersonModal
@@ -487,7 +484,7 @@ export default function TreeViewShell({
                             className="w-[1.4em] h-[1.4em] dark:invert"
                           />
                         </div>
-                        <div className="flex flex-col text-[1em] flex-1 text-center">
+                        <div className="flex flex-col text-[0.8em] flex-1 text-center">
                           {displaySpouses.map((name, i) => (
                             <>
                               <div key={i} className="py-[0.2em] break-words">
@@ -665,20 +662,10 @@ export default function TreeViewShell({
                     )}
                     <div className="overflow-auto mt-[0.5em] flex justify-center">
                       <PopoverZoomContext.Provider
-                        value={isMobile ? mobileModalZoom : undefined}
+                        value={undefined}
                       >
                         {isAddingChild && (
-                          <div
-                            style={
-                              isMobile
-                                ? {
-                                    transform: `scale(${mobileModalZoom})`,
-                                    transformOrigin: "top center",
-                                    width: `${100 / mobileModalZoom}%`,
-                                    flexShrink: 0,
-                                  }
-                                : { width: "100%" }
-                            }
+                          <div style={{ width: "100%" }}
                           >
                             <CreatePerson
                               onSuccess={() => {
@@ -694,17 +681,7 @@ export default function TreeViewShell({
                           </div>
                         )}
                         {isAddingSpouse && (
-                          <div
-                            style={
-                              isMobile
-                                ? {
-                                    transform: `scale(${mobileModalZoom})`,
-                                    transformOrigin: "top center",
-                                    width: `${100 / mobileModalZoom}%`,
-                                    flexShrink: 0,
-                                  }
-                                : { width: "100%" }
-                            }
+                          <div style={{ width: "100%" }}
                           >
                             <CreateSpouseRelationship
                               defaultValues={
@@ -721,17 +698,7 @@ export default function TreeViewShell({
                           </div>
                         )}
                         {isEditingPerson && (
-                          <div
-                            style={
-                              isMobile
-                                ? {
-                                    transform: `scale(${mobileModalZoom})`,
-                                    transformOrigin: "top center",
-                                    width: `${100 / mobileModalZoom}%`,
-                                    flexShrink: 0,
-                                  }
-                                : { width: "100%" }
-                            }
+                          <div style={{ width: "100%" }}
                           >
                             <EditPerson
                               id={selectedPerson.id}

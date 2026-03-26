@@ -391,7 +391,7 @@ export default function PersonForm({
                     </Button>
                     <div className="flex items-center gap-2" dir="rtl">
                       <User className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <span style={spousesStyle}>{spouse.fullName}</span>
+                      <span className="text-sm" style={spousesStyle}>{spouse.fullName}</span>
                     </div>
                   </div>
                 ))}
