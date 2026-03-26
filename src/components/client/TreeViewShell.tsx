@@ -78,6 +78,7 @@ export default function TreeViewShell({
   const [countQuery, setCountQuery] = useState("");
   const [nameCount, setNameCount] = useState<number | null>(null);
   const [showSearch, setShowSearch] = useState(false);
+  const countDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [branchColors, setBranchColors] =
     useState<Record<string, { link: string; label: string }>>(
       initialBranchColors,
@@ -233,13 +234,27 @@ export default function TreeViewShell({
     centerFnRef.current?.();
   }, []);
 
+  // Re-center tree after orientation change settles
+  useEffect(() => {
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const handleOrientationChange = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => centerFnRef.current?.(), 150);
+    };
+    window.addEventListener("resize", handleOrientationChange);
+    return () => {
+      window.removeEventListener("resize", handleOrientationChange);
+      clearTimeout(resizeTimer);
+    };
+  }, []);
+
   const normalizeAlef = (s: string) =>
     s.replace(/[أإآ]/g, "ا").replace(/\s+/g, "");
 
   return (
     <div className="relative">
       {/* Search panel */}
-      <div className="fixed top-20 right-4 z-[45] flex flex-col items-end gap-1">
+      <div className="fixed right-4 z-[45] flex flex-col items-end gap-1" style={{ top: "calc(5rem + env(safe-area-inset-top))" }}>
         <Button
           size="icon"
           variant="secondary"
@@ -341,16 +356,19 @@ export default function TreeViewShell({
                 onChange={(e) => {
                   const q = e.target.value;
                   setCountQuery(q);
+                  if (countDebounceRef.current) clearTimeout(countDebounceRef.current);
                   if (!q.trim()) {
                     setNameCount(null);
                     return;
                   }
-                  const count = rootDescendantsRef.current.filter(
-                    (d) =>
-                      normalizeAlef(d.data.name).trim() ===
-                      normalizeAlef(q).trim(),
-                  ).length;
-                  setNameCount(count);
+                  countDebounceRef.current = setTimeout(() => {
+                    const count = rootDescendantsRef.current.filter(
+                      (d) =>
+                        normalizeAlef(d.data.name).trim() ===
+                        normalizeAlef(q).trim(),
+                    ).length;
+                    setNameCount(count);
+                  }, 150);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Escape") {
@@ -421,8 +439,9 @@ export default function TreeViewShell({
                     top: "50%",
                     transform: "translate(-50%, -50%)",
                     width: "300px",
-                    maxHeight: "55vh",
+                    maxHeight: "min(55dvh, calc(100dvh - env(safe-area-inset-bottom) - 120px))",
                     fontSize: "15px",
+                    paddingBottom: "env(safe-area-inset-bottom)",
                   }
                 : {
                     left: "50%",
@@ -430,11 +449,13 @@ export default function TreeViewShell({
                     transform: "translate(-50%, -50%)",
                     width: "90vw",
                     maxWidth: "350px",
-                    maxHeight: "70vh",
+                    maxHeight: "min(70dvh, calc(100dvh - env(safe-area-inset-bottom) - 80px))",
                     fontSize: "18px",
+                    paddingBottom: "env(safe-area-inset-bottom)",
                   }),
               msOverflowStyle: "none",
               scrollbarWidth: "none",
+              WebkitOverflowScrolling: "touch",
             }}
           >
             <PersonModal
@@ -651,8 +672,9 @@ export default function TreeViewShell({
                             style={
                               isMobile
                                 ? {
-                                    zoom: mobileModalZoom,
-                                    width: "100%",
+                                    transform: `scale(${mobileModalZoom})`,
+                                    transformOrigin: "top center",
+                                    width: `${100 / mobileModalZoom}%`,
                                     flexShrink: 0,
                                   }
                                 : { width: "100%" }
@@ -676,8 +698,9 @@ export default function TreeViewShell({
                             style={
                               isMobile
                                 ? {
-                                    zoom: mobileModalZoom,
-                                    width: "100%",
+                                    transform: `scale(${mobileModalZoom})`,
+                                    transformOrigin: "top center",
+                                    width: `${100 / mobileModalZoom}%`,
                                     flexShrink: 0,
                                   }
                                 : { width: "100%" }
@@ -702,8 +725,9 @@ export default function TreeViewShell({
                             style={
                               isMobile
                                 ? {
-                                    zoom: mobileModalZoom,
-                                    width: "100%",
+                                    transform: `scale(${mobileModalZoom})`,
+                                    transformOrigin: "top center",
+                                    width: `${100 / mobileModalZoom}%`,
                                     flexShrink: 0,
                                   }
                                 : { width: "100%" }

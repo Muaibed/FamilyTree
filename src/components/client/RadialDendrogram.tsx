@@ -33,6 +33,7 @@ export default function RadialDendrogram({
   const svgRef = useRef<SVGSVGElement | null>(null);
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const branchColorsRef = useRef(branchColors);
+  const circleMapRef = useRef<Map<string, SVGCircleElement>>(new Map());
   branchColorsRef.current = branchColors;
   const width = 2000;
   const height = 2000;
@@ -49,28 +50,21 @@ export default function RadialDendrogram({
       ) as d3.HierarchyPointNode<TreeNode> | undefined;
       if (!match) return;
 
-      d3.select(svgRef.current)
-        .selectAll<SVGCircleElement, d3.HierarchyPointNode<TreeNode>>("circle")
-        .attr("fill", (d) =>
-          d.data.attributes?.id === match.data.attributes?.id
-            ? "#f59e0b"
-            : d.children
-            ? "#555"
-            : "#999"
-        )
-        .attr("r", (d) =>
-          d.data.attributes?.id === match.data.attributes?.id ? 7 : 2.5
-        );
-
-      setTimeout(() => {
-        if (!svgRef.current) return;
-        d3.select(svgRef.current)
-          .selectAll<SVGCircleElement, d3.HierarchyPointNode<TreeNode>>("circle")
-          .transition()
-          .duration(600)
-          .attr("fill", (d) => (d.children ? "#555" : "#999"))
-          .attr("r", 2.5);
-      }, 3000);
+      // Highlight only the matching circle directly — no selectAll scan
+      const matchId = match.data.attributes?.id;
+      if (matchId) {
+        const circleEl = circleMapRef.current.get(matchId);
+        if (circleEl) {
+          d3.select(circleEl).attr("fill", "#f59e0b").attr("r", 7);
+          setTimeout(() => {
+            d3.select(circleEl)
+              .transition()
+              .duration(600)
+              .attr("fill", match.children ? "#555" : "#999")
+              .attr("r", 2.5);
+          }, 3000);
+        }
+      }
 
       const svgX = match.y * Math.cos(match.x - Math.PI / 2);
       const svgY = match.y * Math.sin(match.x - Math.PI / 2);
@@ -99,29 +93,50 @@ export default function RadialDendrogram({
     onCenterReady(centerView);
   }, [centerView, onCenterReady]);
 
+  const buildColorCache = (
+    nodes: d3.HierarchyNode<TreeNode>[],
+    colors: Record<string, { link: string; label: string }>
+  ): Map<string, { link: string; label: string }> => {
+    const cache = new Map<string, { link: string; label: string }>();
+    for (const node of nodes) {
+      const nodeId = node.data.attributes?.id;
+      if (!nodeId) continue;
+      let n: d3.HierarchyNode<TreeNode> | null = node;
+      while (n) {
+        const id = n.data.attributes?.id;
+        if (id && colors[id]) { cache.set(nodeId, colors[id]); break; }
+        n = n.parent;
+      }
+    }
+    return cache;
+  };
+
   const applyColors = (
     svgEl: SVGSVGElement | null,
-    colors: Record<string, { link: string; label: string }>
+    colors: Record<string, { link: string; label: string }>,
+    nodes: d3.HierarchyNode<TreeNode>[]
   ) => {
     if (!svgEl) return;
+    const colorCache = buildColorCache(nodes, colors);
     const svg = d3.select(svgEl);
     svg
       .selectAll<SVGPathElement, d3.HierarchyPointLink<TreeNode>>(".tree-link")
-      .attr("stroke", (d) => ancestorColor(d.target, colors, "link", "#555"));
+      .attr("stroke", (d) => colorCache.get(d.target.data.attributes?.id ?? "")?.link ?? "#555");
     svg
       .selectAll<SVGTextElement, d3.HierarchyPointNode<TreeNode>>("text")
-      .attr("fill", (d) => ancestorColor(d, colors, "label", "currentColor"));
+      .attr("fill", (d) => colorCache.get(d.data.attributes?.id ?? "")?.label ?? "currentColor");
   };
 
   // Re-apply colors when branchColors changes (without rebuilding the tree)
   useEffect(() => {
-    applyColors(svgRef.current, branchColors);
+    applyColors(svgRef.current, branchColors, rootDescendantsRef.current);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [branchColors]);
 
   useEffect(() => {
     if (!svgRef.current) return;
     d3.select(svgRef.current).selectAll("*").remove();
+    circleMapRef.current.clear();
 
     const cx = width * 0.5;
     const cy = height * 0.5;
@@ -167,9 +182,9 @@ export default function RadialDendrogram({
       .attr("width", width)
       .attr("height", height)
       .attr("viewBox", [-cx, -cy, width, height])
-      .attr("style", "width: 100%; height: 100vh; font: 10px sans-serif;");
+      .attr("style", "width: 100%; height: 100dvh; font: 10px sans-serif; touch-action: none;");
 
-    const container = svg.append("g");
+    const container = svg.append("g").style("will-change", "transform");
 
     container
       .append("g")
@@ -207,7 +222,11 @@ export default function RadialDendrogram({
       .attr("r", 2.5)
       .attr("id", (d) => `${d.data.attributes?.id}`)
       .attr("name", (d) => `${d.data.name}`)
-      .on("click", onNodeClick);
+      .on("click", onNodeClick)
+      .each(function(d) {
+        const id = d.data.attributes?.id;
+        if (id) circleMapRef.current.set(id, this as SVGCircleElement);
+      });
 
     container
       .append("g")
@@ -237,24 +256,27 @@ export default function RadialDendrogram({
       .attr("paint-order", "stroke")
       .attr("stroke", "white")
       .attr("fill", (d) => ancestorColor(d, branchColorsRef.current, "label", "currentColor"))
-      .text((d) => d.data.name)
-      .clone(true)
-      .lower()
       .attr("id", (d) => `${d.data.attributes?.id}`)
       .attr("name", (d) => `${d.data.name}`)
       .on("click", onNodeClick)
-      .raise();
+      .text((d) => d.data.name);
 
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 4])
+      .filter((event) => {
+        // Allow pinch-to-zoom (touch with 2 fingers) and mouse wheel/drag
+        // Disable double-click zoom — on mobile double-tap selects a node
+        if (event.type === "dblclick") return false;
+        return !event.ctrlKey || event.type === "wheel";
+      })
       .on("zoom", (event) => {
         container.attr("transform", event.transform);
       });
     d3.select(svgRef.current).call(zoom);
     zoomRef.current = zoom;
 
-    applyColors(svgRef.current, branchColorsRef.current);
+    applyColors(svgRef.current, branchColorsRef.current, rootDescendantsRef.current);
   }, [treeData, onNodeClick, rootDescendantsRef, fuseRef]);
 
   return (

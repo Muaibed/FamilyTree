@@ -52,7 +52,7 @@ export default function TreeHome() {
 
   if (isLoading)
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center h-[100dvh]">
         <Loader2 />
       </div>
     );
@@ -93,10 +93,10 @@ export default function TreeHome() {
             <CreateFamilyTree onSuccess={() => setIsCreatingTree(false)} />
           </Modal>
         </>
-        <div className="flex items-center-safe justify-center-safe h-screen w-full">
+        <div className="flex items-center-safe justify-center-safe h-[100dvh] w-full">
           <form
             onSubmit={handleRedirect}
-            className="flex flex-col gap-4 justify-center items-center h-screen w-full"
+            className="flex flex-col gap-4 justify-center items-center h-[100dvh] w-full"
           >
             <div className="w-full flex items-center justify-center">
               <select

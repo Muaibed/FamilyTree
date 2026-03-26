@@ -29,6 +29,7 @@ export function PersonModal({
   return (
     <div
       className={`bg-card text-card-foreground border-t-[0.3em] p-[0.5em] rounded-xl md:rounded-lg w-full h-full max-h-full relative shadow-xl overflow-y-auto overflow-x-hidden ${gender === "MALE" ? "border-t-male" : gender === "FEMALE" ? "border-t-female" : "border-t-card"} `}
+      style={{ WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}
     >
       <Button
         onClick={onClose}

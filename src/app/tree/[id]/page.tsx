@@ -70,14 +70,14 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
 
   if (treeLoading || sessionStatus === "loading" || membersLoading)
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center h-[100dvh]">
         <Loader2 />
       </div>
     );
 
   if (!tree || !members) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen text-4xl">
+      <div className="flex flex-col items-center justify-center h-[100dvh] text-4xl">
         No Data Found!
       </div>
     );
@@ -109,7 +109,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
   return (
     <div className="font-arabic">
       {tree.membersCount > 0 && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-55 text-sm bg-card backdrop-blur-sm rounded-xl px-3 py-1 select-none text-center">
+        <div className="absolute left-1/2 -translate-x-1/2 z-55 text-sm bg-card backdrop-blur-sm rounded-xl px-3 py-1 select-none text-center" style={{ top: "calc(1rem + env(safe-area-inset-top))" }}>
           <div>{tree.membersCount} : عدد أفراد العائلة</div>
           <div className="flex gap-3 justify-center text-xs opacity-60 mt-0.5">
             <span>{tree.aliveCount} أحياء</span>
@@ -118,7 +118,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
           </div>
         </div>
       )}
-      <div className="absolute top-4 left-4 z-55">
+      <div className="absolute left-4 z-55" style={{ top: "calc(1rem + env(safe-area-inset-top))" }}>
         <div className="flex flex-row gap-2">
           <BurgerMenu
             onCreatePerson={() => {
@@ -148,7 +148,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
         </div>
       </div>
       {/* Layout switcher */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[45] flex gap-1 bg-card/90 backdrop-blur-sm border rounded-xl shadow-md p-1">
+      <div className="fixed left-1/2 -translate-x-1/2 z-[45] flex gap-1 bg-card/90 backdrop-blur-sm border rounded-xl shadow-md p-1" style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}>
         {LAYOUTS.map(({ key, label }) => (
           <button
             key={key}
@@ -164,7 +164,7 @@ export default function Tree({ params }: { params: Promise<{ id: string }> }) {
         ))}
       </div>
 
-      <div className="w-full h-screen overflow-hidden">
+      <div className="w-full h-[100dvh] overflow-hidden">
         <Suspense>
           <TreeViewShell
             members={members}
