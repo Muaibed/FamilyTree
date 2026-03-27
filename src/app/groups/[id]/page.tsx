@@ -605,7 +605,8 @@ export default function GroupDetailPage() {
         {/* Members */}
         <SectionCard title={membersLoading ? "الأعضاء" : `الأعضاء (${activeMembers.length})`} icon={<Users className="w-4 h-4" />}>
           {membersLoading ? <SectionSkeleton rows={3} /> : (
-          <div className="flex flex-col divide-y">
+          <div className="overflow-x-auto -mx-5 px-5 scrollbar-hide">
+          <div className="flex flex-col divide-y min-w-[420px]">
             {activeMembers.map((member: Member) => (
               <div key={member.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
                 <div className="flex items-center gap-3">
@@ -648,6 +649,7 @@ export default function GroupDetailPage() {
             {activeMembers.length === 0 && (
               <p className="text-muted-foreground text-sm text-center py-4">لا يوجد أعضاء بعد.</p>
             )}
+          </div>
           </div>
           )}
         </SectionCard>
