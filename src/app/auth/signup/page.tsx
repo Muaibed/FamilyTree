@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { BlurBackground } from '@/components/ui/BlurBackground';
 import { useSignup } from '@/hooks/useAuth';
+import Link from 'next/link';
 
 type SignupForm = { name: string; email: string; password: string };
 
@@ -59,7 +60,7 @@ export default function SignupPage() {
               </div>
               <div className="flex flex-row items-center justify-center gap-2 pt-2 text-card-foreground">
                 <div>لديك حساب بالفعل؟</div>
-                <a href="/auth/signin" className="text-blue-500 dark:text-primary">تسجيل الدخول</a>
+                <Link href="/auth/signin" className="text-blue-500 dark:text-primary">تسجيل الدخول</Link>
               </div>
             </div>
           </form>

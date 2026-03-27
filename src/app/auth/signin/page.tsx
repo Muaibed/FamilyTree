@@ -4,7 +4,8 @@ import { BlurBackground } from "@/components/ui/BlurBackground";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { toast } from "sonner"
+import { toast } from "sonner";
+import Link from "next/link";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -55,15 +56,15 @@ export default function SignIn() {
                 </Button>
               </div>
               <div className="flex justify-center pt-2">
-                <a href="/auth/forgot-password" className="text-sm text-blue-500 dark:text-primary">
+                <Link href="/auth/forgot-password" className="text-sm text-blue-500 dark:text-primary">
                   نسيت كلمة المرور؟
-                </a>
+                </Link>
               </div>
               <div className="flex flex-row items-center justify-center gap-2 pt-2 text-card-foreground">
                 <div>
                   ليس لديك حساب؟ 
                   </div>
-                  <a href="/auth/signup" className="text-blue-500 dark:text-primary">إنشاء حساب</a>
+                  <Link href="/auth/signup" className="text-blue-500 dark:text-primary">إنشاء حساب</Link>
             </div>
           </form>
         </div>
