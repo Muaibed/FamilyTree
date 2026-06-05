@@ -86,8 +86,12 @@ export const getFamilyTreeById = async (id: string) => {
 
   if (!tree) return null;
 
-  // Cache hit — return stored JSON if it contains the display fields (fullName)
-  if (tree.treeJson !== null && (tree.treeJson as any)?.attributes?.fullName !== undefined) {
+  // Cache hit — return stored JSON if it contains the display fields (fullName, spouses)
+  if (
+    tree.treeJson !== null &&
+    (tree.treeJson as any)?.attributes?.fullName !== undefined &&
+    Array.isArray((tree.treeJson as any)?.attributes?.spouses)
+  ) {
     // Backfill FamilyTreeMember if not yet populated (e.g. trees cached before the feature was added)
     const memberCount = await prisma.familyTreeMember.count({ where: { treeId: id } });
     if (memberCount === 0) {
